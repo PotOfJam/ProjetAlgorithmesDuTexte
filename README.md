@@ -6,8 +6,12 @@
 
 ## National Center for Biotechnology Information : National Library of Medicine
 
-- [Présentation de la base de données](https://www.ncbi.nlm.nih.gov/genome/browse#!/overview/)
-- [Base de données](https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/)
+- [Présentation de genBank](https://www.ncbi.nlm.nih.gov/genome/browse#!/overview/)
+- [genBank](https://ftp.ncbi.nlm.nih.gov/genomes/genbank/)
+
+# Dépendences
+
+- [Biojava](https://biojava.org/index.html)
 
 # Equipe
 
