@@ -14,6 +14,14 @@
 - [Biopyhton](https://biopython.org/)  
 - [Biopython documentation](http://biopython.org/DIST/docs/tutorial/Tutorial.html#sec168)  
 
+# TO DO LIST
+
+1. UI
+   - Fenêtre principale  
+   - Fenêtre secondaire
+2. Algo
+   - Tous les algos du cours
+
 # Equipe
 
 - ALLEMAND Fabien
