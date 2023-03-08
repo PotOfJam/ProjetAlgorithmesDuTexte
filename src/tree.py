@@ -28,7 +28,7 @@ def updateTree(overview_file):
         # Check for update
         print(url_date)
         print(file_date)
-        if url_date > file_date:
+        if url_date > file_date: # NEED TO BE TESTED
             downloadAndUpdateTree()
     # Download overview file and create tree
     else:
