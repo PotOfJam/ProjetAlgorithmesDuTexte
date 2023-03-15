@@ -1,5 +1,0 @@
-https://www.ncbi.nlm.nih.gov/genome/browse#!/overview/
-https://www.ncbi.nlm.nih.gov/genome/GENOME_REPORTS/
-
-codon de début: ATG
-codon de fin: TAA TAG ou TGA

@@ -3,3 +3,6 @@
 test/**/*.gb
 test/**/*.fasta
 test/**/*.txt
+
+Results/*
+!Results/README.md
