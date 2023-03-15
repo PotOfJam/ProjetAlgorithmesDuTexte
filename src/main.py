@@ -1,8 +1,12 @@
 import os
 import sys
+
+# GUI
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QTabWidget, QLineEdit, QComboBox, QPushButton
-from math import pi
+
+# Tree
+from tree import updateTree
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -129,6 +133,7 @@ class AA(QMainWindow):
 
 if __name__ == "__main__":
     # Initialise the app
+    updateTree()
     app = QApplication(sys.argv)
     window = AA()
     app.exec_()
