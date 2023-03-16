@@ -9,18 +9,14 @@
 - [Présentation de genBank](https://www.ncbi.nlm.nih.gov/genome/browse#!/overview/)  
 - [genBank](https://ftp.ncbi.nlm.nih.gov/genomes/genbank/)  
 
+## Documentation
+- [Biopython documentation](http://biopython.org/DIST/docs/tutorial/Tutorial.html#sec168)  
+- [Biopyhton genBank](https://biopython.org/docs/1.76/api/Bio.GenBank.html)  
+- [Biopython examples](https://notebook.community/widdowquinn/Notebooks-Bioinformatics/Biopython_NCBI_Entrez_downloads)  
+
 # Dépendences
 
 - [Biopyhton](https://biopython.org/)  
-- [Biopython documentation](http://biopython.org/DIST/docs/tutorial/Tutorial.html#sec168)  
-
-# TO DO LIST
-
-1. UI
-   - Fenêtre principale  
-   - Fenêtre secondaire
-2. Algo
-   - Tous les algos du cours
 
 # Equipe
 

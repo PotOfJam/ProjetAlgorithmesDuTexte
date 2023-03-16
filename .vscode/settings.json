@@ -51,5 +51,6 @@
         "map": "cpp",
         "regex": "cpp",
         "sstream": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
