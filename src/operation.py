@@ -35,7 +35,7 @@ def complement(gene):
         elif (changed == False and gene[i] == 'C'):
             res = res + 'G'
             changed = True
-    return res
+    return res[::-1]
 
 
 def get_representation_gene(gene):
@@ -73,8 +73,6 @@ def subgene(gene, begin_gene, end_gene):
         return gene[begin_gene:end_gene];
     else :
         raise ValueError("Error: begin_gene / end_gene incorrect.")
-
-
 
 # gene = 'ATGCTGATGCATGTAGTCGCGATGTAGC'
 # smaller_gene='ATGCATGCAT'
