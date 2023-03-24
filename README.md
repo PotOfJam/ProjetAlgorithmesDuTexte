@@ -14,7 +14,7 @@
 - [Biopyhton genBank](https://biopython.org/docs/1.76/api/Bio.GenBank.html)  
 - [Biopython examples](https://notebook.community/widdowquinn/Notebooks-Bioinformatics/Biopython_NCBI_Entrez_downloads)  
 
-# Dépendences
+# Dépendances
 
 - [Biopyhton](https://biopython.org/)  
 
