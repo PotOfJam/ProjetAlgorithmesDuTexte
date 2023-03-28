@@ -8,6 +8,7 @@
 
 - [Présentation de genBank](https://www.ncbi.nlm.nih.gov/genome/browse#!/overview/)  
 - [genBank](https://ftp.ncbi.nlm.nih.gov/genomes/genbank/)  
+- [Recherche genBank](https://www.ncbi.nlm.nih.gov/genome/)  
 
 ## Documentation
 - [Biopython documentation](http://biopython.org/DIST/docs/tutorial/Tutorial.html#sec168)  
