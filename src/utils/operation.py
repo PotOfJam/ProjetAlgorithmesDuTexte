@@ -70,7 +70,7 @@ def subgene(gene, begin_gene, end_gene):
                                         end_gene <= gene_length-1 and \
                                         end_gene > 0 and \
                                         begin_gene < end_gene):
-        return gene[begin_gene:end_gene];
+        return gene[begin_gene:end_gene]
     else :
         raise ValueError("Error: begin_gene / end_gene incorrect.")
 

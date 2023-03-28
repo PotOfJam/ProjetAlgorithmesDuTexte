@@ -1,5 +1,9 @@
 /bin/
 
+development_tests/**/*.gb
+development_tests/**/*.fasta
+development_tests/**/*.txt
+
 test/**/*.gb
 test/**/*.fasta
 test/**/*.txt
