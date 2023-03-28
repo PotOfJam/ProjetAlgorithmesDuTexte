@@ -30,19 +30,19 @@
 ## TO DO LIST !!!
 
 - Julie & Louise:
-    - Arborescence
-    - Log
-    - Taille ajustable
-    - Menus déroulants
-    - Esthétique (alignement, couleur, nom, onglet auteurs)
+    - [ ] Arborescence
+    - [ ] Log
+    - [ ] Taille ajustable
+    - [ ] Menus déroulants
+    - [ ] Esthétique (alignement, couleur, nom, onglet auteurs)
 
 - Louise:
-    - Documentation XinY
+    - [ ] Documentation XinY
 
 - Mathéo:
-    - Tests (Pytest?)
+    - [ ] Tests (Pytest?)
 
 - Samuel & Fabien:
-    - Analyse des fichiers
-    - Multithreading (Samuel)
-    - Arborescence (Fabien)
+    - [ ] Analyse des fichiers
+    - [ ] Multithreading (Samuel)
+    - [ ] Arborescence (Fabien)
