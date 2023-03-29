@@ -3,7 +3,6 @@ from Bio import SeqIO
 
 Entrez.email = "fabien.allemand@etu.unistra.fr"
 
-search_db = "nucleotide"
 fetch_db = "nuccore"
 
 region = ["CDS", "centrometre", "intron", "mobile_element", "telomere", "3'UTR", "5'UTR"] # tRNA, rRNA, ncRNA ???
