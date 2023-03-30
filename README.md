@@ -1,26 +1,26 @@
 # Projet Algorithmes Du Texte : Acquisition des Régions Fonctionnelles dans les Génomes
 
-## Description
+## 🧬 Description
 
-## Ressources
+## 📂 Ressources
 
-### National Center for Biotechnology Information : National Library of Medicine
+### 🔬 National Center for Biotechnology Information : National Library of Medicine
 
 - [Présentation de genBank](https://www.ncbi.nlm.nih.gov/genome/browse#!/overview/)
 - [genBank](https://ftp.ncbi.nlm.nih.gov/genomes/genbank/)
 - [Recherche genBank](https://www.ncbi.nlm.nih.gov/genome/)
 
-### Documentation
+### 📚 Documentation
 - [Biopython documentation](http://biopython.org/DIST/docs/tutorial/Tutorial.html#sec168)
 - [Biopyhton genBank](https://biopython.org/docs/1.76/api/Bio.GenBank.html)
 - [Biopython examples](https://notebook.community/widdowquinn/Notebooks-Bioinformatics/Biopython_NCBI_Entrez_downloads)
 
-## Dependancies
+## 🔧 Dependancies
 
 - [Biopyhton](https://biopython.org/)
 - [PyQt5](https://pypi.org/project/PyQt5/)
 
-## Team
+## 👥 Team
 
 - ALLEMAND Fabien
 - BONNAIL Julie
@@ -28,7 +28,7 @@
 - LEBOT Samuel
 - VLAYKOV Mathéo
 
-## TO DO LIST !!!
+## 📝 TO DO LIST !!!
 
 - Julie & Louise:
     - [x] Arborescence
