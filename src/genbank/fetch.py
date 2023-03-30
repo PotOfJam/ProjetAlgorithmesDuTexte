@@ -1,5 +1,5 @@
-from Bio import Entrez, SeqIO
 import logging
+from Bio import Entrez, SeqIO
 
 def fetchFromID(id, fetch_db="nuccore"):
 

@@ -1,5 +1,4 @@
-import os
-import sys
+import os, sys, logging
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QFileSystemModel
 from app.application import Application
 from PyQt5.QtWidgets import *
