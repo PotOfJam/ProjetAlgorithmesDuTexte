@@ -12,7 +12,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 if __name__ == "__main__":
     # Set-up logging
-    #logging.basicConfig(filename="application.log", encoding="utf-8", level=logging.DEBUG)
+    logging.basicConfig(filename="application.log", encoding="utf-8", level=logging.DEBUG)
 
     # Create application
     app = QApplication(sys.argv)
