@@ -1,5 +1,4 @@
-import sys, os
-import numpy as np
+import os, sys, logging
 import csv
 import requests
 import pytz
@@ -43,8 +42,8 @@ def updateTree(overview_file="../overview.txt"):
         file_date = utc.localize(file_date)
 
         # Check for update
-        print(url_date)
-        print(file_date)
+        # print(url_date)
+        # print(file_date)
         if url_date > file_date: # NEED TO BE TESTED
             downloadAndUpdateTree(overview_file)
     # Download overview file and create tree
@@ -62,7 +61,11 @@ def downloadAndUpdateTree(overview_file):
     # Donwload tree decription file from genbank
     url = 'https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt'
     r = requests.get(url, allow_redirects=True)
-    open(overview_file, 'wb').write(r.content)
+    try:
+        open(overview_file, 'wb').write(r.content)
+    except:
+        logging.error("No such file: " + overview_file)
+        sys.exit(1)
 
     # Parse tree description file and create tree
     with open(overview_file, newline='') as csvfile:
@@ -88,10 +91,9 @@ def findOrganisms(folder):
     # Look for sub folders
     sub_folders = []
     try:
-        # sub_folders = list(filter(os.path.isdir, os.listdir(folder)))
         sub_folders = [sub_folder for sub_folder in os.listdir(folder) if os.path.isdir(os.path.join(folder, sub_folder))]
     except Exception as e:
-        print(e)
+        logging.error(e)
         sys.exit(1)
 
     # If no sub folder, folder is an organism
@@ -103,6 +105,4 @@ def findOrganisms(folder):
         for sub_folder in sub_folders:
             organisms.append(findOrganisms(os.path.join(folder, sub_folder)))
         return [organism for sublist in organisms for organism in sublist] # Flatten result
-    
-# print(findOrganisms("../../Results/Organisme/Archaea/Candidatus Hydrothermarchaeota"))
 

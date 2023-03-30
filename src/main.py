@@ -1,11 +1,6 @@
 import os, sys, logging
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QFileSystemModel
+from PyQt5.QtWidgets import QApplication
 from app.application import Application
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-
-
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 

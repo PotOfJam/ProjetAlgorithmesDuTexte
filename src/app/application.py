@@ -1,21 +1,13 @@
-from PyQt5.QtWidgets import *
-from PyQt5.Qt import QStandardItemModel, QStandardItem
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5 import uic
-from PyQt5 import QtWidgets
-# from genbank.tree import updateTree
-import sys
-
-# Tree
-sys.path.append("../")
-
 # GUI
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+
+# Tree
+import sys
+sys.path.append("../")
+from genbank.tree import updateTree
 
 class Application(QMainWindow):
 
@@ -26,7 +18,7 @@ class Application(QMainWindow):
         super(Application, self).__init__()
 
         # Update Results file tree
-        # updateTree()
+        updateTree()
 
         # Load the ui file
         uic.loadUi("app/application.ui", self)
@@ -35,17 +27,16 @@ class Application(QMainWindow):
         self.setLayout(grid)
 
         # treeView.setHeaderHidden(True)
-        #grid.addWidget(treeView, 3, 3)
+        # grid.addWidget(treeView, 3, 3)
         # self.setCentralWidget(treeView)
 
-        #treeView.resize(100, 100)
+        # treeView.resize(100, 100)
 
         # Define widgets
         self.defineWidgets()
 
         # Assign fonction
         self.asignWidgetsToFunction()
-
 
         # Show the app
         self.show()
