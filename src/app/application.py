@@ -11,7 +11,11 @@ import sys
 sys.path.append("../")
 
 # GUI
-
+from PyQt5 import uic
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 
 class Application(QMainWindow):
 
@@ -42,6 +46,7 @@ class Application(QMainWindow):
         # Assign fonction
         self.asignWidgetsToFunction()
 
+
         # Show the app
         self.show()
 
@@ -51,14 +56,10 @@ class Application(QMainWindow):
         """
         model = QFileSystemModel()
         model.setRootPath(QDir.currentPath())
-        self.tabs = self.findChild(QTreeView, "treeWidget")
-        self.tabs = QTreeView()
-        self.tabs.setModel(model)
+        self.treeView.setModel(model)
+        self.treeView.setRootIndex(model.index(QDir.currentPath()+"/../Results"))
 
-        self.tabs.setRootIndex(model.index(
-            '/home/julie/Documents/2A/Algo du texte/ProjetAlgorithmesDuTexte/Results'))
-
-        #self.tabs.insertTopLevelItems(None, treeView)
+        #self.tabs.insertTopLevelItems(None, tree)
 
     def asignWidgetsToFunction(self):
         """
