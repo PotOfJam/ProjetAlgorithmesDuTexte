@@ -6,20 +6,21 @@
 
 ### National Center for Biotechnology Information : National Library of Medicine
 
-- [Présentation de genBank](https://www.ncbi.nlm.nih.gov/genome/browse#!/overview/)  
-- [genBank](https://ftp.ncbi.nlm.nih.gov/genomes/genbank/)  
-- [Recherche genBank](https://www.ncbi.nlm.nih.gov/genome/)  
+- [Présentation de genBank](https://www.ncbi.nlm.nih.gov/genome/browse#!/overview/)
+- [genBank](https://ftp.ncbi.nlm.nih.gov/genomes/genbank/)
+- [Recherche genBank](https://www.ncbi.nlm.nih.gov/genome/)
 
 ### Documentation
-- [Biopython documentation](http://biopython.org/DIST/docs/tutorial/Tutorial.html#sec168)  
-- [Biopyhton genBank](https://biopython.org/docs/1.76/api/Bio.GenBank.html)  
-- [Biopython examples](https://notebook.community/widdowquinn/Notebooks-Bioinformatics/Biopython_NCBI_Entrez_downloads)  
+- [Biopython documentation](http://biopython.org/DIST/docs/tutorial/Tutorial.html#sec168)
+- [Biopyhton genBank](https://biopython.org/docs/1.76/api/Bio.GenBank.html)
+- [Biopython examples](https://notebook.community/widdowquinn/Notebooks-Bioinformatics/Biopython_NCBI_Entrez_downloads)
 
-## Dépendances
+## Dependancies
 
-- [Biopyhton](https://biopython.org/)  
+- [Biopyhton](https://biopython.org/)
+- [PyQt5](https://pypi.org/project/PyQt5/)
 
-## Equipe
+## Team
 
 - ALLEMAND Fabien
 - BONNAIL Julie
@@ -30,19 +31,24 @@
 ## TO DO LIST !!!
 
 - Julie & Louise:
-    - [ ] Arborescence
-    - [ ] Log
+    - [x] Arborescence
+    - [ ] Journal
+    - [ ] Associer fonctions aux *widgets*
     - [ ] Taille ajustable
     - [ ] Menus déroulants
     - [ ] Esthétique (alignement, couleur, nom, onglet auteurs)
+    - [ ] Documentation (code + README)
 
 - Louise:
     - [ ] Documentation XinY
 
 - Mathéo:
-    - [ ] Tests (Pytest?)
+    - [ ] Tests
+    - [ ] Intégration Continue
+    - [ ] Documentation (code + README)
 
 - Samuel & Fabien:
     - [ ] Analyse des fichiers
-    - [ ] Multithreading (Samuel)
-    - [ ] Arborescence (Fabien)
+    - [ ] Multithreading
+    - [ ] Arborescence
+    - [ ] Documentation (code + README)
