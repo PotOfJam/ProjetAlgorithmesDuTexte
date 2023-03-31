@@ -1,8 +1,9 @@
 import logging
-import sequence_parser as sp
+import genbank.DNA_parser.sequence_parser as sp
 
 def CDSParser(path, id, organism, DNA, DNA_length, feature):
 
+    # Create dictionnary containing informations relative to the sequence
     sequence_info = {
         "path": path,
         "id": id,
