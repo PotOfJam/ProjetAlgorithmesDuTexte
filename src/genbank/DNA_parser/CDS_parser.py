@@ -36,6 +36,12 @@ def CDSParser(path, id, organism, DNA, DNA_length, feature):
             sequence_info["DNA_sub_sequence"].append(DNA[sub_sequence_location[0] : sub_sequence_location[1]])
         sequence_info["DNA_sequence"] = sp.defragmentSequence(DNA, sequence_info["location"])
 
+    # Reverse completement
+    if feature.strand == -1:
+        sequence_info["DNA_sequence"] = sequence_info["DNA_sequence"].reverse_complement()
+        for sub_sequence in sequence_info["DNA_sub_sequence"]:
+            sub_sequence = sub_sequence.reverse_complement()            
+    
     # Check for invalid DNA sequence
     print("3")
     if sp.incorrectSequence(sequence_info["DNA_sequence"]):

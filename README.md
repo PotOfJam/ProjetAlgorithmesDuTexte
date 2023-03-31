@@ -31,10 +31,10 @@
 ## 📝 TO DO LIST !!!
 
 - Julie & Louise:
-    - [x] Arborescence
+    - [x] Arborescence interactive (récupérer le nom du dossier sélectionné)
     - [ ] Journal
     - [ ] Associer fonctions aux *widgets*
-    - [ ] Taille ajustable
+    - [x] Taille ajustable
     - [ ] Menus déroulants
     - [ ] Esthétique (alignement, couleur, nom, onglet auteurs)
     - [ ] Documentation (code + README)
@@ -50,5 +50,5 @@
 - Samuel & Fabien:
     - [ ] Analyse des fichiers
     - [ ] Multithreading
-    - [ ] Arborescence
+    - [x] Arborescence
     - [ ] Documentation (code + README)

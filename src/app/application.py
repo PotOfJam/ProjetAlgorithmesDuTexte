@@ -30,7 +30,8 @@ class Application(QMainWindow):
         self.splitter = self.findChild(QSplitter, "splitter")
         print(self.splitter)
         self.splitter.setStretchFactor(1, 10)
-
+        
+        
         # treeView.setHeaderHidden(True)
         # grid.addWidget(treeView, 3, 3)
         # self.setCentralWidget(treeView)
@@ -38,7 +39,16 @@ class Application(QMainWindow):
         # treeView.resize(100, 100)
 
         # Define widgets
-        self.defineWidgets()
+        self.model = QFileSystemModel()
+        self.model.setRootPath(QDir.currentPath())
+        self.model.setFilter(QDir.NoDotAndDotDot | QDir.Dirs)
+        self.treeView.setModel(self.model)
+        self.treeView.setRootIndex(self.model.index(QDir.currentPath() + "/../Results"))
+        for column in range(1, self.model.columnCount()):
+            self.treeView.hideColumn(column)
+
+        self.path = ""
+        self.treeView.clicked.connect(self.on_treeView_clicked)
 
         # Assign fonction
         self.asignWidgetsToFunction()
@@ -46,20 +56,6 @@ class Application(QMainWindow):
         # Show the app
         self.show()
 
-
-    def defineWidgets(self):
-        """
-        Defines all widget used in the application.
-        """
-        model = QFileSystemModel()
-        model.setRootPath(QDir.currentPath())
-        model.setFilter(QDir.NoDotAndDotDot | QDir.Dirs)
-        self.treeView.setModel(model)
-        self.treeView.setRootIndex(model.index(QDir.currentPath()+"/../Results"))
-        for column in range(1, model.columnCount()):
-            self.treeView.hideColumn(column)
-
-        #self.tabs.insertTopLevelItems(None, tree)
 
     def asignWidgetsToFunction(self):
         """
@@ -69,9 +65,17 @@ class Application(QMainWindow):
         self.startbutton = self.findChild(QPushButton, "pushButton")
         self.startbutton.clicked.connect(self.test)
 
+    def on_treeView_clicked(self, index):
+        temp_mod = index.model()
+        self.path = temp_mod.filePath(index)
+        print(self.path)
+
+
     def test(self):
         # Test
-        id = "NC_018416" # For testing purpose, very small organism
+        # id = "NC_018416" # For testing purpose, very small organism
+        id = "NC_000021" # For testing purpose, very small organism
+
         record = genbank.fetch.fetchFromID(id)
         genbank.feature_parser.parseFeatures("", id, "ORGANISME_TEST", record)
         print("FIN DU TEST")
