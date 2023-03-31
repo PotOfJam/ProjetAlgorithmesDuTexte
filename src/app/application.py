@@ -23,6 +23,7 @@ class Application(QMainWindow):
         # Load the ui file
         uic.loadUi("app/application.ui", self)
 
+        # Define layout
         grid = QGridLayout()
         self.setLayout(grid)
 
@@ -40,6 +41,7 @@ class Application(QMainWindow):
 
         # Show the app
         self.show()
+
 
     def defineWidgets(self):
         """

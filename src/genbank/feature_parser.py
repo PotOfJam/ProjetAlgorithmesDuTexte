@@ -1,8 +1,7 @@
 import logging
-
 from DNA_parser.CDS_parser import CDSParser
 
-def parseFeatures(id, record):
+def parseFeatures(path, id, organism, record):
 
     logging.debug("#### id = " + str(id) + " ####")
 
@@ -21,7 +20,7 @@ def parseFeatures(id, record):
     try:
         for feature in record.features:
             if feature.type == "CDS":
-                CDSParser(DNA, DNA_length, feature)
+                CDSParser(path, id, organism, DNA, DNA_length, feature)
             elif feature.type == "centromere":
                 logging.warning("Found centromere in id = " + str(id))
             elif feature.type == "intron":

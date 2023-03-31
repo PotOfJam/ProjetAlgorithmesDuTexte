@@ -1,25 +1,34 @@
 import logging
 import sequence_parser as sp
 
-def CDSParser(DNA, DNA_length, feature):
+def CDSParser(path, id, organism, DNA, DNA_length, feature):
+
+    sequence_info = {
+        "path": path,
+        "id": id,
+        "organism": organism.replace(" ", "_"),
+        "type": "CDS"
+    }
 
     # Find sequence location
-    sequence_location = sp.sequenceLocation(feature, DNA_length)
+    sequence_info["location"] = sp.sequenceLocation(feature, DNA_length)
 
     # Recreate DNA sequence
-    DNA_sequence = ""
-    if sequence_location == []:
+    if sequence_info["location"] == []:
         return
-    elif len(sequence_location) == 1:
-        sequence_start = sequence_location[0][0]
-        sequence_end = sequence_location[0][1]
-        DNA_sequence += DNA[sequence_start : sequence_end]
+    elif len(sequence_info["location"]) == 1:
+        sequence_info["start"] = sequence_info["location"][0][0]
+        sequence_info["end"] = sequence_info["location"][0][1]
+        sequence_info["DNA_sequence"] += DNA[sequence_info["start"] : sequence_info["end"]]
     else:
-        DNA_sequence = sp.defragmentSequence(DNA, sequence_location)
+        sequence_info["DNA_sub_sequence"] = []
+        for sub_sequence_location in sequence_info["location"]:
+            sequence_info["DNA_sub_sequence"].append(DNA[sub_sequence_location[0] : sub_sequence_location[1]])
+        sequence_info["DNA_sequence"] = sp.defragmentSequence(DNA, sequence_info["location"])
 
     # Check for invalid DNA sequence
-    if sp.incorrectSequence(DNA_sequence):
+    if sp.incorrectSequence(sequence_info["DNA_sequence"]):
         return
 
     # Write result in file
-    return
+    sp.writeSequence(sequence_info)

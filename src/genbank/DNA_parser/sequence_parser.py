@@ -1,4 +1,4 @@
-import logging
+import os, logging
 
 def incorrectSequenceLocation(start_location, end_location, DNA_length):
 
@@ -32,6 +32,10 @@ def sequenceLocation(feature, DNA_length):
             if incorrectSequenceLocation(start_location, end_location, DNA_length):
                 return []
             sequence_location.append((int(start_location), int(end_location)))
+        # Reorder sub-sequence locations
+        def getFirst(tuple):
+            return tuple[0]
+        sequence_location.sort(key=getFirst)
     # Contiguous DNA sequence
     else:
         start_location = part_location.start
@@ -45,10 +49,7 @@ def sequenceLocation(feature, DNA_length):
 
 def defragmentSequence(DNA, sequence_location):
 
-    # Reorder sub-sequence locations
-    def getFirst(tuple):
-        return tuple[0]
-    sequence_location.sort(key=getFirst)
+    # Note: sequence locations have been ordered in sequenceLocation function
 
     # Recreate sequence
     DNA_sequence = ""
@@ -83,3 +84,34 @@ def incorrectSequence(DNA_sequence):
         return True
 
     return False
+
+def writeSequence(sequence_info):
+
+    # File path
+    file_path = os.path.join(sequence_info["path"], sequence_info["type"] + "_" + sequence_info["organism"] + "_NC_" + str(sequence_info["NC"]) + ".txt" )
+    
+    # Sequence description
+    sequence_description_text = sequence_info["type"] + " " + sequence_info["organism"] + " " + sequence_info["NC"] + ": "
+    if len(sequence_info["locations"]) == 1:
+        sequence_description_text += str(sequence_info["location"][0][0]) + ".." + str(sequence_info["location"][0][1])
+    else:
+        sequence_description_text += "join("
+        for sub_sequence_location in sequence_info["locations"]:
+            sequence_description_text += str(sub_sequence_location[0]) + ".." + str(sub_sequence_location[1]) + ","
+        sequence_description_text -= ","
+        sequence_description_text += ")"
+
+    try:
+        with open(file_path) as file:
+            # Write full sequence
+            file.write(sequence_description_text)
+            file.write(sequence_info["DNA_sequence"])
+
+            # Write sub-sequences
+            exon_id = 0
+            for subsequence in sequence_info["DNA_sub_sequence"]:
+                exon_id += 1
+                file.write(sequence_description_text + " Exon " + str(exon_id))
+                file.write(subsequence)
+    except:
+        logging.error("Unable to write in file: " + file_path)
