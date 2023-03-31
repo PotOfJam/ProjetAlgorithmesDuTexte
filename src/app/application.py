@@ -1,5 +1,5 @@
 # GUI
-from PyQt5 import uic
+from PyQt5 import uic 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -47,8 +47,12 @@ class Application(QMainWindow):
         """
         model = QFileSystemModel()
         model.setRootPath(QDir.currentPath())
+        model.setFilter(QDir.NoDotAndDotDot | QDir.Dirs)
         self.treeView.setModel(model)
         self.treeView.setRootIndex(model.index(QDir.currentPath()+"/../Results"))
+        for column in range(1, model.columnCount()):
+            self.treeView.hideColumn(column)
+
 
         #self.tabs.insertTopLevelItems(None, tree)
 
