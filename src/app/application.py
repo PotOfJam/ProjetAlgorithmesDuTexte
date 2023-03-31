@@ -26,6 +26,9 @@ class Application(QMainWindow):
         # Define layout
         grid = QGridLayout()
         self.setLayout(grid)
+        self.splitter = self.findChild(QSplitter, "splitter")
+        print(self.splitter)
+        self.splitter.setSizes([1, 2])
 
         # treeView.setHeaderHidden(True)
         # grid.addWidget(treeView, 3, 3)
