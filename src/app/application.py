@@ -27,6 +27,8 @@ class Application(QMainWindow):
         grid = QGridLayout()
         self.setLayout(grid)
         self.splitter = self.findChild(QSplitter, "splitter")
+        self.startbutton = self.findChild(QPushButton,"pushButton")
+        self.startbutton.clicked.connect(self.test)
         print(self.splitter)
         self.splitter.setStretchFactor(1, 10)
 
@@ -66,3 +68,7 @@ class Application(QMainWindow):
         Assign a function to each widget.
         """
         pass
+
+    def test(self):
+        print("test")
+        return
