@@ -19,26 +19,27 @@ def parseFeatures(path, id, organism, record):
     # Parse feature according to its type
     try:
         for feature in record.features:
+            # if feature.type in region_type
             if feature.type == "CDS":
-                logging.warning("Found CDS in id = " + str(id))
+                logging.info("Found CDS in id = " + str(id))
                 CDSParser(path, id, organism, DNA, DNA_length, feature)
             elif feature.type == "centromere":
-                logging.warning("Found centromere in id = " + str(id))
+                logging.info("Found centromere in id = " + str(id))
             elif feature.type == "intron":
-                logging.warning("Found intron in id = " + str(id))
+                logging.info("Found intron in id = " + str(id))
             elif feature.type == "mobile_element":
-                logging.warning("Found mobile_element in id = " + str(id))
+                logging.info("Found mobile_element in id = " + str(id))
             elif feature.type == "telomere":
-                logging.warning("Found telomere in id = " + str(id))
+                logging.info("Found telomere in id = " + str(id))
             elif feature.type == "3'UTR":
-                logging.warning("Found 3'UTR in id = " + str(id))
+                logging.info("Found 3'UTR in id = " + str(id))
             elif feature.type == "5'UTR":
-                logging.warning("Found 5'UTR in id = " + str(id))
+                logging.info("Found 5'UTR in id = " + str(id))
             elif feature.type == "tRNA":
-                logging.warning("Found tRNA in id = " + str(id))
+                logging.info("Found tRNA in id = " + str(id))
             elif feature.type == "rRNA":
-                logging.warning("Found rRNA in id = " + str(id))
+                logging.info("Found rRNA in id = " + str(id))
             elif feature.type == "ncRNA":
-                logging.warning("Found ncRNA in id = " + str(id))
+                logging.info("Found ncRNA in id = " + str(id))
     except:
         logging.error("Unable to read feature(s) from id = " + str(id))

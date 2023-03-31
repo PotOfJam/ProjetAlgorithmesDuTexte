@@ -1,4 +1,5 @@
 import os, logging
+import traceback
 
 def incorrectSequenceLocation(start_location, end_location, DNA_length):
 
@@ -24,26 +25,32 @@ def sequenceLocation(feature, DNA_length):
     # Initialise variable
     sequence_location = []
 
-    # Fragmented DNA sequence
-    if str(feature.location_operator) == "join":
-        for part_location in feature.location.parts:
-            start_location = part_location.start
-            end_location = part_location.end
+    try:
+        # Fragmented DNA sequence
+        if str(feature.location_operator) == "join":
+            for part_location in feature.location.parts:
+                start_location = part_location.start
+                end_location = part_location.end
+                logging.debug("location = " + str(start_location) + "," + str(end_location))
+                if incorrectSequenceLocation(start_location, end_location, DNA_length):
+                    return []
+                sequence_location.append((int(start_location), int(end_location)))
+            # Reorder sub-sequence locations
+            def getFirst(tuple):
+                return tuple[0]
+            sequence_location.sort(key=getFirst)
+        # Contiguous DNA sequence
+        else:
+            start_location = feature.location.start
+            end_location = feature.location.end
+            logging.debug("location = " + str(start_location) + "," + str(end_location))
             if incorrectSequenceLocation(start_location, end_location, DNA_length):
                 return []
             sequence_location.append((int(start_location), int(end_location)))
-        # Reorder sub-sequence locations
-        def getFirst(tuple):
-            return tuple[0]
-        sequence_location.sort(key=getFirst)
-    # Contiguous DNA sequence
-    else:
-        start_location = part_location.start
-        end_location = part_location.end
-        if incorrectSequenceLocation(start_location, end_location, DNA_length):
-                return []
-        sequence_location.append((int(start_location), int(end_location)))
+    except:
+        logging.error("Unable to find sequence location")
     
+    print(sequence_location)
     return sequence_location
 
 
@@ -88,30 +95,37 @@ def incorrectSequence(DNA_sequence):
 def writeSequence(sequence_info):
 
     # File path
-    file_path = os.path.join(sequence_info["path"], sequence_info["type"] + "_" + sequence_info["organism"] + "_NC_" + str(sequence_info["NC"]) + ".txt" )
-    
+    try:
+        file_path = os.path.join(sequence_info["path"], sequence_info["type"] + "_" + sequence_info["organism"] + "_" + str(sequence_info["id"]) + ".txt" )
+    except:
+        logging.debug("PROBLEME 1")
+
     # Sequence description
-    sequence_description_text = sequence_info["type"] + " " + sequence_info["organism"] + " " + sequence_info["NC"] + ": "
-    if len(sequence_info["locations"]) == 1:
-        sequence_description_text += str(sequence_info["location"][0][0]) + ".." + str(sequence_info["location"][0][1])
-    else:
-        sequence_description_text += "join("
-        for sub_sequence_location in sequence_info["locations"]:
-            sequence_description_text += str(sub_sequence_location[0]) + ".." + str(sub_sequence_location[1]) + ","
-        sequence_description_text -= ","
-        sequence_description_text += ")"
+    try:
+        sequence_description_text = sequence_info["type"] + " " + sequence_info["organism"] + " " + sequence_info["id"] + ": "
+        if len(sequence_info["location"]) == 1:
+            sequence_description_text += str(sequence_info["location"][0][0]) + ".." + str(sequence_info["location"][0][1])
+        else:
+            sequence_description_text += "join("
+            for sub_sequence_location in sequence_info["location"]:
+                sequence_description_text += str(sub_sequence_location[0]) + ".." + str(sub_sequence_location[1]) + ","
+            sequence_description_text -= ","
+            sequence_description_text += ")"
+    except:
+        logging.debug("PROBLEME 2")
 
     try:
-        with open(file_path) as file:
+        with open(file_path, "a") as file:
             # Write full sequence
-            file.write(sequence_description_text)
-            file.write(sequence_info["DNA_sequence"])
+            file.write(sequence_description_text + "\n")
+            file.write(str(sequence_info["DNA_sequence"]) + "\n")
 
             # Write sub-sequences
             exon_id = 0
             for subsequence in sequence_info["DNA_sub_sequence"]:
                 exon_id += 1
-                file.write(sequence_description_text + " Exon " + str(exon_id))
-                file.write(subsequence)
+                file.write(sequence_description_text + " Exon " + str(exon_id) + "\n")
+                file.write(str(subsequence) + "\n")
     except:
+        print(traceback.format_exc())
         logging.error("Unable to write in file: " + file_path)

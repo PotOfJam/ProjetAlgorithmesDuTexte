@@ -4,10 +4,11 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-# Tree
+# GenBank functions
 import sys
 sys.path.append("../")
 from genbank.tree import updateTree
+import genbank.search, genbank.fetch, genbank.feature_parser
 
 class Application(QMainWindow):
 
@@ -27,8 +28,6 @@ class Application(QMainWindow):
         grid = QGridLayout()
         self.setLayout(grid)
         self.splitter = self.findChild(QSplitter, "splitter")
-        self.startbutton = self.findChild(QPushButton,"pushButton")
-        self.startbutton.clicked.connect(self.test)
         print(self.splitter)
         self.splitter.setStretchFactor(1, 10)
 
@@ -60,15 +59,20 @@ class Application(QMainWindow):
         for column in range(1, model.columnCount()):
             self.treeView.hideColumn(column)
 
-
         #self.tabs.insertTopLevelItems(None, tree)
 
     def asignWidgetsToFunction(self):
         """
         Assign a function to each widget.
         """
-        pass
+        # Push button
+        self.startbutton = self.findChild(QPushButton, "pushButton")
+        self.startbutton.clicked.connect(self.test)
 
     def test(self):
-        print("test")
+        # Test
+        id = "NC_018416" # For testing purpose, very small organism
+        record = genbank.fetch.fetchFromID(id)
+        genbank.feature_parser.parseFeatures("", id, "ORGANISME_TEST", record)
+        print("FIN DU TEST")
         return
