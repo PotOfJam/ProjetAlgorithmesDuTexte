@@ -80,7 +80,7 @@ def defragmentSequence(DNA, sequence_location):
     return DNA_sequence
 
 
-def incorrectSequence(DNA_sequence):
+def incorrectSequence(DNA_sequence, CDS=False):
 
     # Initialise constants
     valid_start_codon = ["ATG", "CTG", "TTG", "GTG", "ATA", "ATC", "ATT", "TTA"]
@@ -88,14 +88,18 @@ def incorrectSequence(DNA_sequence):
 
     start_codon = DNA_sequence[0:3]
     end_codon = DNA_sequence[len(DNA_sequence)-3:]
-
+    
     # Invalid start codon
-    if start_codon not in valid_start_codon:
+    if CDS and start_codon not in valid_start_codon:
         logging.error("Invalid start codon (%s)" % start_codon)
         return True
-    #Invalid end codon
-    if end_codon not in valid_end_codon:
+    # Invalid end codon
+    if CDS and end_codon not in valid_end_codon:
         logging.error("Invalid end codon (%s)" % end_codon)
+        return True
+    # Invalid length
+    if len(DNA_sequence) % 3 != 0:
+        logging.error("Invalid sequence length")
         return True
     # Invalid DNA base
     if not all(base in "ATGC" for base in DNA_sequence):
@@ -131,18 +135,11 @@ def writeSequence(sequence_info):
         logging.debug("PROBLEME 2")
 
     try:
+        # Write full sequence
         with open(file_path, "a") as file:
-            # Write full sequence
             if sequence_info["DNA_sequence"] != "":
                 file.write(sequence_description_text + "\n")
                 file.write(str(sequence_info["DNA_sequence"]) + "\n")
-
-            # Write sub-sequences
-            exon_id = 0
-            for subsequence in sequence_info["DNA_sub_sequence"]:
-                exon_id += 1
-                file.write(sequence_description_text + " Exon " + str(exon_id) + "\n")
-                file.write(str(subsequence) + "\n")
     except:
         print(traceback.format_exc())
         logging.error("Unable to write in file: " + file_path)

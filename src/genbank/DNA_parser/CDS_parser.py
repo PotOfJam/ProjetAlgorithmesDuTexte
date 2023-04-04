@@ -58,7 +58,7 @@ def parseCDS(path, id, organism, DNA, DNA_length, feature, CDS_flag, intron_flag
         for sub_sequence in CDS_info["DNA_sub_sequence"]:
             sub_sequence = sub_sequence.reverse_complement()
     # Check for invalid DNA sequence
-    if spu.incorrectSequence(CDS_info["DNA_sequence"]):
+    if spu.incorrectSequence(CDS_info["DNA_sequence"], CDS=True):
         logging.warning("Incorrect sequence")
         return
     
