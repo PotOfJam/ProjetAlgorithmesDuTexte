@@ -5,7 +5,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 # GenBank functions
-import sys
+import os, sys
 sys.path.append("../")
 from genbank.tree import updateTree
 import genbank.search, genbank.fetch, genbank.feature_parser
@@ -75,7 +75,11 @@ class Application(QMainWindow):
         # Test
         # id = "NC_018416" # For testing purpose, very small organism
         id = "NC_000021" # For testing purpose, very small organism
-
+        if os.path.exists("CDS_ORGANISME_TEST_NC_000021.txt"):
+            os.remove("CDS_ORGANISME_TEST_NC_000021.txt")
+        if os.path.exists("intron_ORGANISME_TEST_NC_000021.txt"):
+            os.remove("intron_ORGANISME_TEST_NC_000021.txt")
+        print("DEBUT DU TEST")
         record = genbank.fetch.fetchFromID(id)
         genbank.feature_parser.parseFeatures("", id, "ORGANISME_TEST", record)
         print("FIN DU TEST")

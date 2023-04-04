@@ -1,6 +1,4 @@
-/bin/
-
-*.log
+.ipynb_checkpoints/
 
 development_tests/**/*.gb
 development_tests/**/*.fasta
@@ -9,6 +7,8 @@ development_tests/**/*.txt
 test/**/*.gb
 test/**/*.fasta
 test/**/*.txt
+
+*.log
 
 Results/*
 !Results/README.md

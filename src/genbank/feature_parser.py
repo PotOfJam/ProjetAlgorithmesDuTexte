@@ -1,5 +1,5 @@
 import logging
-from genbank.DNA_parser.CDS_parser import CDSParser
+from genbank.DNA_parser.CDS_parser import parseCDS
 
 def parseFeatures(path, id, organism, record):
 
@@ -22,7 +22,7 @@ def parseFeatures(path, id, organism, record):
             # if feature.type in region_type
             if feature.type == "CDS":
                 logging.info("Found CDS in id = " + str(id))
-                CDSParser(path, id, organism, DNA, DNA_length, feature)
+                parseCDS(path, id, organism, DNA, DNA_length, feature)
             elif feature.type == "centromere":
                 logging.info("Found centromere in id = " + str(id))
             elif feature.type == "intron":
