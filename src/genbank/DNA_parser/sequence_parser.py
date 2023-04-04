@@ -103,13 +103,17 @@ def writeSequence(sequence_info):
     # Sequence description
     try:
         sequence_description_text = sequence_info["type"] + " " + sequence_info["organism"] + " " + sequence_info["id"] + ": "
+        if sequence_info["strand"] == -1:
+            sequence_description_text += "complement("
         if len(sequence_info["location"]) == 1:
             sequence_description_text += str(sequence_info["location"][0][0]) + ".." + str(sequence_info["location"][0][1])
         else:
             sequence_description_text += "join("
             for sub_sequence_location in sequence_info["location"]:
                 sequence_description_text += str(sub_sequence_location[0]) + ".." + str(sub_sequence_location[1]) + ","
-            sequence_description_text -= ","
+            sequence_description_text = sequence_description_text[:len(sequence_description_text)-1]
+            sequence_description_text += ")"
+        if sequence_info["strand"] == -1:
             sequence_description_text += ")"
     except:
         logging.debug("PROBLEME 2")
@@ -117,8 +121,9 @@ def writeSequence(sequence_info):
     try:
         with open(file_path, "a") as file:
             # Write full sequence
-            file.write(sequence_description_text + "\n")
-            file.write(str(sequence_info["DNA_sequence"]) + "\n")
+            if sequence_info["DNA_sequence"] != "":
+                file.write(sequence_description_text + "\n")
+                file.write(str(sequence_info["DNA_sequence"]) + "\n")
 
             # Write sub-sequences
             exon_id = 0

@@ -32,6 +32,7 @@
 
 - Julie & Louise:
     - [x] Arborescence interactive (récupérer le nom du dossier sélectionné)
+    - [ ] Checkbox pour les types de régions fonctionnelles
     - [ ] Journal
     - [ ] Associer fonctions aux *widgets*
     - [x] Taille ajustable
