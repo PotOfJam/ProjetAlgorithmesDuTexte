@@ -74,13 +74,14 @@ class Application(QMainWindow):
     def test(self):
         # Test
         # id = "NC_018416" # For testing purpose, very small organism
-        id = "NC_000021" # For testing purpose, very small organism
         if os.path.exists("CDS_ORGANISME_TEST_NC_000021.txt"):
             os.remove("CDS_ORGANISME_TEST_NC_000021.txt")
         if os.path.exists("intron_ORGANISME_TEST_NC_000021.txt"):
             os.remove("intron_ORGANISME_TEST_NC_000021.txt")
         print("DEBUT DU TEST")
+        region_type = ["CDS", "intron"]
+        id = "NC_000021" # For testing purpose, very small organism
         record = genbank.fetch.fetchFromID(id)
-        genbank.feature_parser.parseFeatures("", id, "ORGANISME_TEST", record)
+        genbank.feature_parser.parseFeatures(region_type, "", id, "ORGANISME_TEST", record)
         print("FIN DU TEST")
         return

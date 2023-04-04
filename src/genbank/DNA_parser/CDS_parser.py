@@ -1,7 +1,7 @@
 import os, logging, traceback
 import genbank.DNA_parser.sequence_parser_utils as spu
 
-def parseCDS(path, id, organism, DNA, DNA_length, feature):
+def parseCDS(path, id, organism, DNA, DNA_length, feature, CDS_flag, intron_flag):
 
     # Create dictionnary containing informations relative to the CDS sequence
     CDS_info = {
@@ -16,7 +16,6 @@ def parseCDS(path, id, organism, DNA, DNA_length, feature):
     }
 
     # Create dictionnary containing informations relative to the intron(s) sequence(s)
-    intron_flag = False
     intron_info = {
         "path": path,
         "id": id,
@@ -33,13 +32,15 @@ def parseCDS(path, id, organism, DNA, DNA_length, feature):
     intron_info["CDS_location"] = CDS_info["location"]
 
     # Find intron(s) location(s)
-    intron_info["location"] = spu.intronLocation(CDS_info["location"])
+    if intron_flag:
+        intron_info["location"] = spu.intronLocation(CDS_info["location"])
 
     # Recreate CDS sequence
     if CDS_info["location"] == []:
         logging.warning("Incorrect sequence location: (empty location)")
         return
     elif len(CDS_info["location"]) == 1:
+        intron_flag = False
         CDS_info["start"] = CDS_info["location"][0][0]
         CDS_info["end"] = CDS_info["location"][0][1]
         logging.debug("location = " + str(CDS_info["start"]) + "," + str(CDS_info["end"]))
@@ -72,7 +73,8 @@ def parseCDS(path, id, organism, DNA, DNA_length, feature):
                 sub_sequence = sub_sequence.reverse_complement()
 
     # Write CDS sequence in CDS file
-    writeCDS(CDS_info)
+    if CDS_flag:
+        writeCDS(CDS_info)
 
     # Write introns sequence in intron file
     if intron_flag:
