@@ -4,7 +4,7 @@ from genbank.DNA_parser.sequence_parser import parseSequence
 
 def parseFeatures(region_type, path, id, organism, record):
 
-    logging.debug("#### id = " + str(id) + " ####")
+    logging.info("Start parsing id = " + str(id))
 
     # Initialize variables
     DNA = None

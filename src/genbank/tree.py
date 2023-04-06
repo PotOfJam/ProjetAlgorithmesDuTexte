@@ -110,19 +110,41 @@ def findSubFolders(path):
         sub_folder = os.path.join(path, sub_folder)
     return sub_folders
 
-def findOrganismsAndPath(selected_folder_path):
+
+def findLastSubFolders(selected_folder_path):
 
     # Already done
     # if not os.path.isdir(selected_folder_path):
     #     logging.error("...")
 
-    organisms = []
     sub_folders = findSubFolders(selected_folder_path)
+    
+    # Selected folder does not contain any sub-folder
+    if sub_folders == []:
+        return [selected_folder_path]
 
+    # Selected folder contains sub-folder(s)
     while sub_folders != []:
         for sub_folder in sub_folders:
-            sub_folders += findSubFolders(sub_folder)
-    
+            sub_sub_folders = findSubFolders(sub_folder)
+            if sub_sub_folders != []:
+                sub_folders += sub_sub_folders
+                sub_folders.remove(sub_folder)
+
+    return sub_folders
+
+
+def findOrganisms(selected_folder_path):
+
+    logging.info("Looking for organism(s) in the selected folder...")
+
+    organisms = []
+
+    organisms_paths = findLastSubFolders(selected_folder_path)
+    for path in organisms_paths:
+        organisms.append((os.path.basename(os.path.normpath(path)), path))
+
+    return organisms
 
 
 def convertRecordDate(modification_date):

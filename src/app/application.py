@@ -28,7 +28,6 @@ class Application(QMainWindow):
         grid = QGridLayout()
         self.setLayout(grid)
         self.splitter = self.findChild(QSplitter, "splitter")
-        print(self.splitter)
         self.splitter.setStretchFactor(1, 10)
         
         
@@ -48,7 +47,7 @@ class Application(QMainWindow):
             self.treeView.hideColumn(column)
 
         self.path = ""
-        self.treeView.clicked.connect(self.on_treeView_clicked)
+        self.treeView.clicked.connect(self.onTreeViewClicked)
 
         self.region_type = []
 
@@ -68,10 +67,9 @@ class Application(QMainWindow):
         self.startbutton.clicked.connect(self.startParsing)
 
 
-    def on_treeView_clicked(self, index):
+    def onTreeViewClicked(self, index):
         temp_mod = index.model()
         self.path = temp_mod.filePath(index)
-        print(self.path)
 
 
     def test(self):
@@ -91,18 +89,19 @@ class Application(QMainWindow):
     
 
     def startParsing(self):
-
-        logging.info("Start parsing")
+        
+        logging.info("Initialising parsing")
 
         if self.path == "" or not os.path.isdir(self.path):
             logging.error("Invalid path")
             return
         else:
+            logging.info("Start parsing")
             organisms = genbank.tree.findOrganisms(self.path)
-            print("ORGANISMES:", organisms)
 
-            for organism in organisms:
+            for organism, organism_path in organisms:
+                logging.info("Start parsing organism " + organism)
                 ids = genbank.search.searchID(organism)
                 for id in ids:
                     record = genbank.fetch.fetchFromID(id)
-                    genbank.feature_parser.parseFeatures(self.region_type, , id, organism, record)
+                    genbank.feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)

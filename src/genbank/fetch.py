@@ -3,6 +3,8 @@ from Bio import Entrez, SeqIO
 
 def fetchFromID(id, fetch_db="nuccore", rettype="gbwithparts"):
 
+    logging.info("Fetching data from GenBank database...(please wait)")
+
     # Set-up for request
     Entrez.email = "fabien.allemand@etu.unistra.fr"
 

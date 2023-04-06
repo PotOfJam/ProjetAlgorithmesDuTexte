@@ -3,6 +3,8 @@ from Bio import Entrez
 
 def searchID(organism, search_db = "nucleotide"):
 
+    logging.info("Looking for organism ids...")
+
     # Set-up for request
     Entrez.email = "fabien.allemand@etu.unistra.fr"
 
