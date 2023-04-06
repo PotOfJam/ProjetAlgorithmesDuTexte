@@ -35,7 +35,7 @@
     - [x] Checkbox pour les types de régions fonctionnelles
     - [x] Journal
     - [x] Associer fonctions aux *widgets*
-    - [x] Taille ajustable
+    - [ ] Taille ajustable (taille maximale des widgets à droite?)
     - [ ] Menus déroulants
     - [ ] Esthétique (alignement, couleur [application et journal], nom, onglet auteurs)
     - [ ] Documentation (code + README)

@@ -1,13 +1,12 @@
-from sys import path as s_path
-from os import path as o_path
+import os, sys
 import pytest
 
 # get absolute path of test_sample.py
-script_dir = o_path.dirname(__file__)
+script_dir = os.path.dirname(__file__)
 
 # get absolute path of ../src/utils
-module_dir = o_path.join(script_dir, '..', 'src', 'utils')
-s_path.append(module_dir)
+module_dir = os.path.join(script_dir, '..', 'src', 'utils')
+sys.path.append(module_dir)
 
 import operation as op
 
