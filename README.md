@@ -41,7 +41,7 @@
     - [ ] Documentation (code + README)
 
 - Louise:
-    - [ ] Documentation XinY
+    - [X] Documentation XinY
 
 - Mathéo:
     - [ ] Tests

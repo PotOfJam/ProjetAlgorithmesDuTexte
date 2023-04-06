@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../../texture/orig.jpg</normaloff>../../../texture/orig.jpg</iconset>
+    <normaloff>../texture/orig.jpg</normaloff>../texture/orig.jpg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
@@ -50,6 +50,124 @@
                </property>
                <widget class="QWidget" name="layoutWidget">
                 <layout class="QVBoxLayout" name="verticalLayout_4">
+                 <item>
+                  <widget class="QLabel" name="label_10">
+                   <property name="text">
+                    <string>Région fonctionnelle selectionnée:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QVBoxLayout" name="verticalLayout_2">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_6">
+                     <item>
+                      <widget class="QCheckBox" name="CDS">
+                       <property name="text">
+                        <string>CDS</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="CENTRO">
+                       <property name="text">
+                        <string>Centrometre</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="INTRON">
+                       <property name="text">
+                        <string>Intron</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="MOBILE">
+                       <property name="text">
+                        <string>mobile element</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_4">
+                     <item>
+                      <widget class="QCheckBox" name="NC_RNA">
+                       <property name="text">
+                        <string>ncRNA</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="R_RNA">
+                       <property name="text">
+                        <string>rRNA</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="TELOMETRE">
+                       <property name="text">
+                        <string>telometre</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="T_RNA">
+                       <property name="text">
+                        <string>tRNA</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_5">
+                     <item>
+                      <widget class="QCheckBox" name="UTR_3">
+                       <property name="maximumSize">
+                        <size>
+                         <width>242</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>3'UTR</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="UTR_5">
+                       <property name="maximumSize">
+                        <size>
+                         <width>242</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>5'UTR</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="OTHER">
+                       <property name="maximumSize">
+                        <size>
+                         <width>242</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>autre (à écrire)</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </item>
                  <item>
                   <widget class="QLabel" name="label_6">
                    <property name="text">
@@ -123,7 +241,7 @@
       </widget>
       <widget class="QWidget" name="author">
        <attribute name="title">
-        <string>Auteur</string>
+        <string>Auteurs</string>
        </attribute>
        <widget class="QLabel" name="bg_author">
         <property name="geometry">
@@ -144,7 +262,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap>../texture/bg.png</pixmap>
+         <pixmap>../ProjetAlgorithmesDuTexte/src/texture/bg.png</pixmap>
         </property>
         <property name="scaledContents">
          <bool>false</bool>
@@ -183,7 +301,6 @@
         <property name="font">
          <font>
           <pointsize>20</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -203,7 +320,6 @@
         <property name="font">
          <font>
           <pointsize>20</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -241,7 +357,6 @@
         <property name="font">
          <font>
           <pointsize>20</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -279,7 +394,6 @@
         <property name="font">
          <font>
           <pointsize>20</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -313,7 +427,6 @@
       <property name="font">
        <font>
         <pointsize>30</pointsize>
-        <weight>75</weight>
         <bold>true</bold>
        </font>
       </property>
@@ -334,7 +447,7 @@
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap>../texture/color.png</pixmap>
+       <pixmap>../ProjetAlgorithmesDuTexte/src/texture/color.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>

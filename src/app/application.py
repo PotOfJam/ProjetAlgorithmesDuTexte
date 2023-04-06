@@ -83,13 +83,21 @@ class Application(QMainWindow):
         self.path = ""
         self.treeView.clicked.connect(self.onTreeViewClicked)
 
+        # check boxes
+        self.checkBoxes=[self.CDS,self.CENTRO,self.INTRON,self.MOBILE,self.NC_RNA,self.R_RNA,self.TELOMETRE,self.T_RNA,self.UTR_3,self.UTR_5,self.OTHER]
+        self.checkBoxes[0].setChecked(True)
+
+        for k in range(len(self.checkBoxes)):
+            self.checkBoxes[k].toggled.connect(self.onChecked)
+
         self.region_type = []
 
         # Assign fonction
         self.asignWidgetsToFunction()
 
         # Show the app
-        self.show()
+        self.show()  
+        
 
 
     def asignWidgetsToFunction(self):
@@ -99,6 +107,33 @@ class Application(QMainWindow):
         # Push button
         self.startbutton = self.findChild(QPushButton, "pushButton")
         self.startbutton.clicked.connect(self.startParsing)
+
+    def onChecked(self):
+
+        self.region_type = []
+
+        if(self.CDS.isChecked()):
+            self.region_type.append("CDS")
+        if(self.CENTRO.isChecked()):
+            self.region_type.append("centromere")
+        if(self.INTRON.isChecked()):
+            self.region_type.append("intron")
+        if(self.MOBILE.isChecked()):
+            self.region_type.append("mobile_element")
+        if(self.NC_RNA.isChecked()):
+            self.region_type.append("ncRNA")
+        if(self.R_RNA.isChecked()):
+            self.region_type.append("rRNA")
+        if(self.TELOMETRE.isChecked()):
+            self.region_type.append("telomere")
+        if(self.T_RNA.isChecked()):
+            self.region_type.append("tRNA")
+        if(self.UTR_3.isChecked()):
+            self.region_type.append("3'UTR")
+        if(self.UTR_5.isChecked()):
+            self.region_type.append("5'UTR")
+
+        print("check: region type= ",self.region_type)
 
 
     def onTreeViewClicked(self, index):
@@ -112,7 +147,9 @@ class Application(QMainWindow):
             os.remove("CDS_ORGANISME_TEST_NC_000021.txt")
         if os.path.exists("intron_ORGANISME_TEST_NC_000021.txt"):
             os.remove("intron_ORGANISME_TEST_NC_000021.txt")
+
         print("DEBUT DU TEST")
+
         region_type = ["CDS", "intron"]
         # id = "NC_018416" # For testing purpose, very small organism
         id = "NC_000021" # For testing purpose, very small organism
@@ -133,8 +170,12 @@ class Application(QMainWindow):
             logging.info("Start parsing")
             organisms = genbank.tree.findOrganisms(self.path)
 
-            #for organism in organisms:
-            #    ids = genbank.search.searchID(organism)
-            #    for id in ids:
-            #        record = genbank.fetch.fetchFromID(id)
-            #        genbank.feature_parser.parseFeatures(self.region_type, , id, organism, record)
+            for organism in organisms:
+                ids = genbank.search.searchID(organism)
+                for id in ids:
+                    record = genbank.fetch.fetchFromID(id)
+
+                    if(self.CDS.isChecked()):
+                        t=1
+                    
+                    genbank.feature_parser.parseFeatures(self.region_type, self.path, id, organism, record)
