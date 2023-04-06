@@ -81,7 +81,7 @@ class Application(QMainWindow):
             self.treeView.hideColumn(column)
 
         self.path = ""
-        self.treeView.clicked.connect(self.on_treeView_clicked)
+        self.treeView.clicked.connect(self.onTreeViewClicked)
 
         # check boxes
         self.checkBoxes=[self.CDS,self.CENTRO,self.INTRON,self.MOBILE,self.NC_RNA,self.R_RNA,self.TELOMETRE,self.T_RNA,self.UTR_3,self.UTR_5,self.OTHER]
