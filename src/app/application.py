@@ -81,7 +81,7 @@ class Application(QMainWindow):
             self.treeView.hideColumn(column)
 
         self.path = ""
-        self.treeView.clicked.connect(self.onTreeViewClicked)
+        self.treeView.clicked.connect(self.on_treeView_clicked)
 
         # check boxes
         self.checkBoxes=[self.CDS,self.CENTRO,self.INTRON,self.MOBILE,self.NC_RNA,self.R_RNA,self.TELOMETRE,self.T_RNA,self.UTR_3,self.UTR_5,self.OTHER]
@@ -136,9 +136,12 @@ class Application(QMainWindow):
         print("check: region type= ",self.region_type)
 
 
+        
+
     def onTreeViewClicked(self, index):
         temp_mod = index.model()
         self.path = temp_mod.filePath(index)
+        print(self.path)
 
 
     def test(self):

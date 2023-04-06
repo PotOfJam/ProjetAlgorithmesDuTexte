@@ -63,6 +63,18 @@
                     <layout class="QHBoxLayout" name="horizontalLayout_6">
                      <item>
                       <widget class="QCheckBox" name="CDS">
+                       <property name="minimumSize">
+                        <size>
+                         <width>121</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>242</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
                        <property name="text">
                         <string>CDS</string>
                        </property>
@@ -70,6 +82,18 @@
                      </item>
                      <item>
                       <widget class="QCheckBox" name="CENTRO">
+                       <property name="minimumSize">
+                        <size>
+                         <width>121</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>242</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
                        <property name="text">
                         <string>Centrometre</string>
                        </property>
@@ -77,6 +101,18 @@
                      </item>
                      <item>
                       <widget class="QCheckBox" name="INTRON">
+                       <property name="minimumSize">
+                        <size>
+                         <width>121</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>242</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
                        <property name="text">
                         <string>Intron</string>
                        </property>
@@ -84,6 +120,18 @@
                      </item>
                      <item>
                       <widget class="QCheckBox" name="MOBILE">
+                       <property name="minimumSize">
+                        <size>
+                         <width>121</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>242</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
                        <property name="text">
                         <string>mobile element</string>
                        </property>
@@ -95,6 +143,18 @@
                     <layout class="QHBoxLayout" name="horizontalLayout_4">
                      <item>
                       <widget class="QCheckBox" name="NC_RNA">
+                       <property name="minimumSize">
+                        <size>
+                         <width>121</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>242</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
                        <property name="text">
                         <string>ncRNA</string>
                        </property>
@@ -102,6 +162,18 @@
                      </item>
                      <item>
                       <widget class="QCheckBox" name="R_RNA">
+                       <property name="minimumSize">
+                        <size>
+                         <width>121</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>242</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
                        <property name="text">
                         <string>rRNA</string>
                        </property>
@@ -109,6 +181,18 @@
                      </item>
                      <item>
                       <widget class="QCheckBox" name="TELOMETRE">
+                       <property name="minimumSize">
+                        <size>
+                         <width>121</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>242</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
                        <property name="text">
                         <string>telometre</string>
                        </property>
@@ -116,6 +200,18 @@
                      </item>
                      <item>
                       <widget class="QCheckBox" name="T_RNA">
+                       <property name="minimumSize">
+                        <size>
+                         <width>121</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>242</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
                        <property name="text">
                         <string>tRNA</string>
                        </property>
@@ -127,6 +223,12 @@
                     <layout class="QHBoxLayout" name="horizontalLayout_5">
                      <item>
                       <widget class="QCheckBox" name="UTR_3">
+                       <property name="minimumSize">
+                        <size>
+                         <width>121</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
                          <width>242</width>
@@ -140,6 +242,12 @@
                      </item>
                      <item>
                       <widget class="QCheckBox" name="UTR_5">
+                       <property name="minimumSize">
+                        <size>
+                         <width>121</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
                          <width>242</width>
@@ -153,6 +261,12 @@
                      </item>
                      <item>
                       <widget class="QCheckBox" name="OTHER">
+                       <property name="minimumSize">
+                        <size>
+                         <width>121</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
                          <width>242</width>
