@@ -80,7 +80,7 @@ def defragmentSequence(DNA, sequence_location):
     return DNA_sequence
 
 
-def incorrectSequence(DNA_sequence, CDS=False):
+def incorrectSequence(DNA_sequence, sequence_type):
 
     # Initialise constants
     valid_start_codon = ["ATG", "CTG", "TTG", "GTG", "ATA", "ATC", "ATT", "TTA"]
@@ -90,15 +90,15 @@ def incorrectSequence(DNA_sequence, CDS=False):
     end_codon = DNA_sequence[len(DNA_sequence)-3:]
     
     # Invalid start codon
-    if CDS and start_codon not in valid_start_codon:
+    if sequence_type in ["CDS"] and start_codon not in valid_start_codon:
         logging.error("Invalid start codon (%s)" % start_codon)
         return True
     # Invalid end codon
-    if CDS and end_codon not in valid_end_codon:
+    if sequence_type in ["CDS"] and end_codon not in valid_end_codon:
         logging.error("Invalid end codon (%s)" % end_codon)
         return True
     # Invalid length
-    if len(DNA_sequence) % 3 != 0:
+    if sequence_type in ["CDS"] and len(DNA_sequence) % 3 != 0:
         logging.error("Invalid sequence length")
         return True
     # Invalid DNA base

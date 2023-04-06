@@ -1,7 +1,4 @@
-import os, logging, traceback
-import genbank.DNA_parser.sequence_parser_utils as spu
-
-import os, logging, traceback
+import logging
 import genbank.DNA_parser.sequence_parser_utils as spu
 
 def parseSequence(path, id, organism, DNA, DNA_length, feature, feature_type):
@@ -42,7 +39,7 @@ def parseSequence(path, id, organism, DNA, DNA_length, feature, feature_type):
         for sub_sequence in sequence_info["DNA_sub_sequence"]:
             sub_sequence = sub_sequence.reverse_complement()
     # Check for invalid DNA sequence
-    if spu.incorrectSequence(sequence_info["DNA_sequence"]):
+    if spu.incorrectSequence(sequence_info["DNA_sequence"], sequence_info["type"]):
         logging.warning("Incorrect sequence")
         return
 
