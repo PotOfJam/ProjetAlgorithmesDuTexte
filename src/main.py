@@ -10,7 +10,7 @@ if __name__ == "__main__":
     if os.path.exists(log_file):
         os.remove(log_file)
     logging.basicConfig(filename=log_file, encoding="utf-8", level=logging.DEBUG)
-
+    
     # Create application
     app = QApplication(sys.argv)
     window = Application()

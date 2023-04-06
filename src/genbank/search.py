@@ -3,6 +3,9 @@ from Bio import Entrez
 
 def searchID(organism, search_db = "nucleotide"):
 
+    # Set-up for request
+    Entrez.email = "fabien.allemand@etu.unistra.fr"
+
     if organism == "":
         logging.warning("Unable to retrieve ID(s) from search_db = " + search_db + " (no organism provided)")
         return []

@@ -1,14 +1,14 @@
 import logging
 from Bio import Entrez, SeqIO
 
-def fetchFromID(id, fetch_db="nuccore"):
+def fetchFromID(id, fetch_db="nuccore", rettype="gbwithparts"):
 
     # Set-up for request
     Entrez.email = "fabien.allemand@etu.unistra.fr"
 
     # Fetch data from database
     try:
-        handle = Entrez.efetch(db=fetch_db, id=id, rettype="gbwithparts", retmode="text")
+        handle = Entrez.efetch(db=fetch_db, id=id, rettype=rettype, retmode="text")
     except:
         logging.error("Unable to fetch id = " + str(id) + " from fetch_db = " + fetch_db)
 
