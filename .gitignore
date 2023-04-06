@@ -12,3 +12,5 @@ test/**/*.txt
 
 Results/*
 !Results/README.md
+
+*.Rhistory

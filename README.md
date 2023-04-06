@@ -32,12 +32,12 @@
 
 - Julie & Louise:
     - [x] Arborescence interactive (récupérer le nom du dossier sélectionné)
-    - [ ] Checkbox pour les types de régions fonctionnelles
-    - [ ] Journal
-    - [ ] Associer fonctions aux *widgets*
+    - [x] Checkbox pour les types de régions fonctionnelles
+    - [x] Journal
+    - [x] Associer fonctions aux *widgets*
     - [x] Taille ajustable
     - [ ] Menus déroulants
-    - [ ] Esthétique (alignement, couleur, nom, onglet auteurs)
+    - [ ] Esthétique (alignement, couleur [application et journal], nom, onglet auteurs)
     - [ ] Documentation (code + README)
 
 - Louise:
@@ -49,7 +49,7 @@
     - [ ] Documentation (code + README)
 
 - Samuel & Fabien:
-    - [ ] Analyse des fichiers
+    - [x] Analyse des fichiers
     - [ ] Multithreading
     - [x] Arborescence
     - [ ] Documentation (code + README)

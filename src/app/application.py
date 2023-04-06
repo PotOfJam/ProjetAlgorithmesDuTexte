@@ -4,44 +4,13 @@ from PyQt5 import uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-
-class CustomFormatter(logging.Formatter):
-    FORMATS = {
-        logging.ERROR:   ("[%(levelname)-8s] %(message)s", QColor("red")),
-        logging.DEBUG:   ("[%(levelname)-8s] [%(filename)s:%(lineno)d] %(message)s", "green"),
-        logging.INFO:    ("[%(levelname)-8s] %(message)s", "#0000FF"),
-        logging.WARNING: ('%(asctime)s - %(name)s - %(levelname)s - %(message)s', QColor(100, 100, 0))
-    }
-
-    def format( self, record ):
-        last_fmt = self._style._fmt
-        opt = CustomFormatter.FORMATS.get(record.levelno)
-        if opt:
-            fmt, color = opt
-            self._style._fmt = "<font color=\"{}\">{}</font>".format(QColor(color).name(),fmt)
-        res = logging.Formatter.format( self, record )
-        self._style._fmt = last_fmt
-        return res
-
-class QPlainTextEditLogger(logging.Handler):
-    def __init__(self, parent=None):
-        super().__init__()
-        self.widget = QPlainTextEdit(parent)
-        self.widget.setReadOnly(True)    
-
-    def emit(self, record):
-        msg = self.format(record)
-        self.widget.appendHtml(msg) 
-        # move scrollbar
-        scrollbar = self.widget.verticalScrollBar()
-        scrollbar.setValue(scrollbar.maximum())
-
-
+from app.logger import CustomFormatter, QPlainTextEditLogger
 
 # GenBank functions
 import os, sys
 sys.path.append("../")
 import genbank.tree, genbank.search, genbank.fetch, genbank.feature_parser
+
 
 class Application(QMainWindow):
 
@@ -51,19 +20,37 @@ class Application(QMainWindow):
         """
         super(Application, self).__init__()
 
-        # Update Results file tree
-        genbank.tree.updateTree()
+        # Attributes for file parsing
+        self.path = ""
+        self.region_type = []
 
         # Load the ui file
         uic.loadUi("app/application.ui", self)
 
         # Define layout
-        grid = QGridLayout()
-        self.setLayout(grid)
-        self.splitter = self.findChild(QSplitter, "splitter")
-        self.splitter.setStretchFactor(1, 10)
+        self.defineLayout()
+
+        # Create widgets
+        self.createWidgets()
+
+        # Set-up logger
+        self.setUpLogger()
+        
+        # Update Results file tree
+        genbank.tree.updateTree()
+
+        # Show the app
+        self.show()  
         
 
+    def setUpLogger(self):
+        """
+        Set-up application logger.
+        """
+        self.log_file = "application.log"
+        if os.path.exists(self.log_file):
+            os.remove(self.log_file)
+        logging.basicConfig(filename=self.log_file, encoding="utf-8", level=logging.DEBUG)
         self.logger_box = self.findChild(QFormLayout, "formLayout_6")
         logTextBox = QPlainTextEditLogger()
         self.logger_box.addWidget(logTextBox.widget)
@@ -71,42 +58,49 @@ class Application(QMainWindow):
         logTextBox.setFormatter(CustomFormatter())
         logging.getLogger().setLevel(logging.DEBUG)
 
-        # Define widgets
+
+    def defineLayout(self):
+        """
+        Define Application layout.
+        """
+        grid = QGridLayout()
+        self.setLayout(grid)
+        self.splitter = self.findChild(QSplitter, "splitter")
+        self.splitter.setStretchFactor(1, 10)
+
+
+    def createWidgets(self):
+        """
+        Create widgets and assign a function to each widget.
+        """
+        # Model
         self.model = QFileSystemModel()
         self.model.setRootPath(QDir.currentPath())
         self.model.setFilter(QDir.NoDotAndDotDot | QDir.Dirs)
+
+        # Push button
+        self.startbutton = self.findChild(QPushButton, "pushButton")
+        self.startbutton.clicked.connect(self.startParsing)
+
+        # Tree view
         self.treeView.setModel(self.model)
         self.treeView.setRootIndex(self.model.index(QDir.currentPath() + "/../Results"))
         for column in range(1, self.model.columnCount()):
             self.treeView.hideColumn(column)
-
-        self.path = ""
         self.treeView.clicked.connect(self.onTreeViewClicked)
 
-        # check boxes
+        # Check boxes
         self.checkBoxes=[self.CDS,self.CENTRO,self.INTRON,self.MOBILE,self.NC_RNA,self.R_RNA,self.TELOMETRE,self.T_RNA,self.UTR_3,self.UTR_5,self.OTHER]
         self.checkBoxes[0].setChecked(True)
-
         for k in range(len(self.checkBoxes)):
             self.checkBoxes[k].toggled.connect(self.onChecked)
 
-        self.region_type = []
 
-        # Assign fonction
-        self.asignWidgetsToFunction()
+    def onTreeViewClicked(self, index):
+        temp_mod = index.model()
+        self.path = temp_mod.filePath(index)
+        print(self.path)
 
-        # Show the app
-        self.show()  
-        
-
-
-    def asignWidgetsToFunction(self):
-        """
-        Assign a function to each widget.
-        """
-        # Push button
-        self.startbutton = self.findChild(QPushButton, "pushButton")
-        self.startbutton.clicked.connect(self.startParsing)
 
     def onChecked(self):
 
@@ -133,15 +127,7 @@ class Application(QMainWindow):
         if(self.UTR_5.isChecked()):
             self.region_type.append("5'UTR")
 
-        print("check: region type= ",self.region_type)
-
-
-        
-
-    def onTreeViewClicked(self, index):
-        temp_mod = index.model()
-        self.path = temp_mod.filePath(index)
-        print(self.path)
+        # print("check: region type= ",self.region_type)
 
 
     def test(self):
@@ -177,8 +163,5 @@ class Application(QMainWindow):
                 ids = genbank.search.searchID(organism)
                 for id in ids:
                     record = genbank.fetch.fetchFromID(id)
-
-                    if(self.CDS.isChecked()):
-                        t=1
                     
                     genbank.feature_parser.parseFeatures(self.region_type, self.path, id, organism, record)

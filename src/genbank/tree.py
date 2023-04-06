@@ -67,38 +67,17 @@ def downloadAndUpdateTree(overview_file):
             os.makedirs(os.path.join("../Results/Organisme", kingdom, group, subgroup, organism), exist_ok=True)  # Ignore existing folders
 
 
-def findOrganisms(folder):
+def findSubFolders(path):
     """
-    Find organisms name located in a folder.
+    Find sub-folders.
 
     Args:
-        folder (string): Path of the folder to explore.
+        path (string): Path of the folder to look inside.
 
     Returns:
-        List: List of organisms name and path.
+        list: Paths of the sub-folders.
     """
-    # Look for sub folders
-    sub_folders = []
-    try:
-        sub_folders = [sub_folder for sub_folder in os.listdir(folder) if os.path.isdir(os.path.join(folder, sub_folder))]
-    except Exception as e:
-        logging.error(e)
-        sys.exit(1)
-
-    # If no sub folder, folder is an organism
-    if sub_folders == []:
-        return [os.path.basename(os.path.normpath(folder))]
-    # Else, recursively look for organisms
-    else:
-        organisms = []
-        for sub_folder in sub_folders:
-            organisms.append(findOrganisms(os.path.join(folder, sub_folder)))
-        return [organism for sublist in organisms for organism in sublist] # Flatten result
-
-
-def findSubFolders(path):
-
-    # Look for sub folders
+    # Look for sub-folders
     sub_folders = []
     try:
         sub_folders = [sub_folder for sub_folder in os.listdir(path) if os.path.isdir(os.path.join(path, sub_folder))]
@@ -112,11 +91,16 @@ def findSubFolders(path):
 
 
 def findLastSubFolders(selected_folder_path):
+    """
+    Find folders at the bottom layer of the hierachy starting at a given path.
 
-    # Already done
-    # if not os.path.isdir(selected_folder_path):
-    #     logging.error("...")
+    Args:
+        selected_folder_path (string): Path of the folder at the top of the hierarchy.
 
+
+    Returns:
+        list: Paths of the sub-folders located at the bottom of the hierarchy.
+    """
     sub_folders = findSubFolders(selected_folder_path)
     
     # Selected folder does not contain any sub-folder
@@ -135,7 +119,15 @@ def findLastSubFolders(selected_folder_path):
 
 
 def findOrganisms(selected_folder_path):
+    """
+    Find organisms contained in a given folder.
 
+    Args:
+        selected_folder_path (string): Path of the folder to look inside.
+
+    Returns:
+        list: Tuples containing the name of the organism and the path to its folder.
+    """
     logging.info("Looking for organism(s) in the selected folder...")
 
     organisms = []
@@ -148,6 +140,15 @@ def findOrganisms(selected_folder_path):
 
 
 def convertRecordDate(modification_date):
+    """
+    Convert record (GenBank file) modification date to datetime object.
+
+    Args:
+        modification_date (string): Last modification date of the GenBank file.
+
+    Returns:
+        datetime.datetime: Last modification date of the GenBank file.
+    """
     day, month, year = modification_date.split("-")
 
     day = int(day)
@@ -161,7 +162,15 @@ def convertRecordDate(modification_date):
 
 
 def findLastUpdateDate(ids):
+    """
+    Find the date at wich the organism (all GenBank files) has been last modified in the GenBank database.
 
+    Args:
+        ids (list): List of GenBank IDs related to an organism.
+
+    Returns:
+        datetime.datetime: Last modification date.
+    """
     last_modification_date = -1
     for id in ids:
         record = fetchFromID(id, rettype="genbank") # Create custom function
@@ -177,7 +186,15 @@ def findLastUpdateDate(ids):
 
 
 def findLastParsingDate(path):
+    """
+    Find the date at wich the organism (all parsing results files) has been last modified in the local "Result" folder.
 
+    Args:
+        path (string): Path of the organism's folder.
+
+    Returns:
+        datetime.datetime: Last modification date.
+    """
     # Find files in directory
     files = []
     try:
@@ -199,7 +216,7 @@ def findLastParsingDate(path):
 
 
 def genbankDate(path, organism):
-
+    
     # MULTITHREADING!!
 
     # Genbank date
