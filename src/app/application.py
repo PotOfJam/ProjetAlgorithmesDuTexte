@@ -5,6 +5,39 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
+class CustomFormatter(logging.Formatter):
+    FORMATS = {
+        logging.ERROR:   ("[%(levelname)-8s] %(message)s", QColor("red")),
+        logging.DEBUG:   ("[%(levelname)-8s] [%(filename)s:%(lineno)d] %(message)s", "green"),
+        logging.INFO:    ("[%(levelname)-8s] %(message)s", "#0000FF"),
+        logging.WARNING: ('%(asctime)s - %(name)s - %(levelname)s - %(message)s', QColor(100, 100, 0))
+    }
+
+    def format( self, record ):
+        last_fmt = self._style._fmt
+        opt = CustomFormatter.FORMATS.get(record.levelno)
+        if opt:
+            fmt, color = opt
+            self._style._fmt = "<font color=\"{}\">{}</font>".format(QColor(color).name(),fmt)
+        res = logging.Formatter.format( self, record )
+        self._style._fmt = last_fmt
+        return res
+
+class QPlainTextEditLogger(logging.Handler):
+    def __init__(self, parent=None):
+        super().__init__()
+        self.widget = QPlainTextEdit(parent)
+        self.widget.setReadOnly(True)    
+
+    def emit(self, record):
+        msg = self.format(record)
+        self.widget.appendHtml(msg) 
+        # move scrollbar
+        scrollbar = self.widget.verticalScrollBar()
+        scrollbar.setValue(scrollbar.maximum())
+
+
+
 # GenBank functions
 import os, sys
 sys.path.append("../")
@@ -30,12 +63,13 @@ class Application(QMainWindow):
         self.splitter = self.findChild(QSplitter, "splitter")
         self.splitter.setStretchFactor(1, 10)
         
-        
-        # treeView.setHeaderHidden(True)
-        # grid.addWidget(treeView, 3, 3)
-        # self.setCentralWidget(treeView)
 
-        # treeView.resize(100, 100)
+        self.logger_box = self.findChild(QFormLayout, "formLayout_6")
+        logTextBox = QPlainTextEditLogger()
+        self.logger_box.addWidget(logTextBox.widget)
+        logging.getLogger().addHandler(logTextBox)
+        logTextBox.setFormatter(CustomFormatter())
+        logging.getLogger().setLevel(logging.DEBUG)
 
         # Define widgets
         self.model = QFileSystemModel()
@@ -99,9 +133,8 @@ class Application(QMainWindow):
             logging.info("Start parsing")
             organisms = genbank.tree.findOrganisms(self.path)
 
-            for organism, organism_path in organisms:
-                logging.info("Start parsing organism " + organism)
-                ids = genbank.search.searchID(organism)
-                for id in ids:
-                    record = genbank.fetch.fetchFromID(id)
-                    genbank.feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
+            #for organism in organisms:
+            #    ids = genbank.search.searchID(organism)
+            #    for id in ids:
+            #        record = genbank.fetch.fetchFromID(id)
+            #        genbank.feature_parser.parseFeatures(self.region_type, , id, organism, record)
