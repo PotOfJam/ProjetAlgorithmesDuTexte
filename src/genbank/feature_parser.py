@@ -3,7 +3,16 @@ from genbank.DNA_parser.CDS_parser import parseCDS
 from genbank.DNA_parser.sequence_parser import parseSequence
 
 def parseFeatures(region_type, path, id, organism, record):
+    """
+    Parse a feature found in a record (GenBank file).
 
+    Args:
+        region_type (list): Types of DNA region to parse.
+        path (string): Path of the organism in the "Result" folder.
+        id (string): ID of the GenBank file.
+        organism (string): Name of the organism.
+        record (...): Record (content of the GenBank file).
+    """
     logging.info("Start parsing id = " + str(id))
 
     # Initialize variables
