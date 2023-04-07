@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Algorithme du Texte</string>
+   <string>Analyseur GenBank</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -53,7 +53,7 @@
                  <item>
                   <widget class="QLabel" name="label_10">
                    <property name="text">
-                    <string>Région fonctionnelle selectionnée:</string>
+                    <string>Régions fonctionnelles:</string>
                    </property>
                   </widget>
                  </item>
@@ -285,7 +285,7 @@
                  <item>
                   <widget class="QLabel" name="label_6">
                    <property name="text">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Arborescence des fichiers&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Base de données&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                   </widget>
                  </item>
@@ -301,7 +301,7 @@
                    <item row="0" column="1">
                     <widget class="QLabel" name="label_9">
                      <property name="text">
-                      <string>0/0 fichiers parsés</string>
+                      <string>0/0 fichier(s) analysé(s)</string>
                      </property>
                     </widget>
                    </item>
@@ -315,7 +315,7 @@
                    <item row="0" column="1">
                     <widget class="QLabel" name="label_8">
                      <property name="text">
-                      <string>0/0 organismes mis à jour</string>
+                      <string>0/0 organisme(s) analysé(s)</string>
                      </property>
                     </widget>
                    </item>
@@ -325,7 +325,7 @@
                    <item row="2" column="1">
                     <widget class="QPushButton" name="pushButton">
                      <property name="text">
-                      <string>Démarrer</string>
+                      <string>Lancer l'analyse</string>
                      </property>
                     </widget>
                    </item>
@@ -336,7 +336,7 @@
                    <item row="0" column="1">
                     <widget class="QLabel" name="label_7">
                      <property name="text">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Logs&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Journal&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
                     </widget>
                    </item>
@@ -545,7 +545,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Algorithme du Texte</string>
+       <string>Analyseur GenBank</string>
       </property>
       <property name="scaledContents">
        <bool>false</bool>

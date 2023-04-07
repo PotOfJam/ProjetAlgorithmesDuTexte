@@ -1,16 +1,11 @@
-.ipynb_checkpoints/
-
-development_tests/**/*.gb
-development_tests/**/*.fasta
-development_tests/**/*.txt
-
-test/**/*.gb
-test/**/*.fasta
-test/**/*.txt
-
 *.log
+*.Rhistory
+
+*.gb
+*.fasta
+*.txt
+
+.ipynb_checkpoints/
 
 Results/*
 !Results/README.md
-
-*.Rhistory

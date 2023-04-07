@@ -5,8 +5,7 @@ import pytz
 from dateutil.parser import parse as parsedate
 import datetime
 
-from genbank.search import searchID
-from genbank.fetch import fetchFromID
+import genbank.fetch
 
 def updateTree(overview_file="../overview.txt"):
     """
@@ -34,9 +33,11 @@ def updateTree(overview_file="../overview.txt"):
         # print(url_date)
         # print(file_date)
         if url_date > file_date: # NEED TO BE TESTED
+            logging.info("Updating Results file tree...")
             downloadAndUpdateTree(overview_file)
     # Download overview file and create tree
     else:
+        logging.info("Creating Results file tree...")
         downloadAndUpdateTree(overview_file)
 
 
@@ -173,7 +174,7 @@ def findLastUpdateDate(ids):
     """
     last_modification_date = -1
     for id in ids:
-        record = fetchFromID(id, rettype="genbank") # Create custom function
+        record = genbank.fetch.fetchFromID(id, rettype="genbank")
         modification_date = record.annotations["date"]
         modification_date = convertRecordDate(modification_date)
 
@@ -215,15 +216,35 @@ def findLastParsingDate(path):
     return parsing_date
 
 
-def genbankDate(path, organism):
-    
-    # MULTITHREADING!!
+def needParsing(organism_path, ids):
+    """
+    Check if an organism needs to be parsed.
 
+    Args:
+        organism_path (str): Path of the organism's folder.
+        ids (list): List of GenBank IDs related to an organism.
+
+    Returns:
+        int: Number of GenBank files to parse.
+    """
+    organism_files = [file for file in os.listdir(organism_path)]
+
+    # Never parsed
+    if organism_files == []:
+        return 0
+    
+    # Already parsed, check for update...
     # Genbank date
-    ids = searchID(organism)
-    last_modification_date = findLastUpdateDate(ids)
-    print("# last_modification_date =", last_modification_date)
+    last_update_date = findLastUpdateDate(ids)
+    print("# last_update_date =", last_update_date)
 
     # Parsing date
-    last_parsing_date = findLastParsingDate(path)
+    last_parsing_date = findLastParsingDate(organism_path)
     print("# last_parsing_date =", last_parsing_date)
+
+    # Parsing needs to be updated
+    if last_parsing_date < last_update_date:
+        return len(ids)
+    
+    # Parsing is up to date!
+    return 0

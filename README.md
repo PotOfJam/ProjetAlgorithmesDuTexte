@@ -37,7 +37,8 @@
     - [x] Associer fonctions aux *widgets*
     - [ ] Taille ajustable (taille maximale des widgets à droite?)
     - [ ] Menus déroulants
-    - [ ] Esthétique (alignement, couleur [application et journal], nom, onglet auteurs)
+    - [ ] Etat de l'analyse (x/y fichiers/organismes analysés)
+    - [ ] Esthétique (alignement, couleur [application et journal], nom, onglet auteurs [file view sur README.md])
     - [ ] Documentation (code + README)
 
 - Louise:

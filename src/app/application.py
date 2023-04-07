@@ -1,3 +1,6 @@
+# System
+import os, sys, threading
+
 # GUI
 import logging
 from PyQt5 import uic 
@@ -7,7 +10,6 @@ from PyQt5.QtWidgets import *
 from app.logger import CustomFormatter, QPlainTextEditLogger
 
 # GenBank functions
-import os, sys
 sys.path.append("../")
 import genbank.tree, genbank.search, genbank.fetch, genbank.feature_parser
 
@@ -20,9 +22,16 @@ class Application(QMainWindow):
         """
         super(Application, self).__init__()
 
-        # Attributes for file parsing
+        # Multithreading attributes
+        self.nb_max_threads = 8
+
+        # File parsing attributes
         self.path = ""
         self.region_type = []
+        self.nb_organisms_to_parse = 0
+        self.nb_files_to_parse = 0
+        self.nb_parsed_organisms = 0
+        self.nb_parsed_files = 0
 
         # Load the ui file
         uic.loadUi("app/application.ui", self)
@@ -35,13 +44,12 @@ class Application(QMainWindow):
 
         # Set-up logger
         self.setUpLogger()
+
+        # Show the app
+        self.show()
         
         # Update Results file tree
         genbank.tree.updateTree()
-
-        # Show the app
-        self.show()  
-        
 
     def setUpLogger(self):
         """
@@ -58,7 +66,6 @@ class Application(QMainWindow):
         logTextBox.setFormatter(CustomFormatter())
         logging.getLogger().setLevel(logging.DEBUG)
 
-
     def defineLayout(self):
         """
         Define Application layout.
@@ -67,7 +74,6 @@ class Application(QMainWindow):
         self.setLayout(grid)
         self.splitter = self.findChild(QSplitter, "splitter")
         self.splitter.setStretchFactor(1, 10)
-
 
     def createWidgets(self):
         """
@@ -79,8 +85,9 @@ class Application(QMainWindow):
         self.model.setFilter(QDir.NoDotAndDotDot | QDir.Dirs)
 
         # Push button
-        self.startbutton = self.findChild(QPushButton, "pushButton")
-        self.startbutton.clicked.connect(self.startParsing)
+        self.button = self.findChild(QPushButton, "pushButton")
+        self.button.clicked.connect(self.onButtonClicked)
+        self.button_state = 0
 
         # Tree view
         self.treeView.setModel(self.model)
@@ -95,15 +102,35 @@ class Application(QMainWindow):
         for k in range(len(self.checkBoxes)):
             self.checkBoxes[k].toggled.connect(self.onChecked)
 
+    def onButtonClicked(self):
+        """
+        Function to execute when the button is cliscked.
+        """
+        if self.button_state == 0:
+            self.button_state = 1
+            self.button.setText("Arrêter l'analyse")
+            self.startParsing()
+        else:
+            self.button_state = 0
+            self.button.setText("Lancer l'analyse")
+            self.stopParsing()
 
     def onTreeViewClicked(self, index):
+        """
+        Function to execute when the tree view is clicked.
+
+        Args:
+            index (...): ???
+        """
         temp_mod = index.model()
         self.path = temp_mod.filePath(index)
         print(self.path)
 
 
     def onChecked(self):
-
+        """
+        Function to execute when a check box is clicked.
+        """
         self.region_type = []
 
         if(self.CDS.isChecked()):
@@ -127,41 +154,99 @@ class Application(QMainWindow):
         if(self.UTR_5.isChecked()):
             self.region_type.append("5'UTR")
 
-        # print("check: region type= ",self.region_type)
-
+        logging.info("Selected DNA regions: " + str(self.region_type))
 
     def test(self):
-
         if os.path.exists("CDS_ORGANISME_TEST_NC_000021.txt"):
             os.remove("CDS_ORGANISME_TEST_NC_000021.txt")
         if os.path.exists("intron_ORGANISME_TEST_NC_000021.txt"):
             os.remove("intron_ORGANISME_TEST_NC_000021.txt")
 
         print("DEBUT DU TEST")
-
         region_type = ["CDS", "intron"]
         # id = "NC_018416" # For testing purpose, very small organism
         id = "NC_000021" # For testing purpose, very small organism
         record = genbank.fetch.fetchFromID(id)
         genbank.feature_parser.parseFeatures(region_type, "", id, "ORGANISME_TEST", record)
         print("FIN DU TEST")
-        return# id = "NC_018416" # For testing purpose, very small organism
+        return
     
+    def singleThreadParsing(self, organisms):
+        """
+        Parse organisms sequentially (not using multithreading).
+
+        Args:
+            organisms (list): Tuples containing the name of the organism and the path to its folder.
+        """
+        for organism, organism_path in organisms:
+            ids = genbank.search.searchID(organism)
+            organism_files_to_parse = genbank.tree.needParsing(organism_path, ids)
+            if organism_files_to_parse > 0:
+                self.nb_organisms_to_parse += 1
+                self.nb_files_to_parse += organism_files_to_parse
+                for id in ids:
+                    record = genbank.fetch.fetchFromID(id)
+                    genbank.feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
+
+    def multiThreadParsing(self, organisms):
+        """
+        Parse organims sequentially using multithreading.
+
+        Args:
+            organisms (list): Tuples containing the name of the organism and the path to its folder.
+        """
+        parsing_attributes = []
+        threads = []
+
+        def threadFunction(organism_path, id, organism):
+            record = genbank.fetch.fetchFromID(id)
+            genbank.feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
+
+        for organism, organism_path in organisms:
+            ids = genbank.search.searchID(organism)
+            organism_files_to_parse = genbank.tree.needParsing(organism_path, ids)
+            if organism_files_to_parse > 0:
+                self.nb_organisms_to_parse += 1
+                self.nb_files_to_parse += organism_files_to_parse
+                for id in ids:
+                    parsing_attributes.append((organism_path, id, organism))
+
+            # Create threads
+            for attributes in parsing_attributes:
+                threads.append(threading.Thread(target=threadFunction, args=attributes))
+
+            # Start threads
+            for thread in threads:
+                thread.start()
+
+            # Wait for threads to finish
+            for thread in threads:
+                thread.join()
+                self.nb_files_to_parse -= 1
+                self.nb_parsed_files += 1
+
+            self.nb_organisms_to_parse -= 1
+            self.nb_parsed_organisms += 1
+
+        logging.info("Fin de l'analyse des fichiers sélectionnés")
 
     def startParsing(self):
-        
+        """
+        Start file parsing.
+        """
         logging.info("Initialising parsing")
 
         if self.path == "" or not os.path.isdir(self.path):
-            logging.error("Invalid path")
+            logging.error("Invalid path: " + self.path)
+            self.onButtonClicked()
             return
         else:
             logging.info("Start parsing")
             organisms = genbank.tree.findOrganisms(self.path)
+            self.multiThreadParsing(organisms)
 
-            for organism in organisms:
-                ids = genbank.search.searchID(organism)
-                for id in ids:
-                    record = genbank.fetch.fetchFromID(id)
-                    
-                    genbank.feature_parser.parseFeatures(self.region_type, self.path, id, organism, record)
+    def stopParsing(self):
+        """
+        Stop file parsing.
+        """
+        pass
