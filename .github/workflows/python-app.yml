@@ -27,4 +27,4 @@ jobs:
         pip3 install pytest Bio pytz PyQt5 genbank
     - name: Test with pytest
       run: |
-        pytest test_operation.py
+        pytest test/test_operation.py
