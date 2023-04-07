@@ -15,8 +15,8 @@ smaller_gene='ATGCATGCAT'
 
 def test_join():
     actual_value = op.join(smaller_gene, smaller_gene)
-    expected_valu = 'ATGCATGCATATGCATGCAT'
-    assert actual_value != expected_valu
+    expected_value = 'ATGCATGCATATGCATGCAT'
+    assert actual_value == expected_value
 
 def test_join_number():
     with pytest.raises(ValueError):
