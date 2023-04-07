@@ -9,3 +9,5 @@
 
 Results/*
 !Results/README.md
+
+!test/*.txt
