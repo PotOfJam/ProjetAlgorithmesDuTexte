@@ -24,7 +24,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip3 install Bio pytz parse PyQt5 logging threading genbank traceback pytest
+        pip3 install Bio pytz parse PyQt5 logging genbank traceback pytest
     - name: Test with pytest
       run: |
         pytest test_operation.py
