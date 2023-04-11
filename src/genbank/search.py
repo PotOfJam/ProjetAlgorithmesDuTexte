@@ -16,4 +16,8 @@ def searchID(organism, search_db = "nucleotide"):
     record = Entrez.read(handle)
     handle.close()
 
+    logging.info("Found %d ids to analyse:" % len(record["IdList"]))
+    for id in record["IdList"]:
+        logging.info("-> %s" % id)
+
     return record["IdList"]

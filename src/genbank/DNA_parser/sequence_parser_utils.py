@@ -49,7 +49,6 @@ def sequenceLocation(feature, DNA_length):
     except:
         logging.error("Unable to find sequence location")
     
-    print(sequence_location)
     return sequence_location
 
 

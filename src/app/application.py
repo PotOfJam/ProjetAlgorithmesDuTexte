@@ -124,7 +124,7 @@ class Application(QMainWindow):
         """
         temp_mod = index.model()
         self.path = temp_mod.filePath(index)
-        print(self.path)
+        logging.info("Select path: %s" % self.path)
 
 
     def onChecked(self):
@@ -199,12 +199,15 @@ class Application(QMainWindow):
         threads = []
 
         def threadFunction(organism_path, id, organism):
+            logging.info("Start parsing file: %s" % id)
             record = genbank.fetch.fetchFromID(id)
             genbank.feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
 
         for organism, organism_path in organisms:
+            logging.info("Start parsing organism: %s" % organism)
             ids = genbank.search.searchID(organism)
             organism_files_to_parse = genbank.tree.needParsing(organism_path, ids)
+            logging.info("Organism %s has %d file(s) that need(s) to be parsed" % (organism, organism_files_to_parse))
             if organism_files_to_parse > 0:
                 self.nb_organisms_to_parse += 1
                 self.nb_files_to_parse += organism_files_to_parse
@@ -212,7 +215,10 @@ class Application(QMainWindow):
                     parsing_attributes.append((organism_path, id, organism))
 
             # Create threads
+            t = 0
             for attributes in parsing_attributes:
+                t += 1
+                logging.debug("Creating thread %d" % t)
                 threads.append(threading.Thread(target=threadFunction, args=attributes))
 
             # Start threads
@@ -229,6 +235,7 @@ class Application(QMainWindow):
             self.nb_parsed_organisms += 1
 
         logging.info("Fin de l'analyse des fichiers sélectionnés")
+        self.onButtonClicked()
 
     def startParsing(self):
         """

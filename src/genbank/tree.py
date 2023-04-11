@@ -137,6 +137,10 @@ def findOrganisms(selected_folder_path):
     for path in organisms_paths:
         organisms.append((os.path.basename(os.path.normpath(path)), path))
 
+    logging.info("Found %d organisms to analyse:" % len(organisms))
+    for organism, _ in organisms:
+        logging.info("-> %s" % organism)
+
     return organisms
 
 
@@ -200,7 +204,7 @@ def findLastParsingDate(path):
     files = []
     try:
         files = [file for file in os.listdir(path) if os.path.isdir(os.path.join(path, file))]
-        print("$ files =", files)
+        # print("$ files =", files)
     except Exception as e:
         logging.error(e)
         sys.exit(1)
@@ -209,7 +213,7 @@ def findLastParsingDate(path):
     parsing_date = -1
     for file in files:
         file_date = datetime.datetime.fromtimestamp(os.path.getmtime(file))
-        print("$", file, file_date)
+        # print("$", file, file_date)
         if parsing_date < file_date:
             parsing_date = file_date
 
@@ -231,16 +235,17 @@ def needParsing(organism_path, ids):
 
     # Never parsed
     if organism_files == []:
-        return 0
+        logging.info("Organism was never parsed, all files need to be parsed...")
+        return len(ids)
     
     # Already parsed, check for update...
     # Genbank date
     last_update_date = findLastUpdateDate(ids)
-    print("# last_update_date =", last_update_date)
+    logging.info("Last GenBank update: %s" % last_update_date)
 
     # Parsing date
     last_parsing_date = findLastParsingDate(organism_path)
-    print("# last_parsing_date =", last_parsing_date)
+    logging.info("Last local update: %s" % last_parsing_date)
 
     # Parsing needs to be updated
     if last_parsing_date < last_update_date:
