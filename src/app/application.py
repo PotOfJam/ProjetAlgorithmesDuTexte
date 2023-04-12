@@ -102,6 +102,7 @@ class Application(QMainWindow):
         for k in range(len(self.checkBoxes)):
             self.checkBoxes[k].toggled.connect(self.onChecked)
         self.checkBoxes[0].setChecked(True)
+        self.allChecked=False
 
 
     
@@ -170,7 +171,11 @@ class Application(QMainWindow):
         if(self.OTHER.isChecked()):
             for k in range(len(self.checkBoxes)):
                 self.checkBoxes[k].setChecked(True)
-            self.OTHER.setChecked(False)
+            self.allChecked=True
+        if(self.OTHER.isChecked()==False and self.allChecked):
+            for k in range(len(self.checkBoxes)):
+                self.checkBoxes[k].setChecked(False)
+            self.allChecked=False
 
         logging.info("Selected DNA regions: " + str(self.region_type))
 
