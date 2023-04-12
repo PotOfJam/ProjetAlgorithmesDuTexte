@@ -48,7 +48,6 @@ def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, 
         logging.debug("location = " + str(CDS_info["start"]) + "," + str(CDS_info["end"]))
         CDS_info["DNA_sequence"] = DNA[CDS_info["start"] : CDS_info["end"]]
     else:
-        intron_flag = True
         CDS_info["DNA_sub_sequence"] = []
         for sub_sequence_location in CDS_info["location"]:
             CDS_info["DNA_sub_sequence"].append(DNA[sub_sequence_location[0] : sub_sequence_location[1]])

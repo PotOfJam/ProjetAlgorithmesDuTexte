@@ -34,7 +34,7 @@ def parseFeatures(region_type, path, id, organism, record):
         for feature in record.features:
             # if feature.type in region_type:
             if feature.type == "CDS" and (("CDS" in region_type) or ("intron" in region_type)):
-                logging.info("Found CDS in id = " + str(id))
+                logging.info("Found CDS or intron in id = " + str(id))
                 parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, "CDS" in region_type, "intron" in region_type)
             elif feature.type == "centromere" and "centromere" in region_type:
                 logging.info("Found centromere in id = " + str(id))
