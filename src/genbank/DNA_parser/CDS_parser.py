@@ -1,11 +1,12 @@
 import os, logging, traceback
 import genbank.DNA_parser.sequence_parser_utils as spu
 
-def parseCDS(path, id, organism, DNA, DNA_length, feature, CDS_flag, intron_flag):
+def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, intron_flag):
 
     # Create dictionnary containing informations relative to the CDS sequence
     CDS_info = {
         "path": path,
+        "file_name": file_name,
         "id": id,
         "organism": organism.replace(" ", "_"),
         "type": "CDS",
@@ -18,6 +19,7 @@ def parseCDS(path, id, organism, DNA, DNA_length, feature, CDS_flag, intron_flag
     # Create dictionnary containing informations relative to the intron(s) sequence(s)
     intron_info = {
         "path": path,
+        "file_name": file_name,
         "id": id,
         "organism": organism.replace(" ", "_"),
         "type": "intron",
@@ -85,7 +87,7 @@ def writeCDS(CDS_info):
 
     # File path
     try:
-        file_path = os.path.join(CDS_info["path"], CDS_info["type"] + "_" + CDS_info["organism"] + "_" + str(CDS_info["id"]) + ".txt" )
+        file_path = os.path.join(CDS_info["path"], CDS_info["type"] + "_" + CDS_info["organism"] + "_" + CDS_info["file_name"] + ".txt" )
     except:
         logging.debug("PROBLEME 1")
 
@@ -129,7 +131,7 @@ def writeIntron(intron_info):
 
     # File path
     try:
-        file_path = os.path.join(intron_info["path"], intron_info["type"] + "_" + intron_info["organism"] + "_" + str(intron_info["id"]) + ".txt" )
+        file_path = os.path.join(intron_info["path"], intron_info["type"] + "_" + intron_info["organism"] + "_" + intron_info["file_name"] + ".txt" )
     except:
         logging.debug("PROBLEME 1")
 

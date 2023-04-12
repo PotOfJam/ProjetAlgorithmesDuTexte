@@ -98,7 +98,6 @@ class Application(QMainWindow):
 
         # Check boxes
         self.checkBoxes=[self.CDS,self.CENTRO,self.INTRON,self.MOBILE,self.NC_RNA,self.R_RNA,self.TELOMETRE,self.T_RNA,self.UTR_3,self.UTR_5,self.OTHER]
-        self.checkBoxes[0].setChecked(True)
         for k in range(len(self.checkBoxes)):
             self.checkBoxes[k].toggled.connect(self.onChecked)
 
@@ -132,7 +131,7 @@ class Application(QMainWindow):
         Function to execute when a check box is clicked.
         """
         self.region_type = []
-
+        
         if(self.CDS.isChecked()):
             self.region_type.append("CDS")
         if(self.CENTRO.isChecked()):

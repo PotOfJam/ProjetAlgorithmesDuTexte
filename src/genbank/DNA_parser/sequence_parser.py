@@ -1,11 +1,12 @@
 import logging
 import genbank.DNA_parser.sequence_parser_utils as spu
 
-def parseSequence(path, id, organism, DNA, DNA_length, feature, feature_type):
+def parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, feature_type):
 
     # Create dictionnary containing informations relative to the CDS sequence
     sequence_info = {
         "path": path,
+        "file_name": file_name,
         "id": id,
         "organism": organism.replace(" ", "_"),
         "type": feature_type,

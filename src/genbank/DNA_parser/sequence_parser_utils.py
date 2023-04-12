@@ -111,7 +111,7 @@ def writeSequence(sequence_info):
 
     # File path
     try:
-        file_path = os.path.join(sequence_info["path"], sequence_info["type"] + "_" + sequence_info["organism"] + "_" + str(sequence_info["id"]) + ".txt" )
+        file_path = os.path.join(sequence_info["path"], sequence_info["type"] + "_" + sequence_info["organism"] + "_" + sequence_info["file_name"] + ".txt" )
     except:
         logging.debug("PROBLEME 1")
 

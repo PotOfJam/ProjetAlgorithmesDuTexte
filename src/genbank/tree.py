@@ -176,6 +176,8 @@ def findLastUpdateDate(ids):
     Returns:
         datetime.datetime: Last modification date.
     """
+    logging.info("Looking for last update on GenBank...")
+
     last_modification_date = -1
     for id in ids:
         record = genbank.fetch.fetchFromID(id, rettype="genbank")
@@ -200,20 +202,22 @@ def findLastParsingDate(path):
     Returns:
         datetime.datetime: Last modification date.
     """
+    logging.info("Looking for last local update...")
+
     # Find files in directory
     files = []
     try:
-        files = [file for file in os.listdir(path) if os.path.isdir(os.path.join(path, file))]
-        # print("$ files =", files)
+        files = [file for file in os.listdir(path) if os.path.isfile(os.path.join(path, file))]
     except Exception as e:
         logging.error(e)
         sys.exit(1)
 
     # Find date
-    parsing_date = -1
+    parsing_date = None
     for file in files:
-        file_date = datetime.datetime.fromtimestamp(os.path.getmtime(file))
-        # print("$", file, file_date)
+        file_date = datetime.datetime.fromtimestamp(os.path.getmtime(os.path.join(path, file)))
+        if parsing_date == None:
+            parsing_date = file_date
         if parsing_date < file_date:
             parsing_date = file_date
 
