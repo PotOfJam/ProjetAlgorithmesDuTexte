@@ -36,12 +36,12 @@ This program is a utility tool to facilitate access to this database. The user-f
     - [ ] Arborescence par ordre alphabétique
     - [ ] Zone de texte pour saisir chemin manuellement
     - [x] Checkbox pour les types de régions fonctionnelles
-    - [ ] Checkbox "Tout sélectionner"
-    - [ ] Check box par ordre alphabétique
+    - [X] Checkbox "Tout sélectionner"
+    - [X] Check box par ordre alphabétique
     - [x] Journal
     - [x] Associer fonctions aux *widgets*
     - [ ] Taille ajustable (taille maximale des widgets à droite?)
-    - [ ] Menus déroulants
+    - [x] Menus déroulants
     - [ ] Etat de l'analyse (x/y fichiers/organismes analysés)
     - [ ] Esthétique (alignement, couleur [application et journal], nom, onglet auteurs [file view sur README.md])
     - [ ] Documentation (code + README)

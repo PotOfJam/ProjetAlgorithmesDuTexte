@@ -301,12 +301,16 @@
                    <item row="0" column="1">
                     <widget class="QLabel" name="label_9">
                      <property name="text">
-                      <string>0/0 fichier(s) analysé(s)</string>
+                      <string> fichiers analysés</string>
                      </property>
                     </widget>
                    </item>
                    <item row="1" column="1">
-                    <widget class="QTextEdit" name="textEdit_2"/>
+                    <widget class="QProgressBar" name="progressBar">
+                     <property name="value">
+                      <number>0</number>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -315,17 +319,21 @@
                    <item row="0" column="1">
                     <widget class="QLabel" name="label_8">
                      <property name="text">
-                      <string>0/0 organisme(s) analysé(s)</string>
+                      <string>organismes analysés</string>
                      </property>
                     </widget>
-                   </item>
-                   <item row="1" column="1">
-                    <widget class="QTextEdit" name="textEdit"/>
                    </item>
                    <item row="2" column="1">
                     <widget class="QPushButton" name="pushButton">
                      <property name="text">
                       <string>Lancer l'analyse</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QProgressBar" name="progressBar_2">
+                     <property name="value">
+                      <number>0</number>
                      </property>
                     </widget>
                    </item>
