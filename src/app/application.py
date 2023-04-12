@@ -98,10 +98,7 @@ class Application(QMainWindow):
 
         # Check boxes
         self.checkBoxes=[self.CDS,self.CENTRO,self.INTRON,self.MOBILE,self.NC_RNA,self.R_RNA,self.TELOMETRE,self.T_RNA,self.UTR_3,self.UTR_5,self.OTHER]
-<<<<<<< HEAD
-=======
         self.allChecked=False
->>>>>>> 2b29d6f817290b051fd2c31da3b8262f852bcc3f
         for k in range(len(self.checkBoxes)):
             self.checkBoxes[k].toggled.connect(self.onChecked)
         self.checkBoxes[0].setChecked(True)

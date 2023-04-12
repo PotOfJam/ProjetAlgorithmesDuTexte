@@ -43,7 +43,7 @@ This program is a utility tool to facilitate access to this database. The user-f
     - [ ] Taille ajustable (taille maximale des widgets à droite?)
     - [x] Menus déroulants
     - [ ] Etat de l'analyse (x/y fichiers/organismes analysés)
-    - [ ] Esthétique (alignement, couleur [application et journal], nom, onglet auteurs [file view sur README.md])
+    - [ ] Esthétique (alignement, taille du journal, couleur [application et journal], nom, onglet auteurs [file view sur README.md])
     - [ ] Documentation (code + README)
 
 - Louise:
