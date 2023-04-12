@@ -140,7 +140,7 @@ class Application(QMainWindow):
         """
         temp_mod = index.model()
         self.path = temp_mod.filePath(index)
-        logging.info("Select path: %s" % self.path)
+        logging.info("Selected path: %s" % self.path)
 
     def onChecked(self):
         """
@@ -171,11 +171,11 @@ class Application(QMainWindow):
         if(self.ALL.isChecked()):
             for checkbox in self.checkboxes:
                 checkbox.setChecked(True)
-            self.allChecked=True
-        if(self.ALL.isChecked()==False and self.allChecked):
+            self.all_checked=True
+        if(self.ALL.isChecked()==False and self.all_checked):
             for checkbox in self.checkboxes:
                 checkbox.setChecked(False)
-            self.allChecked=False
+            self.all_checked=False
 
         logging.info("Selected DNA regions: " + str(self.region_type))
 
@@ -210,8 +210,6 @@ class Application(QMainWindow):
                 for id in ids:
                     record = genbank.fetch.fetchFromID(id)
                     genbank.feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
-        
-
 
     def multiThreadParsing(self, organisms):
         """

@@ -1,4 +1,4 @@
-import os, sys, logging
+import os, sys, logging, threading
 import csv
 import requests
 import pytz
@@ -176,6 +176,8 @@ def findLastUpdateDate(ids):
     Returns:
         datetime.datetime: Last modification date.
     """
+    global last_update_date
+
     logging.info("Looking for last update on GenBank...")
 
     last_modification_date = -1
@@ -189,6 +191,7 @@ def findLastUpdateDate(ids):
         elif last_modification_date < modification_date:
             last_modification_date = modification_date   
 
+    last_update_date = last_modification_date
     return last_modification_date
 
 
@@ -202,6 +205,8 @@ def findLastParsingDate(path):
     Returns:
         datetime.datetime: Last modification date.
     """
+    global last_parsing_date
+
     logging.info("Looking for last local update...")
 
     # Find files in directory
@@ -221,6 +226,7 @@ def findLastParsingDate(path):
         if parsing_date < file_date:
             parsing_date = file_date
 
+    last_parsing_date = parsing_date
     return parsing_date
 
 
@@ -235,6 +241,7 @@ def needParsing(organism_path, ids):
     Returns:
         int: Number of GenBank files to parse.
     """
+    global last_update_date, last_parsing_date
     organism_files = [file for file in os.listdir(organism_path)]
 
     # Never parsed
@@ -243,13 +250,22 @@ def needParsing(organism_path, ids):
         return len(ids)
     
     # Already parsed, check for update...
-    # Genbank date
-    last_update_date = findLastUpdateDate(ids)
-    logging.info("Last GenBank update: %s" % last_update_date)
+    genbank_thread = threading.Thread(target=findLastUpdateDate, args=(ids))
+    local_thread = threading.Thread(target=findLastParsingDate, args=(organism_path))
 
-    # Parsing date
-    last_parsing_date = findLastParsingDate(organism_path)
-    logging.info("Last local update: %s" % last_parsing_date)
+    genbank_thread.start()
+    local_thread.start()
+
+    genbank_thread.join()
+    local_thread.join()
+    
+    # # Genbank date
+    # last_update_date = findLastUpdateDate(ids)
+    # logging.info("Last GenBank update: %s" % last_update_date)
+
+    # # Parsing date
+    # last_parsing_date = findLastParsingDate(organism_path)
+    # logging.info("Last local update: %s" % last_parsing_date)
 
     # Parsing needs to be updated
     if last_parsing_date < last_update_date:

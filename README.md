@@ -45,7 +45,7 @@ This program is a utility tool to facilitate access to this database. The user-f
 
 - Mathéo:
     - [ ] Tests
-    - [ ] Intégration Continue
+    - [x] Intégration Continue
     - [ ] Documentation (code + README)
 
 - Samuel & Fabien:
