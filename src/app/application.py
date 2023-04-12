@@ -98,8 +98,28 @@ class Application(QMainWindow):
 
         # Check boxes
         self.checkBoxes=[self.CDS,self.CENTRO,self.INTRON,self.MOBILE,self.NC_RNA,self.R_RNA,self.TELOMETRE,self.T_RNA,self.UTR_3,self.UTR_5,self.OTHER]
+<<<<<<< HEAD
+=======
+        self.allChecked=False
+>>>>>>> 2b29d6f817290b051fd2c31da3b8262f852bcc3f
         for k in range(len(self.checkBoxes)):
             self.checkBoxes[k].toggled.connect(self.onChecked)
+        self.checkBoxes[0].setChecked(True)
+        self.allChecked=False
+
+
+    
+    def progressbarAdvance(self):
+        """
+            change the progress bar 
+        """
+        self.progressBar_2.setValue(self.nb_parsed_organisms)
+        self.progressBar_2.setMaximum(self.nb_organisms_to_parse+1)
+        self.progressBar_2.setFormat("%v / %m")
+
+        self.progressBar.setValue(self.nb_parsed_files)
+        self.progressBar.setMaximum(self.nb_files_to_parse+1)
+        self.progressBar.setFormat("%v / %m")
 
     def onButtonClicked(self):
         """
@@ -124,7 +144,6 @@ class Application(QMainWindow):
         temp_mod = index.model()
         self.path = temp_mod.filePath(index)
         logging.info("Select path: %s" % self.path)
-
 
     def onChecked(self):
         """
@@ -152,6 +171,14 @@ class Application(QMainWindow):
             self.region_type.append("3'UTR")
         if(self.UTR_5.isChecked()):
             self.region_type.append("5'UTR")
+        if(self.OTHER.isChecked()):
+            for k in range(len(self.checkBoxes)):
+                self.checkBoxes[k].setChecked(True)
+            self.allChecked=True
+        if(self.OTHER.isChecked()==False and self.allChecked):
+            for k in range(len(self.checkBoxes)):
+                self.checkBoxes[k].setChecked(False)
+            self.allChecked=False
 
         logging.info("Selected DNA regions: " + str(self.region_type))
 
@@ -186,6 +213,8 @@ class Application(QMainWindow):
                 for id in ids:
                     record = genbank.fetch.fetchFromID(id)
                     genbank.feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
+        
+
 
     def multiThreadParsing(self, organisms):
         """
@@ -227,14 +256,16 @@ class Application(QMainWindow):
             # Wait for threads to finish
             for thread in threads:
                 thread.join()
-                self.nb_files_to_parse -= 1
-                self.nb_parsed_files += 1
+                #self.nb_files_to_parse -= 1
+                self.nb_parsed_files+=1
 
-            self.nb_organisms_to_parse -= 1
+            #self.nb_organisms_to_parse -= 1
             self.nb_parsed_organisms += 1
+            self.progressbarAdvance()
 
         logging.info("Fin de l'analyse des fichiers sélectionnés")
         self.onButtonClicked()
+
 
     def startParsing(self):
         """
