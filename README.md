@@ -32,22 +32,16 @@ This program is a utility tool to facilitate access to this database. The user-f
 
 ## 📝 TO DO LIST !!!
 - Julie & Louise:
-    - [x] Arborescence interactive (récupérer le nom du dossier sélectionné)
+    - [x] Arborescence interactive
     - [ ] Arborescence par ordre alphabétique
-    - [ ] Zone de texte pour saisir chemin manuellement
     - [x] Checkbox pour les types de régions fonctionnelles
     - [X] Checkbox "Tout sélectionner"
-    - [X] Check box par ordre alphabétique
+    - [X] Checkbox par ordre alphabétique
     - [x] Journal
-    - [x] Associer fonctions aux *widgets*
-    - [ ] Taille ajustable (taille maximale des widgets à droite?)
-    - [x] Menus déroulants
+    - [x] Taille ajustable
     - [ ] Etat de l'analyse (x/y fichiers/organismes analysés)
-    - [ ] Esthétique (alignement, taille du journal, couleur [application et journal], nom, onglet auteurs [file view sur README.md])
+    - [ ] Esthétique (taille du journal, couleur [application et journal], nom, onglet auteurs [file view sur README.md])
     - [ ] Documentation (code + README)
-
-- Louise:
-    - [X] Documentation XinY
 
 - Mathéo:
     - [ ] Tests
