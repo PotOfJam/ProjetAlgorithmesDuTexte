@@ -88,14 +88,20 @@ class Application(QMainWindow):
         self.model.setRootPath(QDir.currentPath())
         self.model.setFilter(QDir.NoDotAndDotDot | QDir.Dirs)
 
+        # Proxy Model to sort 
+        self.sort_proxy_model = QSortFilterProxyModel()
+        self.sort_proxy_model.setSourceModel(self.model)
+        self.sort_proxy_model.setDynamicSortFilter(True)
+        self.sort_proxy_model.sort(0, Qt.AscendingOrder)
+
         # Push button
         self.button = self.findChild(QPushButton, "pushButton")
         self.button.clicked.connect(self.onButtonClicked)
         self.button_state = 0
 
         # Tree view
-        self.treeView.setModel(self.model)
-        self.treeView.setRootIndex(self.model.index(QDir.currentPath() + "/../Results"))
+        self.treeView.setModel(self.sort_proxy_model)
+        self.treeView.setRootIndex(self.sort_proxy_model.mapFromSource(self.model.index(QDir.currentPath() + "/../Results")))
         for column in range(1, self.model.columnCount()):
             self.treeView.hideColumn(column)
         self.treeView.clicked.connect(self.onTreeViewClicked)
@@ -138,8 +144,8 @@ class Application(QMainWindow):
         Args:
             index (...): ???
         """
-        temp_mod = index.model()
-        self.path = temp_mod.filePath(index)
+        mapped_index = self.sort_proxy_model.mapToSource(index)
+        self.path = self.model.filePath(mapped_index)
         logging.info("Selected path: %s" % self.path)
 
     def onChecked(self):
