@@ -36,28 +36,28 @@ def parseFeatures(region_type, path, id, organism, record):
             if feature.type == "CDS" and (("CDS" in region_type) or ("intron" in region_type)):
                 logging.info("Found CDS in id = " + str(id))
                 parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, "CDS" in region_type, "intron" in region_type)
-            elif feature.type == "centromere":
+            elif feature.type == "centromere" and "centromere" in region_type:
                 logging.info("Found centromere in id = " + str(id))
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "centromere")
-            elif feature.type == "mobile_element":
+            elif feature.type == "mobile_element" and "mobile_element" in region_type:
                 logging.info("Found mobile_element in id = " + str(id))
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "mobile_element")
-            elif feature.type == "telomere":
+            elif feature.type == "telomere" and "telomere" in region_type:
                 logging.info("Found telomere in id = " + str(id))
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "telomere")
-            elif feature.type == "3'UTR":
+            elif feature.type == "3'UTR" and "3'UTR" in region_type:
                 logging.info("Found 3'UTR in id = " + str(id))
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "3'UTR")
-            elif feature.type == "5'UTR":
+            elif feature.type == "5'UTR" and "5'UTR" in region_type:
                 logging.info("Found 5'UTR in id = " + str(id))
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "5'UTR")
-            elif feature.type == "tRNA":
+            elif feature.type == "tRNA" and "tRNA" in region_type:
                 logging.info("Found tRNA in id = " + str(id))
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "tRNA")
-            elif feature.type == "rRNA":
+            elif feature.type == "rRNA" and "rRNA" in region_type:
                 logging.info("Found rRNA in id = " + str(id))
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "rRNA")
-            elif feature.type == "ncRNA":
+            elif feature.type == "ncRNA" and "ncRNA" in region_type:
                 logging.info("Found ncRNA in id = " + str(id))
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "ncRNA")
     except:
