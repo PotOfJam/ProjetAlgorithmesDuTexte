@@ -23,6 +23,7 @@ def parseFeatures(region_type, path, id, organism, record):
     # Read DNA sequence from record
     try:
         file_name = record.id
+        file_name = file_name.split(".")[0]
         logging.debug("file_name = " + file_name)
         DNA = record.seq
         DNA_length = len(DNA)

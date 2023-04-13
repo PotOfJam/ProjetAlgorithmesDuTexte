@@ -6,11 +6,10 @@ from PyQt5.QtWidgets import *
 
 class CustomFormatter(logging.Formatter):
     FORMATS = {
-        logging.ERROR:   ("[%(levelname)-8s] %(message)s", QColor("red")),
-        logging.DEBUG:   ("[%(levelname)-8s] [%(filename)s:%(lineno)d] %(message)s", "green"),
-        logging.INFO:    ("[%(levelname)-8s] %(message)s", "#0000FF"),
-        logging.WARNING: (
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s', QColor(100, 100, 0))
+        logging.ERROR:   ("[%(levelname)-8s] %(message)s", "red"),
+        logging.DEBUG:   ("[%(levelname)-8s] %(message)s", "green"),
+        logging.INFO:    ("[%(levelname)-8s] %(message)s", "blue"),
+        logging.WARNING: ("[%(levelname)-8s] %(message)s", "orange")
     }
 
     def format(self, record):

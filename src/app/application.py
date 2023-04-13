@@ -1,5 +1,5 @@
 # System
-import os, sys, threading
+import os, sys
 
 # GUI
 import logging
@@ -8,13 +8,11 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from app.logger import CustomFormatter, QPlainTextEditLogger
+import app.parser_thread
 
 # GenBank functions
 sys.path.append("../")
 import genbank.tree, genbank.search, genbank.fetch, genbank.feature_parser
-
-# last_update_date = None
-# last_parsing_date = None
 
 class Application(QMainWindow):
 
@@ -25,9 +23,11 @@ class Application(QMainWindow):
         super(Application, self).__init__()
 
         # Multithreading attributes
-        self.nb_max_threads = 8
+        self.threadpool = QThreadPool()
+        logging.info("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
 
-        # UI attributes
+
+        # GUI attributes
         self.all_checked = False
         self.all_unchecked = True
 
@@ -114,7 +114,7 @@ class Application(QMainWindow):
         for checkbox in self.checkboxes:
             checkbox.toggled.connect(self.onChecked)
     
-    def progressBarAdvence(self):
+    def progressBarAdvance(self):
         """
         Change the progress bar.
         """
@@ -186,38 +186,25 @@ class Application(QMainWindow):
             self.all_checked=False
 
         logging.info("Selected DNA regions: " + str(self.region_type))
-
-    def test(self):
-        if os.path.exists("CDS_ORGANISME_TEST_NC_000021.txt"):
-            os.remove("CDS_ORGANISME_TEST_NC_000021.txt")
-        if os.path.exists("intron_ORGANISME_TEST_NC_000021.txt"):
-            os.remove("intron_ORGANISME_TEST_NC_000021.txt")
-
-        print("DEBUT DU TEST")
-        region_type = ["CDS", "intron"]
-        # id = "NC_018416" # For testing purpose, very small organism
-        id = "NC_000021" # For testing purpose, very small organism
-        record = genbank.fetch.fetchFromID(id)
-        genbank.feature_parser.parseFeatures(region_type, "", id, "ORGANISME_TEST", record)
-        print("FIN DU TEST")
-        return
     
-    def singleThreadParsing(self, organisms):
-        """
-        Parse organisms sequentially (not using multithreading).
+    def threadWork(self, progress_callback, parsing_attribute):
+        # progress_callback.emit()
+        organism_path, id, organism = parsing_attribute
+        logging.info("Start parsing file: %s" % id)
+        record = genbank.fetch.fetchFromID(id)
+        if record is not None:
+            genbank.feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
+    
+    def threadUpdateProgress(self):
+        self.nb_parsed_files += 1
+        # self.progressBarAdvance()
 
-        Args:
-            organisms (list): Tuples containing the name of the organism and the path to its folder.
-        """
-        for organism, organism_path in organisms:
-            ids = genbank.search.searchID(organism)
-            organism_files_to_parse = genbank.tree.needParsing(organism_path, ids)
-            if organism_files_to_parse > 0:
-                self.nb_organisms_to_parse += 1
-                self.nb_files_to_parse += organism_files_to_parse
-                for id in ids:
-                    record = genbank.fetch.fetchFromID(id)
-                    genbank.feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
+    def threadComplete(self):
+        self.nb_parsed_organisms += 1
+        # self.progressBarAdvance()
+
+    def threadResult(self):
+        pass
 
     def multiThreadParsing(self, organisms):
         """
@@ -227,17 +214,16 @@ class Application(QMainWindow):
             organisms (list): Tuples containing the name of the organism and the path to its folder.
         """
         parsing_attributes = []
-        threads = []
-
-        def threadFunction(organism_path, id, organism):
-            logging.info("Start parsing file: %s" % id)
-            record = genbank.fetch.fetchFromID(id)
-            if record is not None:
-                genbank.feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
+        self.threads = []
 
         for organism, organism_path in organisms:
             logging.info("Start parsing organism: %s" % organism)
             ids = genbank.search.searchID(organism)
+            if ids == []:
+                logging.warning("Did not find any NC corresponding to organism: %s" % organism)
+                logging.info("Fin de l'analyse des fichiers sélectionnés")
+                self.onButtonClicked()
+                return
             organism_files_to_parse = genbank.tree.needParsing(organism_path, ids)
             logging.info("Organism %s has %d file(s) that need(s) to be parsed" % (organism, organism_files_to_parse))
             if organism_files_to_parse > 0:
@@ -248,30 +234,20 @@ class Application(QMainWindow):
 
             # Create threads
             t = 0
-            for attributes in parsing_attributes:
+            for parsing_attribute in parsing_attributes:
+                # Pass the function to execute
+                worker = app.parser_thread.Worker(self.threadWork, parsing_attribute=parsing_attribute) # Any other args, kwargs are passed to the run function
+                worker.signals.result.connect(self.threadResult)
+                worker.signals.progress.connect(self.threadUpdateProgress)
+                worker.signals.finished.connect(self.threadComplete)
+                
+                # Start the thread
+                self.threadpool.start(worker)
+                logging.info("Starting thread %d" % t)
                 t += 1
-                logging.debug("Creating thread %d" % t)
-                threads.append(threading.Thread(target=threadFunction, args=attributes))
 
-            # Start threads
-            import time
-            for thread in threads:
-                thread.start()
-                time.sleep(1)
-
-            # Wait for threads to finish
-            for thread in threads:
-                thread.join()
-                #self.nb_files_to_parse -= 1
-                self.nb_parsed_files += 1 # Move to the end of the thread
-
-            # self.nb_organisms_to_parse -= 1
-            self.nb_parsed_organisms += 1 # Move to the end of the thread
-            self.progressBarAdvence()
-
-        logging.info("Fin de l'analyse des fichiers sélectionnés")
-        self.onButtonClicked()
-
+            logging.info("Fin de l'analyse des fichiers sélectionnés")
+            self.onButtonClicked()
 
     def startParsing(self):
         """
