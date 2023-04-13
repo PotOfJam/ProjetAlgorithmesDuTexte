@@ -13,6 +13,8 @@ from app.logger import CustomFormatter, QPlainTextEditLogger
 sys.path.append("../")
 import genbank.tree, genbank.search, genbank.fetch, genbank.feature_parser
 
+# last_update_date = None
+# last_parsing_date = None
 
 class Application(QMainWindow):
 
@@ -230,7 +232,8 @@ class Application(QMainWindow):
         def threadFunction(organism_path, id, organism):
             logging.info("Start parsing file: %s" % id)
             record = genbank.fetch.fetchFromID(id)
-            genbank.feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
+            if record is not None:
+                genbank.feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
 
         for organism, organism_path in organisms:
             logging.info("Start parsing organism: %s" % organism)
@@ -251,17 +254,19 @@ class Application(QMainWindow):
                 threads.append(threading.Thread(target=threadFunction, args=attributes))
 
             # Start threads
+            import time
             for thread in threads:
                 thread.start()
+                time.sleep(1)
 
             # Wait for threads to finish
             for thread in threads:
                 thread.join()
                 #self.nb_files_to_parse -= 1
-                self.nb_parsed_files+=1
+                self.nb_parsed_files += 1 # Move to the end of the thread
 
-            #self.nb_organisms_to_parse -= 1
-            self.nb_parsed_organisms += 1
+            # self.nb_organisms_to_parse -= 1
+            self.nb_parsed_organisms += 1 # Move to the end of the thread
             self.progressBarAdvence()
 
         logging.info("Fin de l'analyse des fichiers sélectionnés")
@@ -277,6 +282,9 @@ class Application(QMainWindow):
         if self.path == "" or not os.path.isdir(self.path):
             logging.error("Invalid path: " + self.path)
             self.onButtonClicked()
+            return
+        elif self.region_type == []:
+            logging.error("No DNA region selected")
             return
         else:
             logging.info("Start parsing")

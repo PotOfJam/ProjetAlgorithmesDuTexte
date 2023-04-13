@@ -241,7 +241,7 @@ def needParsing(organism_path, ids):
     Returns:
         int: Number of GenBank files to parse.
     """
-    global last_update_date, last_parsing_date
+    # global last_update_date, last_parsing_date
     organism_files = [file for file in os.listdir(organism_path)]
 
     # Never parsed
@@ -250,22 +250,22 @@ def needParsing(organism_path, ids):
         return len(ids)
     
     # Already parsed, check for update...
-    genbank_thread = threading.Thread(target=findLastUpdateDate, args=(ids))
-    local_thread = threading.Thread(target=findLastParsingDate, args=(organism_path))
+    # genbank_thread = threading.Thread(target=findLastUpdateDate, args=(ids))
+    # local_thread = threading.Thread(target=findLastParsingDate, args=(organism_path))
 
-    genbank_thread.start()
-    local_thread.start()
+    # genbank_thread.start()
+    # local_thread.start()
 
-    genbank_thread.join()
-    local_thread.join()
+    # genbank_thread.join()
+    # local_thread.join()
     
-    # # Genbank date
-    # last_update_date = findLastUpdateDate(ids)
-    # logging.info("Last GenBank update: %s" % last_update_date)
+    # Genbank date
+    last_update_date = findLastUpdateDate(ids)
+    logging.info("Last GenBank update: %s" % last_update_date)
 
-    # # Parsing date
-    # last_parsing_date = findLastParsingDate(organism_path)
-    # logging.info("Last local update: %s" % last_parsing_date)
+    # Parsing date
+    last_parsing_date = findLastParsingDate(organism_path)
+    logging.info("Last local update: %s" % last_parsing_date)
 
     # Parsing needs to be updated
     if last_parsing_date < last_update_date:
