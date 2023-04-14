@@ -1,5 +1,5 @@
 # System
-import os, sys
+import os
 
 # GUI
 import logging
@@ -7,12 +7,11 @@ from PyQt5 import uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from app.logger import CustomFormatter, QPlainTextEditLogger
-import app.parser_thread
+from .logger import CustomFormatter, QPlainTextEditLogger
+from .parser_thread import *
 
 # GenBank functions
-sys.path.append("../")
-import genbank.tree, genbank.search, genbank.fetch, genbank.feature_parser
+from ..genbank import tree, search, fetch, feature_parser
 
 class Application(QMainWindow):
 
@@ -24,7 +23,7 @@ class Application(QMainWindow):
 
         # Multithreading attributes
         self.threadpool = QThreadPool()
-        logging.info("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+        # logging.info("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
 
 
         # GUI attributes
@@ -40,7 +39,7 @@ class Application(QMainWindow):
         self.nb_parsed_files = 0
 
         # Load the ui file
-        uic.loadUi("app/application.ui", self)
+        uic.loadUi("src/app/application.ui", self)
 
         # Define layout
         self.defineLayout()
@@ -55,7 +54,9 @@ class Application(QMainWindow):
         self.show()
         
         # Update Results file tree
-        genbank.tree.updateTree()
+        tree.updateTree()
+
+        logging.info("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
 
     def setUpLogger(self):
         """
@@ -103,7 +104,7 @@ class Application(QMainWindow):
 
         # Tree view
         self.treeView.setModel(self.sort_proxy_model)
-        self.treeView.setRootIndex(self.sort_proxy_model.mapFromSource(self.model.index(QDir.currentPath() + "/../Results")))
+        self.treeView.setRootIndex(self.sort_proxy_model.mapFromSource(self.model.index(os.path.join(QDir.currentPath(), "Results"))))
         for column in range(1, self.model.columnCount()):
             self.treeView.hideColumn(column)
         self.treeView.clicked.connect(self.onTreeViewClicked)
@@ -191,16 +192,18 @@ class Application(QMainWindow):
         # progress_callback.emit()
         organism_path, id, organism = parsing_attribute
         logging.info("Start parsing file: %s" % id)
-        record = genbank.fetch.fetchFromID(id)
+        record = fetch.fetchFromID(id)
         if record is not None:
-            genbank.feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
+            feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
     
     def threadUpdateProgress(self):
-        self.nb_parsed_files += 1
+        pass
+        # self.nb_parsed_files += 1
         # self.progressBarAdvance()
 
     def threadComplete(self):
-        self.nb_parsed_organisms += 1
+        logging.info("one of threads completed")
+        # self.nb_parsed_organisms += 1
         # self.progressBarAdvance()
 
     def threadResult(self):
@@ -218,13 +221,13 @@ class Application(QMainWindow):
 
         for organism, organism_path in organisms:
             logging.info("Start parsing organism: %s" % organism)
-            ids = genbank.search.searchID(organism)
+            ids = search.searchID(organism)
             if ids == []:
                 logging.warning("Did not find any NC corresponding to organism: %s" % organism)
                 logging.info("Fin de l'analyse des fichiers sélectionnés")
                 self.onButtonClicked()
                 return
-            organism_files_to_parse = genbank.tree.needParsing(organism_path, ids)
+            organism_files_to_parse = tree.needParsing(organism_path, ids)
             logging.info("Organism %s has %d file(s) that need(s) to be parsed" % (organism, organism_files_to_parse))
             if organism_files_to_parse > 0:
                 self.nb_organisms_to_parse += 1
@@ -264,7 +267,7 @@ class Application(QMainWindow):
             return
         else:
             logging.info("Start parsing")
-            organisms = genbank.tree.findOrganisms(self.path)
+            organisms = tree.findOrganisms(self.path)
             self.multiThreadParsing(organisms)
 
     def stopParsing(self):

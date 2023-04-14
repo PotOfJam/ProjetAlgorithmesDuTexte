@@ -1,13 +1,13 @@
-import os, sys, logging, threading
+import os, sys, logging
 import csv
 import requests
 import pytz
 from dateutil.parser import parse as parsedate
 import datetime
 
-import genbank.fetch
+from .fetch import *
 
-def updateTree(overview_file="../overview.txt"):
+def updateTree(overview_file="overview.txt"):
     """
     Create or update the tree in the results folder located in the main folder.
 
@@ -55,7 +55,7 @@ def downloadAndUpdateTree(overview_file):
         open(overview_file, 'wb').write(r.content)
     except:
         logging.error("No such file: " + overview_file)
-        sys.exit(1)
+        return
 
     # Parse tree description file and create tree
     with open(overview_file, newline='') as csvfile:
@@ -65,7 +65,7 @@ def downloadAndUpdateTree(overview_file):
             organism, kingdom, group, subgroup, *_ = row
             # organism = organism.replace(" ", "_").replace("?", "").replace("/", "").replace("[", "").replace("]", "")
             organism = organism.replace("?", "").replace("/", "").replace("[", "").replace("]", "")
-            os.makedirs(os.path.join("../Results/Organisme", kingdom, group, subgroup, organism), exist_ok=True)  # Ignore existing folders
+            os.makedirs(os.path.join("Results/Organisme", kingdom, group, subgroup, organism), exist_ok=True)  # Ignore existing folders
 
 
 def findSubFolders(path):
@@ -181,7 +181,7 @@ def findLastUpdateDate(ids):
 
     last_modification_date = None
     for id in ids:
-        record = genbank.fetch.fetchFromID(id, rettype="genbank")
+        record = fetchFromID(id, rettype="genbank")
         modification_date = record.annotations["date"]
         modification_date = convertRecordDate(modification_date)
 

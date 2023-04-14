@@ -11,3 +11,7 @@ Results/*
 !Results/README.md
 
 !test/*.txt
+
+__pycache__/*
+
+.ipynb_checkpoints/*

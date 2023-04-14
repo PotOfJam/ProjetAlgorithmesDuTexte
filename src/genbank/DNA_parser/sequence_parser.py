@@ -1,5 +1,5 @@
 import logging
-import genbank.DNA_parser.sequence_parser_utils as spu
+from .sequence_parser_utils import *
 
 def parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, feature_type):
 
@@ -17,7 +17,7 @@ def parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, featu
     }
 
     # Find sequence location
-    sequence_info["location"] = spu.sequenceLocation(feature, DNA_length)
+    sequence_info["location"] = sequenceLocation(feature, DNA_length)
 
     # Recreate CDS sequence
     if sequence_info["location"] == []:
@@ -32,7 +32,7 @@ def parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, featu
         sequence_info["DNA_sub_sequence"] = []
         for sub_sequence_location in sequence_info["location"]:
             sequence_info["DNA_sub_sequence"].append(DNA[sub_sequence_location[0] : sub_sequence_location[1]])
-        sequence_info["DNA_sequence"] = spu.defragmentSequence(DNA, sequence_info["location"])
+        sequence_info["DNA_sequence"] = defragmentSequence(DNA, sequence_info["location"])
 
     # CDS reverse completement
     if sequence_info["strand"] == -1:
@@ -40,9 +40,9 @@ def parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, featu
         for sub_sequence in sequence_info["DNA_sub_sequence"]:
             sub_sequence = sub_sequence.reverse_complement()
     # Check for invalid DNA sequence
-    if spu.incorrectSequence(sequence_info["DNA_sequence"], sequence_info["type"]):
+    if incorrectSequence(sequence_info["DNA_sequence"], sequence_info["type"]):
         logging.warning("Incorrect sequence")
         return
 
     # Write CDS sequence in CDS file
-    spu.writeSequence(sequence_info)
+    writeSequence(sequence_info)

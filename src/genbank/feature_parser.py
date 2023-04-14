@@ -1,6 +1,6 @@
 import logging
-from genbank.DNA_parser.CDS_parser import parseCDS
-from genbank.DNA_parser.sequence_parser import parseSequence
+from .DNA_parser.CDS_parser import parseCDS
+from .DNA_parser.sequence_parser import parseSequence
 
 def parseFeatures(region_type, path, id, organism, record):
     """
