@@ -6,8 +6,8 @@ from src import *
 
 if __name__ == "__main__":
     # Create application
-    app = QApplication(sys.argv)
+    _app = QApplication(sys.argv)
     window = Application()
 
     # Run application
-    app.exec_()
+    _app.exec_()
