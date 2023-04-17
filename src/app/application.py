@@ -233,22 +233,21 @@ class Application(QMainWindow):
                 for id in ids:
                     parsing_attributes.append((organism_path, id, organism))
 
-            t = 0
-            for parsing_attribute in parsing_attributes:
-                # Pass the function to execute
-                worker = Worker(self.threadWork, parsing_attribute=parsing_attribute) # Any other args, kwargs are passed to the run function
-                worker.signals.result.connect(self.threadResult)
-                worker.signals.progress.connect(self.threadUpdateProgress)
-                worker.signals.finished.connect(self.threadComplete)
-                
-                # Start the thread
-                self.threadpool.start(worker)
-                logging.info("Starting thread %d" % t)
-                t += 1
-                time.sleep(1)
-
-            logging.info("Fin de l'analyse des fichiers sélectionnés")
-            self.onButtonClicked()
+        t = 0
+        for parsing_attribute in parsing_attributes:
+            # Pass the function to execute
+            worker = Worker(self.threadWork, parsing_attribute=parsing_attribute) # Any other args, kwargs are passed to the run function
+            worker.signals.result.connect(self.threadResult)
+            worker.signals.progress.connect(self.threadUpdateProgress)
+            worker.signals.finished.connect(self.threadComplete)
+            
+            # Start the thread
+            self.threadpool.start(worker)
+            logging.info("Starting thread %d" % t)
+            t += 1
+            time.sleep(1)
+        logging.info("Fin de l'analyse des fichiers sélectionnés")
+        self.onButtonClicked()
 
     def startParsing(self):
         """
@@ -273,6 +272,7 @@ class Application(QMainWindow):
         """
         Stop file parsing.
         """
+        logging.info("Stop parsing")
         pass
 
 

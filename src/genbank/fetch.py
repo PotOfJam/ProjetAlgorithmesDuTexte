@@ -15,6 +15,13 @@ def fetchFromID(id, fetch_db="nuccore", rettype="gbwithparts"):
     except:
         print(traceback.format_exc())
         logging.error("Unable to fetch id = " + str(id) + " from fetch_db = " + fetch_db)
+        if(handle!=None):
+            # Close record
+            try:
+                handle.close()
+            except:
+                logging.error("Unable to close handle")
+                return
         return
 
     # Read data
