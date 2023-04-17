@@ -1,8 +1,6 @@
-import os, sys
+import sys
 from PyQt5.QtWidgets import QApplication
 from src import *
-
-# os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 if __name__ == "__main__":
     # Create application
@@ -10,4 +8,4 @@ if __name__ == "__main__":
     window = Application()
 
     # Run application
-    _app.exec_()
+    sys.exit(_app.exec_())

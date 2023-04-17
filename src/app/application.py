@@ -1,5 +1,5 @@
 # System
-import os
+import os, time
 
 # GUI
 import logging
@@ -22,9 +22,9 @@ class Application(QMainWindow):
         super(Application, self).__init__()
 
         # Multithreading attributes
-        self.threadpool = QThreadPool()
-        # logging.info("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
-
+        self.threadpool = QThreadPool.globalInstance()
+        # self.nb_threads = self.threadpool.maxThreadCount()
+        # self.running_threads = 0
 
         # GUI attributes
         self.all_checked = False
@@ -77,8 +77,6 @@ class Application(QMainWindow):
         """
         Define Application layout.
         """
-        grid = QGridLayout()
-        self.setLayout(grid)
         self.splitter = self.findChild(QSplitter, "splitter")
         self.splitter.setStretchFactor(1, 10)
 
@@ -202,7 +200,7 @@ class Application(QMainWindow):
         # self.progressBarAdvance()
 
     def threadComplete(self):
-        logging.info("one of threads completed")
+        logging.info("Thread complete")
         # self.nb_parsed_organisms += 1
         # self.progressBarAdvance()
 
@@ -235,7 +233,6 @@ class Application(QMainWindow):
                 for id in ids:
                     parsing_attributes.append((organism_path, id, organism))
 
-            # Create threads
             t = 0
             for parsing_attribute in parsing_attributes:
                 # Pass the function to execute
@@ -248,6 +245,7 @@ class Application(QMainWindow):
                 self.threadpool.start(worker)
                 logging.info("Starting thread %d" % t)
                 t += 1
+                time.sleep(1)
 
             logging.info("Fin de l'analyse des fichiers sélectionnés")
             self.onButtonClicked()
@@ -264,6 +262,7 @@ class Application(QMainWindow):
             return
         elif self.region_type == []:
             logging.error("No DNA region selected")
+            self.onButtonClicked()
             return
         else:
             logging.info("Start parsing")

@@ -16,15 +16,12 @@ def parseFeatures(region_type, path, id, organism, record):
     logging.info("Start parsing id = " + str(id))
 
     # Initialize variables
-    file_name = ""
+    file_name = id.split(".")[0]
     DNA = None
     DNA_length = -1
 
     # Read DNA sequence from record
     try:
-        file_name = record.id
-        file_name = file_name.split(".")[0]
-        logging.debug("file_name = " + file_name)
         DNA = record.seq
         DNA_length = len(DNA)
     except:

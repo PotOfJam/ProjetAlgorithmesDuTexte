@@ -41,7 +41,7 @@ This program is a utility tool to facilitate access to this database. The user-f
     - [x] Journal
     - [x] Taille ajustable
     - [ ] Etat de l'analyse (x/y fichiers/organismes analysés)
-    - [ ] Esthétique (taille du journal, couleur [application et journal], nom, onglet auteurs [file view sur README.md])
+    - [ ] Esthétique (taille du journal, couleur [application et journal], nom, onglet auteurs [file view sur README.md], logo dans la barre des tâches)
     - [ ] Documentation (code + README)
 
 - Mathéo:
