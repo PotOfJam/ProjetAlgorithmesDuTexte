@@ -25,6 +25,7 @@ class WorkerSignals(QObject):
     error = pyqtSignal(tuple)
     result = pyqtSignal(object)
     progress = pyqtSignal(int)
+    log = pyqtSignal(str)
 
 
 class Worker(QRunnable):

@@ -207,6 +207,10 @@ class Application(QMainWindow):
     def threadResult(self):
         pass
 
+    def threadLog(self,message):
+        logging.info(message)
+        return
+
     def multiThreadParsing(self, organisms):
         """
         Parse organims sequentially using multithreading.
@@ -240,6 +244,7 @@ class Application(QMainWindow):
             worker.signals.result.connect(self.threadResult)
             worker.signals.progress.connect(self.threadUpdateProgress)
             worker.signals.finished.connect(self.threadComplete)
+            worker.signals.log.connect(self.threadLog)
             
             # Start the thread
             self.threadpool.start(worker)
@@ -274,97 +279,3 @@ class Application(QMainWindow):
         """
         logging.info("Stop parsing")
         pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def onChecked(self):
-#     """
-#     Function to execute when a check box is clicked.
-#     """
-#     self.region_type = []
-
-#     if(self.CDS.isChecked()):
-#         self.region_type.append("CDS")
-#     else:
-#         self.ALL.setChecked(False)
-#         self.all_checked = False
-#     if(self.CENTRO.isChecked()):
-#         self.region_type.append("centromere")
-#     else:
-#         self.ALL.setChecked(False)
-#         self.all_checked = False
-#     if(self.INTRON.isChecked()):
-#         self.region_type.append("intron")
-#     else:
-#         self.ALL.setChecked(False)
-#         self.all_checked = False
-#     if(self.MOBILE.isChecked()):
-#         self.region_type.append("mobile_element")
-#     else:
-#         self.ALL.setChecked(False)
-#         self.all_checked = False
-#     if(self.NC_RNA.isChecked()):
-#         self.region_type.append("ncRNA")
-#     else:
-#         self.ALL.setChecked(False)
-#         self.all_checked = False
-#     if(self.R_RNA.isChecked()):
-#         self.region_type.append("rRNA")
-#     else:
-#         self.ALL.setChecked(False)
-#         self.all_checked = False
-#     if(self.TELOMETRE.isChecked()):
-#         self.region_type.append("telomere")
-#     else:
-#         self.ALL.setChecked(False)
-#         self.all_checked = False
-#     if(self.T_RNA.isChecked()):
-#         self.region_type.append("tRNA")
-#     else:
-#         self.ALL.setChecked(False)
-#         self.all_checked = False
-#     if(self.UTR_3.isChecked()):
-#         self.region_type.append("3'UTR")
-#     else:
-#         self.ALL.setChecked(False)
-#         self.all_checked = False
-#     if(self.UTR_5.isChecked()):
-#         self.region_type.append("5'UTR")
-#     else:
-#         self.ALL.setChecked(False)
-#         self.all_checked = False
-#     if(self.ALL.isChecked() and not self.all_checked):
-#         self.all_checked = True
-#         self.all_unchecked = False
-#         for checkbox in self.checkboxes:
-#             if checkbox != self.NONE:
-#                 checkbox.setChecked(True)
-#             else:
-#                 checkbox.setChecked(False)
-#         logging.info("Selected DNA regions: " + str(self.region_type))
-#     # if(self.NONE.isChecked() and not self.all_unchecked):
-#     #     self.all_unchecked = True
-#     #     self.all_checked = False
-#     #     for checkbox in self.checkboxes:
-#     #         if checkbox != self.NONE:
-#     #             checkbox.setChecked(False)
-#     #     logging.info("Selected DNA regions: " + str(self.region_type))
-
-#     # if not self.all_checked and not self.all_unchecked:
-#     if not self.all_checked:
-#         logging.info("Selected DNA regions: " + str(self.region_type))
