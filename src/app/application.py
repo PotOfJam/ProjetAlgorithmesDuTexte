@@ -239,7 +239,7 @@ class Application(QMainWindow):
             t = 0
             for parsing_attribute in parsing_attributes:
                 # Pass the function to execute
-                worker = app.parser_thread.Worker(self.threadWork, parsing_attribute=parsing_attribute) # Any other args, kwargs are passed to the run function
+                worker = Worker(self.threadWork, parsing_attribute=parsing_attribute) # Any other args, kwargs are passed to the run function
                 worker.signals.result.connect(self.threadResult)
                 worker.signals.progress.connect(self.threadUpdateProgress)
                 worker.signals.finished.connect(self.threadComplete)
