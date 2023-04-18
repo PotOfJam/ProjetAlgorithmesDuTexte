@@ -98,7 +98,6 @@ def findLastSubFolders(selected_folder_path):
     Args:
         selected_folder_path (string): Path of the folder at the top of the hierarchy.
 
-
     Returns:
         list: Paths of the sub-folders located at the bottom of the hierarchy.
     """

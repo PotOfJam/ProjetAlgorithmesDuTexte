@@ -1,6 +1,5 @@
 # System
-import os
-import time
+import os, time
 
 # GUI
 import logging
@@ -25,16 +24,17 @@ class Application(QMainWindow):
 
         # Multithreading attributes
         self.threadpool = QThreadPool.globalInstance()
-        # self.nb_threads = self.threadpool.maxThreadCount()
-        # self.running_threads = 0
+        self.nb_threads = self.threadpool.maxThreadCount()
+        self.nb_running_threads = 0
 
         # GUI attributes
         self.all_checked = False
         self.all_unchecked = True
 
         # File parsing attributes
-        self.path = ""
+        self.selected_path = ""
         self.region_type = []
+        self.organisms_to_parse = []
         self.nb_organisms_to_parse = 0
         self.nb_files_to_parse = 0
         self.nb_parsed_organisms = 0
@@ -58,8 +58,11 @@ class Application(QMainWindow):
         # Update Results file tree
         tree.updateTree()
 
-        logging.info("Multithreading with maximum %d threads" %
-                     self.threadpool.maxThreadCount())
+        logging.info("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+
+    def signalHandler(self, frame):
+            print("CTRL+C")
+            sys.exit(42)
 
     def setUpLogger(self):
         """
@@ -156,8 +159,8 @@ class Application(QMainWindow):
             index (...): ???
         """
         mapped_index = self.sort_proxy_model.mapToSource(index)
-        self.path = self.model.filePath(mapped_index)
-        logging.info("Selected path: %s" % self.path)
+        self.selected_path = self.model.filePath(mapped_index)
+        logging.info("Selected path: %s" % self.selected_path)
 
     def onChecked(self):
         """
@@ -215,14 +218,14 @@ class Application(QMainWindow):
                 self.region_type, organism_path, id, organism, record)
 
     def threadUpdateProgress(self):
-        pass
-        # self.nb_parsed_files += 1
-        # self.progressBarAdvance()
+        # WARNING: not thread-safe
+        self.nb_parsed_files += 1
 
     def threadComplete(self):
+        # WARNING: not thread-safe
         logging.info("Thread complete")
-        # self.nb_parsed_organisms += 1
-        # self.progressBarAdvance()
+        self.nb_running_threads -= 1
+        self.nb_parsed_organisms += 1
 
     def threadResult(self):
         pass
@@ -272,6 +275,7 @@ class Application(QMainWindow):
 
             # Start the thread
             self.threadpool.start(worker)
+            self.nb_running_threads += 1
             logging.info("Starting thread %d" % t)
             t += 1
             time.sleep(1)
@@ -284,8 +288,8 @@ class Application(QMainWindow):
         """
         logging.info("Initialising parsing")
 
-        if self.path == "" or not os.path.isdir(self.path):
-            logging.error("Invalid path: " + self.path)
+        if self.selected_path == "" or not os.path.isdir(self.selected_path):
+            logging.error("Invalid path: " + self.selected_path)
             self.onButtonClicked()
             return
         elif self.region_type == []:
@@ -294,8 +298,8 @@ class Application(QMainWindow):
             return
         else:
             logging.info("Start parsing")
-            organisms = tree.findOrganisms(self.path)
-            self.multiThreadParsing(organisms)
+            self.organisms_to_parse = tree.findOrganisms(self.selected_path)
+            self.multiThreadParsing(self.organisms_to_parse)
 
     def stopParsing(self):
         """
@@ -303,3 +307,17 @@ class Application(QMainWindow):
         """
         logging.info("Stop parsing")
         pass
+
+    def signalHandler(self):
+        """
+        Delete all organisms files in the selected folder (self.selected_path).
+        Note: Also remove files if they were created during a previous parsing. (For instance, files not needing update)
+        """
+        logging.debug("Received SIGINT")
+        if self.organisms_to_parse != [] and self.nb_files_to_parse - self.nb_parsed_files > 0:
+            for organism, organism_path in self.organisms_to_parse:
+                files = [file for file in os.listdir(organism_path) if os.path.isfile(file)]
+                for file in files:
+                    if os.path.exists(file):
+                        os.remove(file)
+                        logging.info("Successfully deleted: %s" % file)
