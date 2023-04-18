@@ -1,9 +1,10 @@
 # System
-import os, time
+import os
+import time
 
 # GUI
 import logging
-from PyQt5 import uic 
+from PyQt5 import uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -12,6 +13,7 @@ from .parser_thread import *
 
 # GenBank functions
 from ..genbank import tree, search, fetch, feature_parser
+
 
 class Application(QMainWindow):
 
@@ -52,11 +54,12 @@ class Application(QMainWindow):
 
         # Show the app
         self.show()
-        
+
         # Update Results file tree
         tree.updateTree()
 
-        logging.info("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+        logging.info("Multithreading with maximum %d threads" %
+                     self.threadpool.maxThreadCount())
 
     def setUpLogger(self):
         """
@@ -65,7 +68,8 @@ class Application(QMainWindow):
         self.log_file = "application.log"
         if os.path.exists(self.log_file):
             os.remove(self.log_file)
-        logging.basicConfig(filename=self.log_file, encoding="utf-8", level=logging.DEBUG)
+        logging.basicConfig(filename=self.log_file,
+                            encoding="utf-8", level=logging.DEBUG)
         self.logger_box = self.findChild(QFormLayout, "formLayout_6")
         logTextBox = QPlainTextEditLogger()
         self.logger_box.addWidget(logTextBox.widget)
@@ -89,7 +93,7 @@ class Application(QMainWindow):
         self.model.setRootPath(QDir.currentPath())
         self.model.setFilter(QDir.NoDotAndDotDot | QDir.Dirs)
 
-        # Proxy Model to sort 
+        # Proxy Model to sort
         self.sort_proxy_model = QSortFilterProxyModel()
         self.sort_proxy_model.setSourceModel(self.model)
         self.sort_proxy_model.setDynamicSortFilter(True)
@@ -102,21 +106,23 @@ class Application(QMainWindow):
 
         # Tree view
         self.treeView.setModel(self.sort_proxy_model)
-        self.treeView.setRootIndex(self.sort_proxy_model.mapFromSource(self.model.index(os.path.join(QDir.currentPath(), "Results"))))
+        self.treeView.setRootIndex(self.sort_proxy_model.mapFromSource(
+            self.model.index(os.path.join(QDir.currentPath(), "Results"))))
         for column in range(1, self.model.columnCount()):
             self.treeView.hideColumn(column)
         self.treeView.clicked.connect(self.onTreeViewClicked)
 
         # Check boxes
-        self.checkboxes=[self.CDS, self.CENTRO, self.INTRON, self.MOBILE, self.NC_RNA, self.R_RNA, self.TELOMETRE, self.T_RNA, self.UTR_3, self.UTR_5, self.ALL, self.NONE]
-        self.all_checked=False
-        self.none_checked=False
+        self.checkboxes = [self.CDS, self.CENTRO, self.INTRON, self.MOBILE, self.NC_RNA,
+                           self.R_RNA, self.TELOMETRE, self.T_RNA, self.UTR_3, self.UTR_5, self.ALL, self.NONE]
+        self.all_checked = False
+        self.none_checked = False
         for checkbox in self.checkboxes:
             checkbox.toggled.connect(self.onChecked)
-        
+
         self.NONE.toggled.connect(self.onChecked_NONE)
         self.ALL.toggled.connect(self.onChecked_ALL)
-    
+
     def progressBarAdvance(self):
         """
         Change the progress bar.
@@ -158,7 +164,7 @@ class Application(QMainWindow):
         Function to execute when a check box is clicked.
         """
         self.region_type = []
-        
+
         if(self.CDS.isChecked()):
             self.region_type.append("CDS")
         if(self.CENTRO.isChecked()):
@@ -180,24 +186,23 @@ class Application(QMainWindow):
         if(self.UTR_5.isChecked()):
             self.region_type.append("5'UTR")
 
-        if(self.all_checked==False and self.none_checked==False):
+        if(self.all_checked == False and self.none_checked == False):
             logging.info("Selected DNA regions: " + str(self.region_type))
-    
-    def onChecked_ALL(self):
 
-        if(self.ALL.isChecked() and self.none_checked==False):
-            self.all_checked=True
+    def onChecked_ALL(self):
+        if(self.ALL.isChecked() and self.none_checked == False):
+            self.all_checked = True
             for k in range(len(self.checkboxes)-2):
                 self.checkboxes[k].setChecked(True)
-            self.all_checked=False
+            self.all_checked = False
             logging.info("Selected DNA regions: " + str(self.region_type))
-         
-    def onChecked_NONE(self):      
-        if(self.NONE.isChecked() and self.all_checked==False):
-            self.none_checked=True
-            for k in range(len(self.checkboxes)):
-                self.checkboxes[k].setChecked(False)
-            self.none_checked=False
+
+    def onChecked_NONE(self):
+        if(self.NONE.isChecked() and self.all_checked == False):
+            self.none_checked = True
+            for checkbox in self.checkboxes:
+                checkbox.setChecked(False)
+            self.none_checked = False
             logging.info("Selected DNA regions: " + str(self.region_type))
 
     def threadWork(self, progress_callback, parsing_attribute):
@@ -206,8 +211,9 @@ class Application(QMainWindow):
         logging.info("Start parsing file: %s" % id)
         record = fetch.fetchFromID(id)
         if record is not None:
-            feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
-    
+            feature_parser.parseFeatures(
+                self.region_type, organism_path, id, organism, record)
+
     def threadUpdateProgress(self):
         pass
         # self.nb_parsed_files += 1
@@ -221,7 +227,7 @@ class Application(QMainWindow):
     def threadResult(self):
         pass
 
-    def threadLog(self,message):
+    def threadLog(self, message):
         logging.info(message)
         return
 
@@ -239,12 +245,14 @@ class Application(QMainWindow):
             logging.info("Start parsing organism: %s" % organism)
             ids = search.searchID(organism)
             if ids == []:
-                logging.warning("Did not find any NC corresponding to organism: %s" % organism)
+                logging.warning(
+                    "Did not find any NC corresponding to organism: %s" % organism)
                 logging.info("Fin de l'analyse des fichiers sélectionnés")
                 self.onButtonClicked()
                 return
             organism_files_to_parse = tree.needParsing(organism_path, ids)
-            logging.info("Organism %s has %d file(s) that need(s) to be parsed" % (organism, organism_files_to_parse))
+            logging.info("Organism %s has %d file(s) that need(s) to be parsed" % (
+                organism, organism_files_to_parse))
             if organism_files_to_parse > 0:
                 self.nb_organisms_to_parse += 1
                 self.nb_files_to_parse += organism_files_to_parse
@@ -254,12 +262,14 @@ class Application(QMainWindow):
         t = 0
         for parsing_attribute in parsing_attributes:
             # Pass the function to execute
-            worker = Worker(self.threadWork, parsing_attribute=parsing_attribute) # Any other args, kwargs are passed to the run function
+            # Any other args, kwargs are passed to the run function
+            worker = Worker(self.threadWork,
+                            parsing_attribute=parsing_attribute)
             worker.signals.result.connect(self.threadResult)
             worker.signals.progress.connect(self.threadUpdateProgress)
             worker.signals.finished.connect(self.threadComplete)
             worker.signals.log.connect(self.threadLog)
-            
+
             # Start the thread
             self.threadpool.start(worker)
             logging.info("Starting thread %d" % t)
