@@ -110,8 +110,12 @@ class Application(QMainWindow):
         # Check boxes
         self.checkboxes=[self.CDS, self.CENTRO, self.INTRON, self.MOBILE, self.NC_RNA, self.R_RNA, self.TELOMETRE, self.T_RNA, self.UTR_3, self.UTR_5, self.ALL, self.NONE]
         self.all_checked=False
+        self.none_checked=False
         for checkbox in self.checkboxes:
             checkbox.toggled.connect(self.onChecked)
+        
+        self.NONE.toggled.connect(self.onChecked_NONE)
+        self.ALL.toggled.connect(self.onChecked_ALL)
     
     def progressBarAdvance(self):
         """
@@ -175,17 +179,27 @@ class Application(QMainWindow):
             self.region_type.append("3'UTR")
         if(self.UTR_5.isChecked()):
             self.region_type.append("5'UTR")
-        if(self.ALL.isChecked()):
-            for checkbox in self.checkboxes:
-                checkbox.setChecked(True)
-            self.all_checked=True
-        if(self.ALL.isChecked()==False and self.all_checked):
-            for checkbox in self.checkboxes:
-                checkbox.setChecked(False)
-            self.all_checked=False
 
-        logging.info("Selected DNA regions: " + str(self.region_type))
+        if(self.all_checked==False and self.none_checked==False):
+            logging.info("Selected DNA regions: " + str(self.region_type))
     
+    def onChecked_ALL(self):
+
+        if(self.ALL.isChecked() and self.none_checked==False):
+            self.all_checked=True
+            for k in range(len(self.checkboxes)-2):
+                self.checkboxes[k].setChecked(True)
+            self.all_checked=False
+            logging.info("Selected DNA regions: " + str(self.region_type))
+         
+    def onChecked_NONE(self):      
+        if(self.NONE.isChecked() and self.all_checked==False):
+            self.none_checked=True
+            for k in range(len(self.checkboxes)):
+                self.checkboxes[k].setChecked(False)
+            self.none_checked=False
+            logging.info("Selected DNA regions: " + str(self.region_type))
+
     def threadWork(self, progress_callback, parsing_attribute):
         # progress_callback.emit()
         organism_path, id, organism = parsing_attribute

@@ -33,11 +33,11 @@ This program is a utility tool to facilitate access to this database. The user-f
 ## 📝 TO DO LIST !!!
 - Julie & Louise:
     - [x] Arborescence interactive
-    - [ ] Arborescence par ordre alphabétique
+    - [X] Arborescence par ordre alphabétique
     - [x] Checkbox pour les types de régions fonctionnelles
     - [X] Checkbox "Tout sélectionner"
     - [X] Checkbox par ordre alphabétique
-    - [ ] Checkbox Toutes/Aucune (afficher un seul message dans le journal)
+    - [X] Checkbox Toutes/Aucune (afficher un seul message dans le journal)
     - [x] Journal
     - [x] Taille ajustable
     - [ ] Etat de l'analyse (x/y fichiers/organismes analysés)
