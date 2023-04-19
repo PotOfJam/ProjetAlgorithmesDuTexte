@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import QApplication
 from qt_material import apply_stylesheet
 from src import *
 
+TEST = False
+
 def main():
     """
     Main function.

@@ -1,5 +1,6 @@
 import logging
 from .DNA_parser.sequence_parser import parseSequence
+from .DNA_parser.CDS_parser import parseCDS
 from ..app.parser_thread import emitLog
 
 def parseFeatures(region_type, path, id, organism, record, worker=None):

@@ -2,10 +2,11 @@ import sys, traceback, logging
 from PyQt5.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot, QThread
 from PyQt5.QtWidgets import QApplication
 
+from main import TEST
 
 def emitLog(worker, message):
-    global DEBUG
-    if not DEBUG:
+    global TEST
+    if not TEST:
         if(QThread.currentThread() == QApplication.instance().thread()):
             logging.info(message)
         else:
@@ -78,7 +79,5 @@ class Worker(QRunnable):
             traceback.print_exc()
             exctype, value = sys.exc_info()[:2]
             self.signals.error.emit((exctype, value, traceback.format_exc()))
-        else:
-            self.signals.result.emit(result)  # Return the result of the processing
         finally:
             self.signals.finished.emit()  # Done

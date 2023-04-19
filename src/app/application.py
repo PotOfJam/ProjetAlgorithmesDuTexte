@@ -240,12 +240,10 @@ class Application(QMainWindow):
 
     def threadComplete(self):
         logging.info("Thread complete")
+        self.nb_running_threads -= 1
         self.nb_parsed_files += 1
         self.processQueue()
         self.updateProgressBar()
-
-    def threadResult(self):
-        pass
 
     def multiThreadParsing(self, organisms):
         """
@@ -280,7 +278,6 @@ class Application(QMainWindow):
             # Pass the function to execute
             # Any other args, kwargs are passed to the run function
             worker = Worker(self.threadWork, parsing_attribute=parsing_attribute)
-            worker.signals.result.connect(self.threadResult)
             worker.signals.finished.connect(self.threadComplete)
             worker.signals.log.connect(self.threadLog)
 
