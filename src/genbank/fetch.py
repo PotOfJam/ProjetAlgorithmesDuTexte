@@ -1,6 +1,6 @@
 import logging, traceback
 from Bio import Entrez, SeqIO
-import random
+import time, random
 
 from ..app.parser_thread import emitLog
 
@@ -24,6 +24,7 @@ def fetchFromID(id, fetch_db="nuccore", rettype="gbwithparts", worker=None):
         except IOError:
             delay += random.uniform(0, 0.5)
             emitLog(worker, "Unable to fetch id = " + str(id) + " from fetch_db = " + fetch_db + ", retrying in " + str(delay) + " seconds")
+            time.sleep(delay)
         except:
             print(traceback.format_exc())
             emitLog(worker, "Unable to fetch id = " + str(id) + " from fetch_db = " + fetch_db)

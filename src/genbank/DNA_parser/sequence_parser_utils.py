@@ -66,7 +66,7 @@ def intronLocation(CDS_info_location):
     return intron_location
 
 
-def defragmentSequence(DNA, sequence_location):
+def defragmentSequence(DNA, sequence_location, worker=None):
 
     # Note: sequence locations have been ordered in sequenceLocation function
 

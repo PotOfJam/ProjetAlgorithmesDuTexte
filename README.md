@@ -42,27 +42,17 @@ This program is a utility tool to facilitate access to this database. The user-f
 
 ## 📝 TO DO LIST !!!
 - Julie & Louise:
-    - [x] Arborescence interactive
-    - [X] Arborescence par ordre alphabétique
-    - [x] Checkbox pour les types de régions fonctionnelles
-    - [X] Checkbox "Tout sélectionner"
-    - [X] Checkbox par ordre alphabétique
-    - [X] Checkbox Toutes/Aucune (afficher un seul message dans le journal)
-    - [x] Journal
-    - [x] Taille ajustable
+    - [ ] Onglet README taille ajustable
     - [ ] Etat de l'analyse (x/y fichiers/organismes analysés)
     - [ ] Esthétique (taille du journal, couleur [application et journal], nom, onglet auteurs [file view sur README.md], logo dans la barre des tâches)
     - [ ] Documentation (code + README)
 
 - Mathéo:
     - [ ] Tests
-    - [x] Intégration Continue
     - [ ] Documentation (code + README)
 
 - Samuel & Fabien:
-    - [x] Analyse des fichiers
-    - [ ] Multithreading
-    - [x] Arborescence
-    - [ ] Conservation de l'état de l'analyse
+    - [ ] Niveaux de log
+    - [ ] Arrêt du parsing
+    - [ ] Fix UI 
     - [ ] Documentation (code + README)
-    - [ ] Sélectionner fichiers et résultats de test (comparer avec GenBank)

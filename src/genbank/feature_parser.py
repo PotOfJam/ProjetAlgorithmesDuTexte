@@ -1,4 +1,4 @@
-import logging
+import traceback
 from .DNA_parser.sequence_parser import parseSequence
 from .DNA_parser.CDS_parser import parseCDS
 from ..app.parser_thread import emitLog
@@ -60,4 +60,5 @@ def parseFeatures(region_type, path, id, organism, record, worker=None):
                 emitLog(worker, "Found ncRNA in id = " + str(id))
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "ncRNA", worker=worker)
     except:
+        emitLog(worker, traceback.format_exc())
         emitLog(worker, "Unable to read feature(s) from id = " + str(id))
