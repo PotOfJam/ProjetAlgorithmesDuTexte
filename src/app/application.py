@@ -128,6 +128,16 @@ class Application(QMainWindow):
         self.NONE.toggled.connect(self.onChecked_NONE)
         self.ALL.toggled.connect(self.onChecked_ALL)
 
+        # readme
+
+        text_read = self.textEdit
+        text_read.setReadOnly(True)
+
+        with open('README.md', encoding='utf8') as f:
+            markdown = f.read()
+            text_read.setMarkdown(markdown)
+
+
     def progressBarAdvance(self):
         """
         Change the progress bar.
