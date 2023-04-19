@@ -4,7 +4,10 @@
 The GenBank sequence database is an open access, annotated collection of all publicly available nucleotide sequences and their protein translations. It is produced and maintained by the National Center for Biotechnology Information (NCBI; a part of the National Institutes of Health in the United States) as part of the International Nucleotide Sequence Database Collaboration (INSDC). [[Wikipedia](https://en.wikipedia.org/wiki/GenBank)]  
 This program is a utility tool to facilitate access to this database. The user-friendly graphic interface allows to browse organisms in the database and parse their DNA. The DNA parsing can be set-up in order to parse only relevant DNA sequences such as: CDS, centromere, intron, mobile element, telomere, ncRNA, rRNA, tRNA, 3'UTR, 5'UTR.
 
-![User Interface](screenshot.png)
+<p align="center">
+  <img src="screenshot.png" />
+</p>
+
 
 ## 📂 Ressources
 
@@ -29,6 +32,11 @@ This program is a utility tool to facilitate access to this database. The user-f
 - COUTURE Louise
 - LEBOT Samuel
 - VLAYKOV Mathéo
+
+<p align="center">
+  <img src="logo.png" />
+</p>
+
 
 ## 📝 TO DO LIST !!!
 - Julie & Louise:

@@ -414,10 +414,10 @@
                   <string />
                 </property>
                 <property name="pixmap">
-                  <pixmap>../ProjetAlgorithmesDuTexte/src/texture/bg.png</pixmap>
+                  <pixmap>../../logo.png</pixmap>
                 </property>
                 <property name="scaledContents">
-                  <bool>false</bool>
+                  <bool>true</bool>
                 </property>
               </widget>
               <widget class="QLabel" name="name">
