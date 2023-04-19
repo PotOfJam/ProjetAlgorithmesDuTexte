@@ -1,5 +1,4 @@
 import logging
-from .DNA_parser.CDS_parser import parseCDS
 from .DNA_parser.sequence_parser import parseSequence
 from ..app.parser_thread import emitLog
 
