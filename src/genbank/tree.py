@@ -19,9 +19,9 @@ def updateTree(overview_file="overview.txt"):
         utc = pytz.UTC
 
         # URL
-        url = 'https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt'
+        url = "https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt"
         r = requests.head(url)
-        url_time = r.headers['last-modified']
+        url_time = r.headers["last-modified"]
         url_date = parsedate(url_time)
         # url_date = utc.localize(url_date)
 
@@ -49,24 +49,25 @@ def downloadAndUpdateTree(overview_file):
         overview_file (str): Path to the overview.txt file.
     """
     # Donwload tree decription file from genbank
-    url = 'https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt'
+    url = "https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt"
     r = requests.get(url, allow_redirects=True)
     try:
-        open(overview_file, 'wb').write(r.content)
+        open(overview_file, "wb").write(r.content)
     except:
         logging.error("No such file: " + overview_file)
         return
 
     # Parse tree description file and create tree
-    with open(overview_file, newline='') as csvfile:
-        file_tree = csv.reader(csvfile, delimiter='\t')
+    with open(overview_file, newline="") as csvfile:
+        file_tree = csv.reader(csvfile, delimiter="\t")
         next(file_tree, None)
         for row in file_tree:
-            organism, kingdom, group, subgroup, *_ = row
-            # organism = organism.replace(" ", "_").replace("?", "").replace("/", "").replace("[", "").replace("]", "")
-            organism = organism.replace("?", "").replace("/", "").replace("[", "").replace("]", "")
-            os.makedirs(os.path.join("Results/Organisme", kingdom, group, subgroup, organism), exist_ok=True)  # Ignore existing folders
-
+            try:
+                organism, kingdom, group, subgroup, *_ = row
+                organism = organism.replace("?", "").replace("/", "").replace("[", "").replace("]", "")
+                os.makedirs(os.path.join("Results", "Organisme", kingdom, group, subgroup, organism), exist_ok=True)  # Ignore existing folders
+            except:
+                logging.warning("Invalid overview line: %s" % row)
 
 def findSubFolders(path):
     """
