@@ -1,5 +1,6 @@
 # System
 import os, time
+from queue import Queue
 
 # GUI
 import logging
@@ -24,7 +25,8 @@ class Application(QMainWindow):
 
         # Multithreading attributes
         self.threadpool = QThreadPool.globalInstance()
-        self.nb_threads = self.threadpool.maxThreadCount()
+        self.worker_queue = Queue()
+        self.max_nb_threads = self.threadpool.maxThreadCount()
         self.nb_running_threads = 0
 
         # GUI attributes
@@ -208,6 +210,16 @@ class Application(QMainWindow):
             self.none_checked = False
             logging.info("Selected DNA regions: " + str(self.region_type))
 
+    def addWorker(self, worker):
+        self.worker_queue.put(worker)
+        self.processQueue()
+
+    def processQueue(self):
+        while not self.worker_queue.empty() and self.nb_running_threads < self.max_nb_threads - 1:
+            worker = self.worker_queue.get()
+            self.threadpool.start(worker)
+            self.nb_running_threads += 1
+
     def threadWork(self, progress_callback, parsing_attribute):
         # progress_callback.emit()
         organism_path, id, organism = parsing_attribute
@@ -218,21 +230,16 @@ class Application(QMainWindow):
                 self.region_type, organism_path, id, organism, record)
 
     def threadUpdateProgress(self):
-        # WARNING: not thread-safe
         self.nb_parsed_files += 1
 
     def threadComplete(self):
-        # WARNING: not thread-safe
         logging.info("Thread complete")
         self.nb_running_threads -= 1
         self.nb_parsed_organisms += 1
+        self.processQueue()
 
     def threadResult(self):
         pass
-
-    def threadLog(self, message):
-        logging.info(message)
-        return
 
     def multiThreadParsing(self, organisms):
         """
@@ -251,9 +258,10 @@ class Application(QMainWindow):
                 logging.warning(
                     "Did not find any NC corresponding to organism: %s" % organism)
                 logging.info("Fin de l'analyse des fichiers sélectionnés")
-                self.onButtonClicked()
+                self.button_state = 0
+                self.button.setText("Lancer l'analyse") # RESET BUTTON FUNCTION
                 return
-            organism_files_to_parse = tree.needParsing(organism_path, ids)
+            organism_files_to_parse = tree.needParsing(organism_path, ids) # AMELIORABLE ?
             logging.info("Organism %s has %d file(s) that need(s) to be parsed" % (
                 organism, organism_files_to_parse))
             if organism_files_to_parse > 0:
@@ -271,16 +279,13 @@ class Application(QMainWindow):
             worker.signals.result.connect(self.threadResult)
             worker.signals.progress.connect(self.threadUpdateProgress)
             worker.signals.finished.connect(self.threadComplete)
-            worker.signals.log.connect(self.threadLog)
 
             # Start the thread
-            self.threadpool.start(worker)
-            self.nb_running_threads += 1
+            self.addWorker(worker)
             logging.info("Starting thread %d" % t)
             t += 1
-            time.sleep(1)
+            time.sleep(1) # CHANGER
         logging.info("Fin de l'analyse des fichiers sélectionnés")
-        self.onButtonClicked()
 
     def startParsing(self):
         """
@@ -290,11 +295,13 @@ class Application(QMainWindow):
 
         if self.selected_path == "" or not os.path.isdir(self.selected_path):
             logging.error("Invalid path: " + self.selected_path)
-            self.onButtonClicked()
+            self.button_state = 0
+            self.button.setText("Lancer l'analyse")
             return
         elif self.region_type == []:
             logging.error("No DNA region selected")
-            self.onButtonClicked()
+            self.button_state = 0
+            self.button.setText("Lancer l'analyse")
             return
         else:
             logging.info("Start parsing")

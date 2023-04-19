@@ -8,7 +8,6 @@ This program is a utility tool to facilitate access to this database. The user-f
   <img src="screenshot.png" />
 </p>
 
-
 ## 📂 Ressources
 
 ### 🔬 National Center for Biotechnology Information : National Library of Medicine
@@ -25,6 +24,7 @@ This program is a utility tool to facilitate access to this database. The user-f
 ## 🔧 Dependancies
 - [Biopyhton](https://biopython.org/)
 - [PyQt5](https://pypi.org/project/PyQt5/)
+- [QtMAterial](https://pypi.org/project/qt-material/)
 
 ## 👥 Team
 - ALLEMAND Fabien
