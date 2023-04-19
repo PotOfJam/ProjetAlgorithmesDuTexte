@@ -1,7 +1,8 @@
 import os, logging, traceback
 from .sequence_parser_utils import *
+from ...app.parser_thread import emitLog
 
-def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, intron_flag):
+def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, intron_flag, worker=None):
 
     # Create dictionnary containing informations relative to the CDS sequence
     CDS_info = {
@@ -30,28 +31,28 @@ def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, 
     }
 
     # Find sequence location
-    CDS_info["location"] = sequenceLocation(feature, DNA_length)
+    CDS_info["location"] = sequenceLocation(feature, DNA_length, worker=worker)
     intron_info["CDS_location"] = CDS_info["location"]
 
     # Find intron(s) location(s)
     if intron_flag:
-        intron_info["location"] = intronLocation(CDS_info["location"])
+        intron_info["location"] = intronLocation(CDS_info["location"], worker=worker)
 
     # Recreate CDS sequence
     if CDS_info["location"] == []:
-        logging.warning("Incorrect sequence location: (empty location)")
+        emitLog(worker, "Incorrect sequence location: (empty location)")
         return
     elif len(CDS_info["location"]) == 1:
         intron_flag = False
         CDS_info["start"] = CDS_info["location"][0][0]
         CDS_info["end"] = CDS_info["location"][0][1]
-        logging.debug("location = " + str(CDS_info["start"]) + "," + str(CDS_info["end"]))
+        emitLog(worker, "location = " + str(CDS_info["start"]) + "," + str(CDS_info["end"]))
         CDS_info["DNA_sequence"] = DNA[CDS_info["start"] : CDS_info["end"]]
     else:
         CDS_info["DNA_sub_sequence"] = []
         for sub_sequence_location in CDS_info["location"]:
             CDS_info["DNA_sub_sequence"].append(DNA[sub_sequence_location[0] : sub_sequence_location[1]])
-        CDS_info["DNA_sequence"] = defragmentSequence(DNA, CDS_info["location"])
+        CDS_info["DNA_sequence"] = defragmentSequence(DNA, CDS_info["location"], worker=worker)
 
     # CDS reverse completement
     if CDS_info["strand"] == -1:
@@ -59,8 +60,8 @@ def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, 
         for sub_sequence in CDS_info["DNA_sub_sequence"]:
             sub_sequence = sub_sequence.reverse_complement()
     # Check for invalid DNA sequence
-    if incorrectSequence(CDS_info["DNA_sequence"], "CDS"):
-        logging.warning("Incorrect sequence")
+    if incorrectSequence(CDS_info["DNA_sequence"], "CDS", worker=worker):
+        emitLog(worker, "Incorrect sequence")
         return
     
     # Recreate intron(s) sequence(s)
@@ -75,20 +76,20 @@ def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, 
 
     # Write CDS sequence in CDS file
     if CDS_flag:
-        writeCDS(CDS_info)
+        writeCDS(CDS_info, worker=worker)
 
     # Write introns sequence in intron file
     if intron_flag:
-        writeIntron(intron_info)
+        writeIntron(intron_info, worker=worker)
 
 
-def writeCDS(CDS_info):
+def writeCDS(CDS_info, worker=None):
 
     # File path
     try:
         file_path = os.path.join(CDS_info["path"], CDS_info["type"] + "_" + CDS_info["organism"] + "_" + CDS_info["file_name"] + ".txt" )
     except:
-        logging.debug("PROBLEME 1")
+        emitLog(worker, "PROBLEME 1")
 
     # Sequence description
     try:
@@ -106,7 +107,7 @@ def writeCDS(CDS_info):
         if CDS_info["strand"] == -1:
             sequence_description_text += ")"
     except:
-        logging.debug("PROBLEME 2")
+        emitLog(worker, "PROBLEME 2")
 
     try:
         with open(file_path, "a") as file:
@@ -122,17 +123,17 @@ def writeCDS(CDS_info):
                 file.write(sequence_description_text + " Exon " + str(exon_id) + "\n")
                 file.write(str(subsequence) + "\n")
     except:
-        print(traceback.format_exc())
-        logging.error("Unable to write in file: " + file_path)
+        emitLog(worker, traceback.format_exc())
+        emitLog(worker, "Unable to write in file: " + file_path)
 
 
-def writeIntron(intron_info):
+def writeIntron(intron_info, worker=None):
 
     # File path
     try:
         file_path = os.path.join(intron_info["path"], intron_info["type"] + "_" + intron_info["organism"] + "_" + intron_info["file_name"] + ".txt" )
     except:
-        logging.debug("PROBLEME 1")
+        emitLog(worker, "PROBLEME 1")
 
     # Sequence description
     try:
@@ -147,7 +148,7 @@ def writeIntron(intron_info):
         if intron_info["strand"] == -1:
             sequence_description_text += ")"
     except:
-        logging.debug("PROBLEME 2")
+        emitLog(worker, "PROBLEME 2")
 
     try:
         with open(file_path, "a") as file:
@@ -158,5 +159,5 @@ def writeIntron(intron_info):
                 file.write(sequence_description_text + " Intron " + str(intron_id) + "\n")
                 file.write(str(subsequence) + "\n")
     except:
-        print(traceback.format_exc())
-        logging.error("Unable to write in file: " + file_path)
+        emitLog(worker, traceback.format_exc())
+        emitLog(worker, "Unable to write in file: " + file_path)

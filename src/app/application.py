@@ -230,11 +230,10 @@ class Application(QMainWindow):
     def threadWork(self, progress_callback, parsing_attribute, worker=None):
         # progress_callback.emit()
         organism_path, id, organism, worker = parsing_attribute
-        logging.info("Start parsing file: %s" % id)
-        emitLog(worker, "XXXXX Start parsing file: %s" % id)
+        emitLog(worker, "Start parsing file: %s" % id)
         record = fetch.fetchFromID(id, worker=worker)
         if record is not None:
-            feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
+            feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record, worker=worker)
 
     def threadLog(self, message):
         logging.info(message)

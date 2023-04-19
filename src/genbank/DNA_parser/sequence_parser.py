@@ -1,7 +1,8 @@
 import logging
 from .sequence_parser_utils import *
+from ...app.parser_thread import emitLog
 
-def parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, feature_type):
+def parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, feature_type, worker=None):
 
     # Create dictionnary containing informations relative to the CDS sequence
     sequence_info = {
@@ -17,22 +18,22 @@ def parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, featu
     }
 
     # Find sequence location
-    sequence_info["location"] = sequenceLocation(feature, DNA_length)
+    sequence_info["location"] = sequenceLocation(feature, DNA_length, worker=worker)
 
     # Recreate CDS sequence
     if sequence_info["location"] == []:
-        logging.warning("Incorrect sequence location: (empty location)")
+        emitLog(worker, "Incorrect sequence location: (empty location)")
         return
     elif len(sequence_info["location"]) == 1:
         sequence_info["start"] = sequence_info["location"][0][0]
         sequence_info["end"] = sequence_info["location"][0][1]
-        logging.debug("location = " + str(sequence_info["start"]) + "," + str(sequence_info["end"]))
+        emitLog(worker, "location = " + str(sequence_info["start"]) + "," + str(sequence_info["end"]))
         sequence_info["DNA_sequence"] = DNA[sequence_info["start"] : sequence_info["end"]]
     else:
         sequence_info["DNA_sub_sequence"] = []
         for sub_sequence_location in sequence_info["location"]:
             sequence_info["DNA_sub_sequence"].append(DNA[sub_sequence_location[0] : sub_sequence_location[1]])
-        sequence_info["DNA_sequence"] = defragmentSequence(DNA, sequence_info["location"])
+        sequence_info["DNA_sequence"] = defragmentSequence(DNA, sequence_info["location"], worker=worker)
 
     # CDS reverse completement
     if sequence_info["strand"] == -1:
@@ -41,7 +42,7 @@ def parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, featu
             sub_sequence = sub_sequence.reverse_complement()
     # Check for invalid DNA sequence
     if incorrectSequence(sequence_info["DNA_sequence"], sequence_info["type"]):
-        logging.warning("Incorrect sequence")
+        emitLog(worker, "Incorrect sequence")
         return
 
     # Write CDS sequence in CDS file
