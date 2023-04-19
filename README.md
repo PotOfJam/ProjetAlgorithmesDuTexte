@@ -10,11 +10,6 @@ This program is a utility tool to facilitate access to this database. The user-f
   <img src="screenshot.png" />
 </p>
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 836a64d66bd28b0202980b0e2307ffdf66e9f32a
 ## 📂 Ressources
 
 ### 🔬 National Center for Biotechnology Information : National Library of Medicine

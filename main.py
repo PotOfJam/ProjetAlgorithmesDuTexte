@@ -12,7 +12,9 @@ def main():
         Handler for the SIGINT signal.
         """
         sys.stderr.write("\r")
-        if QMessageBox.question(None, "", "Are you sure you want to quit?",
+        if QMessageBox.question(None,
+                                "",
+                                "Are you sure you want to quit?",
                                 QMessageBox.Yes | QMessageBox.No,
                                 QMessageBox.No) == QMessageBox.Yes:
             window.signalHandler()

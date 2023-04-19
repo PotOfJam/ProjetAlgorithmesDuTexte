@@ -128,27 +128,24 @@ class Application(QMainWindow):
         self.NONE.toggled.connect(self.onChecked_NONE)
         self.ALL.toggled.connect(self.onChecked_ALL)
 
-        # readme
-
+        # Readme
         text_read = self.textEdit
         text_read.setReadOnly(True)
-
         with open('README.md', encoding='utf8') as f:
             markdown = f.read()
             text_read.setMarkdown(markdown)
 
-
-    def progressBarAdvance(self):
+    def updateProgressBar(self):
         """
         Change the progress bar.
         """
-        self.progressBar_2.setValue(self.nb_parsed_organisms)
-        self.progressBar_2.setMaximum(self.nb_organisms_to_parse+1)
-        self.progressBar_2.setFormat("%v / %m")
+        # self.organismProgressBar.setValue(self.nb_parsed_organisms)
+        # self.organismProgressBar.setMaximum(self.nb_organisms_to_parse + 1)
+        # self.organismProgressBar.setFormat("%v / %m")
 
-        self.progressBar.setValue(self.nb_parsed_files)
-        self.progressBar.setMaximum(self.nb_files_to_parse+1)
-        self.progressBar.setFormat("%v / %m")
+        self.fileProgressBar.setValue(self.nb_parsed_files)
+        self.fileProgressBar.setMaximum(self.nb_files_to_parse + 1)
+        self.fileProgressBar.setFormat("%v / %m")
 
     def onButtonClicked(self):
         """
@@ -239,14 +236,11 @@ class Application(QMainWindow):
             feature_parser.parseFeatures(
                 self.region_type, organism_path, id, organism, record)
 
-    def threadUpdateProgress(self):
-        self.nb_parsed_files += 1
-
     def threadComplete(self):
         logging.info("Thread complete")
-        self.nb_running_threads -= 1
-        self.nb_parsed_organisms += 1
+        self.nb_parsed_files += 1
         self.processQueue()
+        self.updateProgressBar()
 
     def threadResult(self):
         pass
@@ -265,8 +259,7 @@ class Application(QMainWindow):
             logging.info("Start parsing organism: %s" % organism)
             ids = search.searchID(organism)
             if ids == []:
-                logging.warning(
-                    "Did not find any NC corresponding to organism: %s" % organism)
+                logging.warning("Did not find any NC corresponding to organism: %s" % organism)
                 logging.info("Fin de l'analyse des fichiers sélectionnés")
                 self.button_state = 0
                 self.button.setText("Lancer l'analyse") # RESET BUTTON FUNCTION
@@ -287,14 +280,12 @@ class Application(QMainWindow):
             worker = Worker(self.threadWork,
                             parsing_attribute=parsing_attribute)
             worker.signals.result.connect(self.threadResult)
-            worker.signals.progress.connect(self.threadUpdateProgress)
             worker.signals.finished.connect(self.threadComplete)
 
             # Start the thread
             self.addWorker(worker)
             logging.info("Starting thread %d" % t)
             t += 1
-            time.sleep(1) # CHANGER
         logging.info("Fin de l'analyse des fichiers sélectionnés")
 
     def startParsing(self):
