@@ -12,5 +12,4 @@
 Results/*
 !Results/README.md
 
-!test/*.txt
-
+!test/test_files/reference_files/*.txt

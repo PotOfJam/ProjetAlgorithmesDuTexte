@@ -4,11 +4,13 @@ from PyQt5.QtWidgets import QApplication
 
 
 def emitLog(worker, message):
-    if(QThread.currentThread() == QApplication.instance().thread()):
-       logging.info(message)
-    else:
-        worker.signals.log.emit(message)
-    return
+    global DEBUG
+    if not DEBUG:
+        if(QThread.currentThread() == QApplication.instance().thread()):
+            logging.info(message)
+        else:
+            worker.signals.log.emit(message)
+        return
 
 
 class WorkerSignals(QObject):
