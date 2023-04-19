@@ -1,5 +1,6 @@
 # System
 import os, time
+from queue import Queue
 
 # GUI
 import logging
@@ -24,7 +25,8 @@ class Application(QMainWindow):
 
         # Multithreading attributes
         self.threadpool = QThreadPool.globalInstance()
-        self.nb_threads = self.threadpool.maxThreadCount()
+        self.worker_queue = Queue()
+        self.max_nb_threads = self.threadpool.maxThreadCount()
         self.nb_running_threads = 0
 
         # GUI attributes
@@ -126,17 +128,24 @@ class Application(QMainWindow):
         self.NONE.toggled.connect(self.onChecked_NONE)
         self.ALL.toggled.connect(self.onChecked_ALL)
 
-    def progressBarAdvance(self):
+        # Readme
+        text_read = self.textEdit
+        text_read.setReadOnly(True)
+        with open('README.md', encoding='utf8') as f:
+            markdown = f.read()
+            text_read.setMarkdown(markdown)
+
+    def updateProgressBar(self):
         """
         Change the progress bar.
         """
-        self.progressBar_2.setValue(self.nb_parsed_organisms)
-        self.progressBar_2.setMaximum(self.nb_organisms_to_parse+1)
-        self.progressBar_2.setFormat("%v / %m")
+        # self.organismProgressBar.setValue(self.nb_parsed_organisms)
+        # self.organismProgressBar.setMaximum(self.nb_organisms_to_parse)
+        # self.organismProgressBar.setFormat("%v / %m")
 
-        self.progressBar.setValue(self.nb_parsed_files)
-        self.progressBar.setMaximum(self.nb_files_to_parse+1)
-        self.progressBar.setFormat("%v / %m")
+        self.fileProgressBar.setValue(self.nb_parsed_files)
+        self.fileProgressBar.setMaximum(self.nb_files_to_parse)
+        self.fileProgressBar.setFormat("%v / %m")
 
     def onButtonClicked(self):
         """
@@ -208,31 +217,35 @@ class Application(QMainWindow):
             self.none_checked = False
             logging.info("Selected DNA regions: " + str(self.region_type))
 
-    def threadWork(self, progress_callback, parsing_attribute):
+    def addWorker(self, worker):
+        self.worker_queue.put(worker)
+        self.processQueue()
+
+    def processQueue(self):
+        while not self.worker_queue.empty() and self.nb_running_threads < self.max_nb_threads - 1:
+            worker = self.worker_queue.get()
+            self.threadpool.start(worker)
+            self.nb_running_threads += 1
+
+    def threadWork(self, progress_callback, parsing_attribute, worker=None):
         # progress_callback.emit()
-        organism_path, id, organism = parsing_attribute
-        logging.info("Start parsing file: %s" % id)
-        record = fetch.fetchFromID(id)
+        organism_path, id, organism, worker = parsing_attribute
+        emitLog(worker, "Start parsing file: %s" % id)
+        record = fetch.fetchFromID(id, worker=worker)
         if record is not None:
-            feature_parser.parseFeatures(
-                self.region_type, organism_path, id, organism, record)
-
-    def threadUpdateProgress(self):
-        # WARNING: not thread-safe
-        self.nb_parsed_files += 1
-
-    def threadComplete(self):
-        # WARNING: not thread-safe
-        logging.info("Thread complete")
-        self.nb_running_threads -= 1
-        self.nb_parsed_organisms += 1
-
-    def threadResult(self):
-        pass
+            feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record, worker=worker)
 
     def threadLog(self, message):
         logging.info(message)
-        return
+
+    def threadComplete(self):
+        logging.info("Thread complete")
+        self.nb_parsed_files += 1
+        self.processQueue()
+        self.updateProgressBar()
+
+    def threadResult(self):
+        pass
 
     def multiThreadParsing(self, organisms):
         """
@@ -248,12 +261,12 @@ class Application(QMainWindow):
             logging.info("Start parsing organism: %s" % organism)
             ids = search.searchID(organism)
             if ids == []:
-                logging.warning(
-                    "Did not find any NC corresponding to organism: %s" % organism)
+                logging.warning("Did not find any NC corresponding to organism: %s" % organism)
                 logging.info("Fin de l'analyse des fichiers sélectionnés")
-                self.onButtonClicked()
+                self.button_state = 0
+                self.button.setText("Lancer l'analyse") # RESET BUTTON FUNCTION
                 return
-            organism_files_to_parse = tree.needParsing(organism_path, ids)
+            organism_files_to_parse = tree.needParsing(organism_path, ids) # AMELIORABLE ?
             logging.info("Organism %s has %d file(s) that need(s) to be parsed" % (
                 organism, organism_files_to_parse))
             if organism_files_to_parse > 0:
@@ -266,21 +279,16 @@ class Application(QMainWindow):
         for parsing_attribute in parsing_attributes:
             # Pass the function to execute
             # Any other args, kwargs are passed to the run function
-            worker = Worker(self.threadWork,
-                            parsing_attribute=parsing_attribute)
+            worker = Worker(self.threadWork, parsing_attribute=parsing_attribute)
             worker.signals.result.connect(self.threadResult)
-            worker.signals.progress.connect(self.threadUpdateProgress)
             worker.signals.finished.connect(self.threadComplete)
             worker.signals.log.connect(self.threadLog)
 
             # Start the thread
-            self.threadpool.start(worker)
-            self.nb_running_threads += 1
+            self.addWorker(worker)
             logging.info("Starting thread %d" % t)
             t += 1
-            time.sleep(1)
         logging.info("Fin de l'analyse des fichiers sélectionnés")
-        self.onButtonClicked()
 
     def startParsing(self):
         """
@@ -290,11 +298,13 @@ class Application(QMainWindow):
 
         if self.selected_path == "" or not os.path.isdir(self.selected_path):
             logging.error("Invalid path: " + self.selected_path)
-            self.onButtonClicked()
+            self.button_state = 0
+            self.button.setText("Lancer l'analyse")
             return
         elif self.region_type == []:
             logging.error("No DNA region selected")
-            self.onButtonClicked()
+            self.button_state = 0
+            self.button.setText("Lancer l'analyse")
             return
         else:
             logging.info("Start parsing")

@@ -1,5 +1,6 @@
 import sys, signal
 from PyQt5.QtWidgets import QApplication
+from qt_material import apply_stylesheet
 from src import *
 
 def main():
@@ -11,7 +12,9 @@ def main():
         Handler for the SIGINT signal.
         """
         sys.stderr.write("\r")
-        if QMessageBox.question(None, "", "Are you sure you want to quit?",
+        if QMessageBox.question(None,
+                                "",
+                                "Are you sure you want to quit?",
                                 QMessageBox.Yes | QMessageBox.No,
                                 QMessageBox.No) == QMessageBox.Yes:
             window.signalHandler()
@@ -20,6 +23,7 @@ def main():
     # Create application
     _app = QApplication(sys.argv)
     window = Application()
+    apply_stylesheet(_app, theme="light_cyan_500.xml")
 
     # Signal handler
     signal.signal(signal.SIGINT, signalHandler)

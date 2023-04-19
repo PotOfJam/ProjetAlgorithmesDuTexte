@@ -1,23 +1,24 @@
 import logging
 from Bio import Entrez
+from ..app.parser_thread import emitLog
 
-def searchID(organism, search_db = "nucleotide"):
+def searchID(organism, search_db = "nucleotide", worker=None):
 
-    logging.info("Looking for organism ids...")
+    emitLog(worker, "Looking for organism ids...")
 
     # Set-up for request
     Entrez.email = "fabien.allemand@etu.unistra.fr"
 
     if organism == "":
-        logging.warning("Unable to retrieve ID(s) from search_db = " + search_db + " (no organism provided)")
+        emitLog(worker, "Unable to retrieve ID(s) from search_db = " + search_db + " (no organism provided)")
         return []
     
     handle = Entrez.esearch(db=search_db, term="(" + organism + "[Organism] AND NC_000001:NC_999999[ACCN])", retmax ="999999999", usehistory='y', idtype="acc")
     record = Entrez.read(handle)
     handle.close()
 
-    logging.info("Found %d ids to analyse:" % len(record["IdList"]))
+    emitLog(worker, "Found %d ids to analyse:" % len(record["IdList"]))
     for id in record["IdList"]:
-        logging.info("-> %s" % id)
+        emitLog(worker, "-> %s" % id)
 
     return record["IdList"]
