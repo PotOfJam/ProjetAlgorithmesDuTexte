@@ -140,11 +140,11 @@ class Application(QMainWindow):
         Change the progress bar.
         """
         # self.organismProgressBar.setValue(self.nb_parsed_organisms)
-        # self.organismProgressBar.setMaximum(self.nb_organisms_to_parse + 1)
+        # self.organismProgressBar.setMaximum(self.nb_organisms_to_parse)
         # self.organismProgressBar.setFormat("%v / %m")
 
         self.fileProgressBar.setValue(self.nb_parsed_files)
-        self.fileProgressBar.setMaximum(self.nb_files_to_parse + 1)
+        self.fileProgressBar.setMaximum(self.nb_files_to_parse)
         self.fileProgressBar.setFormat("%v / %m")
 
     def onButtonClicked(self):
@@ -227,14 +227,17 @@ class Application(QMainWindow):
             self.threadpool.start(worker)
             self.nb_running_threads += 1
 
-    def threadWork(self, progress_callback, parsing_attribute):
+    def threadWork(self, progress_callback, parsing_attribute, worker=None):
         # progress_callback.emit()
-        organism_path, id, organism = parsing_attribute
+        organism_path, id, organism, worker = parsing_attribute
         logging.info("Start parsing file: %s" % id)
-        record = fetch.fetchFromID(id)
+        emitLog(worker, "XXXXX Start parsing file: %s" % id)
+        record = fetch.fetchFromID(id, worker=worker)
         if record is not None:
-            feature_parser.parseFeatures(
-                self.region_type, organism_path, id, organism, record)
+            feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record)
+
+    def threadLog(self, message):
+        logging.info(message)
 
     def threadComplete(self):
         logging.info("Thread complete")
@@ -277,10 +280,10 @@ class Application(QMainWindow):
         for parsing_attribute in parsing_attributes:
             # Pass the function to execute
             # Any other args, kwargs are passed to the run function
-            worker = Worker(self.threadWork,
-                            parsing_attribute=parsing_attribute)
+            worker = Worker(self.threadWork, parsing_attribute=parsing_attribute)
             worker.signals.result.connect(self.threadResult)
             worker.signals.finished.connect(self.threadComplete)
+            worker.signals.log.connect(self.threadLog)
 
             # Start the thread
             self.addWorker(worker)

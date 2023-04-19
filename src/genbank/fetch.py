@@ -2,9 +2,12 @@ import logging, traceback
 from Bio import Entrez, SeqIO
 import random
 
-def fetchFromID(id, fetch_db="nuccore", rettype="gbwithparts"):
+from ..app.parser_thread import emitLog
 
-    logging.info("Fetching data from GenBank database...(please wait)")
+def fetchFromID(id, fetch_db="nuccore", rettype="gbwithparts", worker=None):
+
+    # logging.info("Fetching data from GenBank database...(please wait)")
+    emitLog(worker, "XXXXXXX Fetching data from GenBank database...(please wait)")
 
     # Set-up for request
     Entrez.email = "fabien.allemand@etu.unistra.fr"
