@@ -5,15 +5,12 @@
 *.fasta
 *.txt
 
-.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+*/__pycache__/*
+*.pyc
 
 Results/*
 !Results/README.md
 
 !test/*.txt
 
-__pycache__/*
-*.pyc
-
-.ipynb_checkpoints/*
-*/__pycache__/*
