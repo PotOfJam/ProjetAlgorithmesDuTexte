@@ -18,7 +18,6 @@ def parseFeatures(region_type, path, id, organism, record, worker=None):
 
     # Initialize variables
     file_name = id.split(".")[0]
-    print("TEST:", file_name)
     DNA = None
     DNA_length = -1
 

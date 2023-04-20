@@ -99,7 +99,7 @@ def writeCDS(CDS_info, worker=None):
 
     # Sequence description
     try:
-        sequence_description_text = CDS_info["type"] + " " + CDS_info["organism"] + " " + CDS_info["id"] + ": "
+        sequence_description_text = CDS_info["type"] + " " + CDS_info["organism"].replace("_", " ") + " " + CDS_info["file_name"] + ": "
         if CDS_info["strand"] == -1:
             sequence_description_text += "complement("
         if len(CDS_info["location"]) == 1:
@@ -149,7 +149,7 @@ def writeIntron(intron_info, worker=None):
 
     # Sequence description
     try:
-        sequence_description_text = intron_info["type"] + " " + intron_info["organism"] + " " + intron_info["id"] + ": "
+        sequence_description_text = intron_info["type"] + " " + intron_info["organism"].replace("_", " ") + " " + intron_info["file_name"] + ": "
         if intron_info["strand"] == -1:
             sequence_description_text += "complement("
         sequence_description_text += "join("

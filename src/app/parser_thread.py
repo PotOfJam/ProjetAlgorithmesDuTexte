@@ -119,7 +119,6 @@ class Preworker(QRunnable):
                 if organism_files_to_parse > 0:
                     for id in ids:
                         parsing_attributes.append((organism_path, id, organism))
-            print(parsing_attributes)
             self.signals.result.emit(parsing_attributes)
         except:
             exctype, value = sys.exc_info()[:2]

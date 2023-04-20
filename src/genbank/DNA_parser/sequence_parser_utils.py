@@ -139,7 +139,7 @@ def writeSequence(sequence_info, worker=None):
 
     # Sequence description
     try:
-        sequence_description_text = sequence_info["type"] + " " + sequence_info["organism"] + " " + sequence_info["id"] + ": "
+        sequence_description_text = sequence_info["type"] + " " + sequence_info["organism"].replace("_", " ") + " " + sequence_info["file_name"] + ": "
         if sequence_info["strand"] == -1:
             sequence_description_text += "complement("
         if len(sequence_info["location"]) == 1:
