@@ -2,6 +2,8 @@ import sys, traceback, logging
 from PyQt5.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot, QThread
 from PyQt5.QtWidgets import QApplication
 
+from ..genbank import tree, search, fetch, feature_parser
+
 from main import TEST
 
 def emitLog(worker, message):
@@ -35,7 +37,7 @@ class WorkerSignals(QObject):
     """
     finished = pyqtSignal()
     error = pyqtSignal(tuple)
-    result = pyqtSignal(object)
+    result = pyqtSignal(list)
     progress = pyqtSignal(int)
     log = pyqtSignal(str)
 
@@ -107,7 +109,7 @@ class Preworker(QRunnable):
 
         # Add the callback to our kwargs
         self.kwargs["progress_callback"] = self.signals.progress
-        self.kwargs["parsing_attribute"] = kwargs["parsing_attribute"] + (self,)
+        self.organisms = self.kwargs["Orga"][0]
 
     @pyqtSlot()
     def run(self):
@@ -116,11 +118,26 @@ class Preworker(QRunnable):
         """
         # Retrieve args/kwargs here and fire processing using them
         try:
+            parsing_attributes = []
 
-            result = self.fn(*self.args, **self.kwargs)
+            for organism, organism_path in self.organisms:
+                #logging.info("Start parsing organism: %s" % organism)
+                ids = search.searchID(organism)
+                if ids == []:
+                    #logging.warning("Did not find any NC corresponding to organism: %s" % organism)
+                    #logging.info("Fin de l'analyse des fichiers sélectionnés")
+                    break
+                organism_files_to_parse = tree.needParsing(organism_path, ids) # AMELIORABLE ?
+                #logging.info("Organism %s has %d file(s) that need(s) to be parsed" % (organism, organism_files_to_parse))
+                if organism_files_to_parse > 0:
+                    self.nb_organisms_to_parse += 1
+                    self.nb_files_to_parse += organism_files_to_parse
+                    for id in ids:
+                        parsing_attributes.append((organism_path, id, organism))
+            
         except:
             traceback.print_exc()
             exctype, value = sys.exc_info()[:2]
             self.signals.error.emit((exctype, value, traceback.format_exc()))
         finally:
-            self.signals.result.emit(result)  # Done
+            self.signals.result.emit(parsing_attributes)  # Done

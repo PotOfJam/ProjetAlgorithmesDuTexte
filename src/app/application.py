@@ -251,46 +251,9 @@ class Application(QMainWindow):
             self.button.setText("Lancer l'analyse")
             self.button.setEnabled(True)
 
-
-    def multiThreadParsing(self, organisms):
-        """
-        Parse organims sequentially using multithreading.
-
-        Args:
-            organisms (list): Tuples containing the name of the organism and the path to its folder.
-        """
-        self.start_parsing_label=True
-        parsing_attributes = []
-
-        for organism, organism_path in organisms:
-            if self.start_parsing_label == False:
-                return
-            logging.info("Start parsing organism: %s" % organism)
-            ids = search.searchID(organism)
-            if ids == []:
-                logging.warning("Did not find any NC corresponding to organism: %s" % organism)
-                logging.info("Fin de l'analyse des fichiers sélectionnés")
-                self.button_state = 0
-                self.button.setText("Lancer l'analyse") # RESET BUTTON FUNCTION
-                return
-            organism_files_to_parse = tree.needParsing(organism_path, ids) # AMELIORABLE ?
-            logging.info("Organism %s has %d file(s) that need(s) to be parsed" % (
-                organism, organism_files_to_parse))
-            if organism_files_to_parse > 0:
-                self.nb_organisms_to_parse += 1
-                self.nb_files_to_parse += organism_files_to_parse
-                for id in ids:
-                    parsing_attributes.append((organism_path, id, organism))
-            else:
-                logging.info("Fin de l'analyse des fichiers sélectionnés")
-                self.button_state = 0
-                self.button.setText("Lancer l'analyse")
-                return
-
+    def threadPreparsing(self, parsing_attributes):
         t = 0
         for parsing_attribute in parsing_attributes:
-            if self.start_parsing_label == False:
-                return
             # Pass the function to execute
             # Any other args, kwargs are passed to the run function
             worker = Worker(self.threadWork, parsing_attribute=parsing_attribute)
@@ -300,9 +263,19 @@ class Application(QMainWindow):
             # Start the thread
             self.addWorker(worker)
             logging.info("Starting thread %d" % t)
-            t += 1
-        self.start_parsing_label=False
-        return
+            t += 1        
+
+    def multiThreadParsing(self, organisms):
+        """
+        Parse organims sequentially using multithreading.
+
+        Args:
+            organisms (list): Tuples containing the name of the organism and the path to its folder.
+        """
+        pre_worker = Preworker(None, organisms=organisms)
+        pre_worker.signals.result.connect(self.threadComplete)
+        pre_worker.signals.log.connect(self.threadPreparsing)
+        self.threadpool.start(pre_worker)
 
     def startParsing(self):
         """
