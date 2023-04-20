@@ -1,26 +1,8 @@
-<<<<<<< HEAD
 import sys, traceback
 from PyQt5.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
+from ..genbank.search import searchID
+from ..genbank.tree import needParsing
 from .logger import Log
-=======
-import sys, traceback, logging
-from PyQt5.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot, QThread
-from PyQt5.QtWidgets import QApplication
-
-from ..genbank import tree, search, fetch, feature_parser
-
-from main import TEST
-
-def emitLog(worker, message):
-    global TEST
-    if not TEST:
-        if(QThread.currentThread() == QApplication.instance().thread()):
-            logging.info(message)
-        else:
-            worker.signals.log.emit(message)
-        return
-
->>>>>>> 8bdaae68c5cdb62a269a3e3da8bf0dd75bd7a7f3
 
 class WorkerSignals(QObject):
     """
@@ -128,12 +110,12 @@ class Preworker(QRunnable):
 
             for organism, organism_path in self.organisms:
                 #logging.info("Start parsing organism: %s" % organism)
-                ids = search.searchID(organism)
+                ids = searchID(organism)
                 if ids == []:
                     #logging.warning("Did not find any NC corresponding to organism: %s" % organism)
                     #logging.info("Fin de l'analyse des fichiers sélectionnés")
                     break
-                organism_files_to_parse = tree.needParsing(organism_path, ids) # AMELIORABLE ?
+                organism_files_to_parse = needParsing(organism_path, ids) # AMELIORABLE ?
                 #logging.info("Organism %s has %d file(s) that need(s) to be parsed" % (organism, organism_files_to_parse))
                 if organism_files_to_parse > 0:
                     self.nb_organisms_to_parse += 1
