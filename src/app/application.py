@@ -292,7 +292,7 @@ class Application(QMainWindow):
             emitLog(Log.INFO, "Fin de l'analyse des fichiers sélectionnés")
             self.button_state = 0
             self.button.setText("Start parsing ")
-            self.button.setEnable(True)
+            self.button.setEnabled(True)
             return
         
         self.nb_files_to_parse = len(parsing_attributes)
@@ -346,6 +346,8 @@ class Application(QMainWindow):
             self.organisms_to_parse = tree.findOrganisms(self.selected_path)
             self.nb_files_to_parse = 0
             self.nb_parsed_files = 0
+            self.F_parsed_last = 0
+            self.F_TOparsed_last = 0
             self.fileProgressBar.setValue(0)
             self.fileProgressBar.setMaximum(1)
             self.updateProgressBar()
