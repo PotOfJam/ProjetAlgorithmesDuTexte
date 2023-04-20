@@ -1,4 +1,4 @@
-import os, sys, logging
+import os
 import csv
 import requests
 import pytz
@@ -6,6 +6,7 @@ from dateutil.parser import parse as parsedate
 import datetime
 
 from .fetch import *
+from ..app.logger import emitLog, Log
 
 def updateTree(overview_file="overview.txt"):
     """
@@ -33,11 +34,11 @@ def updateTree(overview_file="overview.txt"):
         # print(url_date)
         # print(file_date)
         if url_date > file_date: # NEED TO BE TESTED
-            logging.info("Updating Results file tree...")
+            emitLog(Log.INFO, "Updating Results file tree...")
             downloadAndUpdateTree(overview_file)
     # Download overview file and create tree
     else:
-        logging.info("Creating Results file tree...")
+        emitLog(Log.INFO, "Creating Results file tree...")
         downloadAndUpdateTree(overview_file)
 
 
@@ -54,7 +55,7 @@ def downloadAndUpdateTree(overview_file):
     try:
         open(overview_file, "wb").write(r.content)
     except:
-        logging.error("No such file: " + overview_file)
+        emitLog(Log.ERROR, "No such file: " + overview_file)
         return
 
     # Parse tree description file and create tree
@@ -67,7 +68,7 @@ def downloadAndUpdateTree(overview_file):
                 organism = organism.replace("?", "").replace("/", "").replace("[", "").replace("]", "")
                 os.makedirs(os.path.join("Results", "Organisme", kingdom, group, subgroup, organism), exist_ok=True)  # Ignore existing folders
             except:
-                logging.warning("Invalid overview line: %s" % row)
+                emitLog(Log.WARNING, "Invalid overview line: %s" % row)
 
 def findSubFolders(path):
     """
@@ -84,7 +85,7 @@ def findSubFolders(path):
     try:
         sub_folders = [sub_folder for sub_folder in os.listdir(path) if os.path.isdir(os.path.join(path, sub_folder))]
     except Exception as e:
-        logging.error(e)
+        emitLog(Log.ERROR, e)
         return []
     
     for sub_folder in sub_folders:
@@ -129,7 +130,7 @@ def findOrganisms(selected_folder_path):
     Returns:
         list: Tuples containing the name of the organism and the path to its folder.
     """
-    logging.info("Looking for organism(s) in the selected folder...")
+    emitLog(Log.INFO, "Looking for organism(s) in the selected folder...")
 
     organisms = []
 
@@ -137,9 +138,9 @@ def findOrganisms(selected_folder_path):
     for path in organisms_paths:
         organisms.append((os.path.basename(os.path.normpath(path)), path))
 
-    logging.info("Found %d organisms to analyse:" % len(organisms))
+    emitLog(Log.INFO, "Found %d organisms to analyse:" % len(organisms))
     for organism, _ in organisms:
-        logging.info("-> %s" % organism)
+        emitLog(Log.INFO, "-> %s" % organism)
 
     return organisms
 
@@ -168,7 +169,7 @@ def convertRecordDate(modification_date):
 
 def findLastUpdateDate(ids):
     """
-    Find the date at wich the organism (all GenBank files) has been last modified in the GenBank database.
+    Find the date at which the organism (all GenBank files) has been last modified in the GenBank database.
 
     Args:
         ids (list): List of GenBank IDs related to an organism.
@@ -177,7 +178,7 @@ def findLastUpdateDate(ids):
         datetime.datetime: Last modification date.
     """
 
-    logging.info("Looking for last update on GenBank...")
+    emitLog(Log.INFO, "Looking for last update on GenBank...")
 
     last_modification_date = None
     for id in ids:
@@ -195,7 +196,7 @@ def findLastUpdateDate(ids):
 
 def findLastParsingDate(path):
     """
-    Find the date at wich the organism (all parsing results files) has been last modified in the local "Result" folder.
+    Find the date at which the organism (all parsing results files) has been last modified in the local "Result" folder.
 
     Args:
         path (string): Path of the organism's folder.
@@ -204,14 +205,14 @@ def findLastParsingDate(path):
         datetime.datetime: Last modification date.
     """
 
-    logging.info("Looking for last local update...")
+    emitLog(Log.INFO, "Looking for last local update...")
 
     # Find files in directory
     files = []
     try:
         files = [file for file in os.listdir(path) if os.path.isfile(os.path.join(path, file))]
     except Exception as e:
-        logging.error(e)
+        emitLog(Log.ERROR, e)
         return
 
     # Find date
@@ -242,21 +243,21 @@ def needParsing(organism_path, ids):
 
     # Never parsed
     if organism_files == []:
-        logging.info("Organism was never parsed, all files need to be parsed...")
+        emitLog(Log.INFO, "Organism was never parsed, all files need to be parsed...")
         return len(ids)
     
     # Already parsed, check for update...    
     # Genbank date
     last_update_date = findLastUpdateDate(ids)
-    logging.info("Last GenBank update: %s" % last_update_date)
+    emitLog(Log.INFO, "Last GenBank update: %s" % last_update_date)
 
     # Parsing date
     last_parsing_date = findLastParsingDate(organism_path)
-    logging.info("Last local update: %s" % last_parsing_date)
+    emitLog(Log.INFO, "Last local update: %s" % last_parsing_date)
 
     # Parsing needs to be updated
     if last_parsing_date is None or last_update_date is None:
-        logging.warning("Invalid date")
+        emitLog(Log.WARNING, "Invalid date")
         return 0
     if last_parsing_date < last_update_date:
         return len(ids)

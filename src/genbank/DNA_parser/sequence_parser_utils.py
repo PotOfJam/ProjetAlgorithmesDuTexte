@@ -1,27 +1,48 @@
 import os, logging, traceback
-from ...app.parser_thread import emitLog
+from ...app.logger import emitLog, Log
 
 def incorrectSequenceLocation(start_location, end_location, DNA_length, worker=None):
+    """
+    Check if the sequence location is correct.
 
+    Args:
+        start_location (_type_): _description_
+        end_location (_type_): _description_
+        DNA_length (_type_): _description_
+        worker (_type_, optional): _description_. Defaults to None.
+
+    Returns:
+        _type_: _description_
+    """
     # Invalid location (not int)
     if ("<" in str(start_location)) or (">" in str(start_location)) or ("<" in str(end_location)) or (">" in str(end_location)):
-        emitLog(worker, "Invalid sequence start/end location (%s,%s)" % (start_location, end_location))
+        emitLog(Log.WARNING, "Invalid sequence start/end location (%s,%s)" % (start_location, end_location), worker)
         return True
     # Incorrect start location
     if start_location < 0:
-        emitLog(worker, "Incorrect sequence start location (%d,%d) (start_location < 0)" % (start_location, end_location))
+        emitLog(Log.WARNING, "Incorrect sequence start location (%d,%d) (start_location < 0)" % (start_location, end_location), worker)
         return True
     if end_location > DNA_length:
-        emitLog(worker, "Incorrect sequence end location (%d,%d) (end_location > DNA_seq_len)" % (start_location, end_location))
+        emitLog(Log.WARNING, "Incorrect sequence end location (%d,%d) (end_location > DNA_seq_len)" % (start_location, end_location), worker)
         return True
     if end_location <= start_location:
-        emitLog(worker, "Incorrect sequence start/end location (%d,%d) (end_location <= start_location)" % (start_location, end_location))
+        emitLog(Log.WARNING, "Incorrect sequence start/end location (%d,%d) (end_location <= start_location)" % (start_location, end_location), worker)
         return True
     return False
 
 
 def sequenceLocation(feature, DNA_length, worker=None):
+    """
 
+
+    Args:
+        feature (_type_): _description_
+        DNA_length (_type_): _description_
+        worker (_type_, optional): _description_. Defaults to None.
+
+    Returns:
+        _type_: _description_
+    """
     # Initialise variable
     sequence_location = []
 
@@ -31,7 +52,7 @@ def sequenceLocation(feature, DNA_length, worker=None):
             for part_location in feature.location.parts:
                 start_location = part_location.start
                 end_location = part_location.end
-                emitLog(worker, "location = " + str(start_location) + "," + str(end_location))
+                emitLog(Log.INFO, "location = " + str(start_location) + "," + str(end_location), worker)
                 if incorrectSequenceLocation(start_location, end_location, DNA_length, worker=worker):
                     return []
                 sequence_location.append((int(start_location), int(end_location)))
@@ -43,12 +64,12 @@ def sequenceLocation(feature, DNA_length, worker=None):
         else:
             start_location = feature.location.start
             end_location = feature.location.end
-            emitLog(worker, "location = " + str(start_location) + "," + str(end_location))
+            emitLog(Log.INFO, "location = " + str(start_location) + "," + str(end_location), worker)
             if incorrectSequenceLocation(start_location, end_location, DNA_length, worker=worker):
                 return []
             sequence_location.append((int(start_location), int(end_location)))
     except:
-        emitLog(worker, "Unable to find sequence location")
+        emitLog(Log.ERROR, "Unable to find sequence location", worker)
     
     return sequence_location
 
@@ -91,19 +112,19 @@ def incorrectSequence(DNA_sequence, sequence_type, worker=None):
     
     # Invalid start codon
     if sequence_type in ["CDS"] and start_codon not in valid_start_codon:
-        emitLog(worker, "Invalid start codon (%s)" % start_codon)
+        emitLog(Log.WARNING, "Invalid start codon (%s)" % start_codon, worker)
         return True
     # Invalid end codon
     if sequence_type in ["CDS"] and end_codon not in valid_end_codon:
-        emitLog(worker, "Invalid end codon (%s)" % end_codon)
+        emitLog(Log.WARNING, "Invalid end codon (%s)" % end_codon, worker)
         return True
     # Invalid length
     if sequence_type in ["CDS"] and len(DNA_sequence) % 3 != 0:
-        emitLog(worker, "Invalid sequence length")
+        emitLog(Log.WARNING, "Invalid sequence length", worker)
         return True
     # Invalid DNA base
     if not all(base in "ATGC" for base in DNA_sequence):
-        emitLog(worker, "Invalid base in sequence")
+        emitLog(Log.WARNING, "Invalid base in sequence", worker)
         return True
 
     return False
@@ -114,7 +135,7 @@ def writeSequence(sequence_info, worker=None):
     try:
         file_path = os.path.join(sequence_info["path"], sequence_info["type"] + "_" + sequence_info["organism"] + "_" + sequence_info["file_name"] + ".txt" )
     except:
-        emitLog(worker, "PROBLEME 1")
+        emitLog(Log.ERROR, "Invalid file path", worker)
 
     # Sequence description
     try:
@@ -132,7 +153,7 @@ def writeSequence(sequence_info, worker=None):
         if sequence_info["strand"] == -1:
             sequence_description_text += ")"
     except:
-        emitLog(worker, "PROBLEME 2")
+        emitLog(Log.ERROR, "Invalid sequence description", worker)
 
     try:
         # Write full sequence
@@ -141,5 +162,5 @@ def writeSequence(sequence_info, worker=None):
                 file.write(sequence_description_text + "\n")
                 file.write(str(sequence_info["DNA_sequence"]) + "\n")
     except:
-        emitLog(worker, traceback.format_exc())
-        emitLog(worker, "Unable to write in file: " + file_path)
+        emitLog(Log.ERROR, traceback.format_exc(), worker)
+        emitLog(Log.ERROR, "Unable to write in file: " + file_path, worker)

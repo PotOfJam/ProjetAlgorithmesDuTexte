@@ -55,5 +55,6 @@ This program is a utility tool to facilitate access to this database. The user-f
 - Samuel & Fabien:
     - [ ] Niveaux de log
     - [ ] Arrêt du parsing
-    - [ ] Fix UI 
+    - [ ] Fix UI *
+    - [ ] Fix NC version
     - [ ] Documentation (code + README)

@@ -2,12 +2,11 @@ import logging, traceback
 from Bio import Entrez, SeqIO
 import time, random
 
-from ..app.parser_thread import emitLog
+from ..app.logger import emitLog, Log
 
 def fetchFromID(id, fetch_db="nuccore", rettype="gbwithparts", worker=None):
 
-    # emitLog(worker, "Fetching data from GenBank database...(please wait)")
-    emitLog(worker, "Fetching data from GenBank database...(please wait)")
+    emitLog(Log.INFO, "Fetching data from GenBank database...(please wait)", worker)
 
     # Set-up for request
     Entrez.email = "fabien.allemand@etu.unistra.fr"
@@ -23,17 +22,17 @@ def fetchFromID(id, fetch_db="nuccore", rettype="gbwithparts", worker=None):
             handle = Entrez.efetch(db=fetch_db, id=id, rettype=rettype, retmode="text")
         except IOError:
             delay += random.uniform(0, 0.5)
-            emitLog(worker, "Unable to fetch id = " + str(id) + " from fetch_db = " + fetch_db + ", retrying in " + str(delay) + " seconds")
+            emitLog(Log.ERROR, "Unable to fetch id = " + str(id) + " from fetch_db = " + fetch_db + ", retrying in " + str(delay) + " seconds", worker)
             time.sleep(delay)
         except:
-            print(traceback.format_exc())
-            emitLog(worker, "Unable to fetch id = " + str(id) + " from fetch_db = " + fetch_db)
+            emitLog(Log.ERROR, traceback.format_exc(), worker)
+            emitLog(Log.ERROR, "Unable to fetch id = " + str(id) + " from fetch_db = " + fetch_db, worker)
             if(handle!=None):
                 # Close record
                 try:
                     handle.close()
                 except:
-                    emitLog(worker, "Unable to close handle")
+                    emitLog(Log.ERROR, "Unable to close handle", worker)
                     return
             return
         else:
@@ -44,14 +43,14 @@ def fetchFromID(id, fetch_db="nuccore", rettype="gbwithparts", worker=None):
     try:
         record = SeqIO.read(handle, "genbank")
     except:
-        emitLog(worker, "Unable to read id = " + str(id))
+        emitLog(Log.ERROR, "Unable to read id = " + str(id), worker)
         return
 
     # Close record
     try:
         handle.close()
     except:
-        emitLog(worker, "Unable to close handle")
+        emitLog(Log.ERROR, "Unable to close handle", worker)
         return
 
     return record
