@@ -4,7 +4,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-from main import TEST
+import sys
 
 class Log(Enum):
     """
@@ -26,8 +26,7 @@ def emitLog(level, message, worker=None):
         message (str): Logging message.
         worker (worker, optional): Worker thread. Defaults to None.
     """
-    global TEST
-    if not TEST:
+    if "pytest" not in sys.modules:
         if(QThread.currentThread() == QApplication.instance().thread()):
             if level.value == Log.ERROR.value:
                 logging.error(message)
