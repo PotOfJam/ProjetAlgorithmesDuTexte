@@ -169,7 +169,7 @@ def convertRecordDate(modification_date):
 
 def findLastUpdateDate(ids):
     """
-    Find the date at wich the organism (all GenBank files) has been last modified in the GenBank database.
+    Find the date at which the organism (all GenBank files) has been last modified in the GenBank database.
 
     Args:
         ids (list): List of GenBank IDs related to an organism.
@@ -196,7 +196,7 @@ def findLastUpdateDate(ids):
 
 def findLastParsingDate(path):
     """
-    Find the date at wich the organism (all parsing results files) has been last modified in the local "Result" folder.
+    Find the date at which the organism (all parsing results files) has been last modified in the local "Result" folder.
 
     Args:
         path (string): Path of the organism's folder.
