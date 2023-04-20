@@ -128,12 +128,19 @@ class Application(QMainWindow):
         self.NONE.toggled.connect(self.onChecked_NONE)
         self.ALL.toggled.connect(self.onChecked_ALL)
 
-        # Readme
+        # markdown
         text_read = self.textEdit
         text_read.setReadOnly(True)
         with open('README.md', encoding='utf8') as f:
             markdown = f.read()
             text_read.setMarkdown(markdown)
+
+        # progress bar init
+        self.F_parsed_last=self.nb_parsed_files
+        self.F_TOparsed_last=self.nb_files_to_parse
+
+        chaine="Scanned files: "+str(self.nb_parsed_files)+"/"+str(self.nb_files_to_parse)
+        self.label_9.setText(chaine)
 
     def updateProgressBar(self):
         """
@@ -142,10 +149,30 @@ class Application(QMainWindow):
         # self.organismProgressBar.setValue(self.nb_parsed_organisms)
         # self.organismProgressBar.setMaximum(self.nb_organisms_to_parse)
         # self.organismProgressBar.setFormat("%v / %m")
+        #chaine="Scanned organisms: "+str(self.nb_parsed_organisms)+"/"+str(self.nb_organisms_to_parse)
+        #self.label_9.setText(chaine)
 
-        self.fileProgressBar.setValue(self.nb_parsed_files)
-        self.fileProgressBar.setMaximum(self.nb_files_to_parse)
-        self.fileProgressBar.setFormat("%v / %m")
+        advance = self.nb_parsed_files   - self.F_parsed_last
+        max     = self.nb_files_to_parse - self.F_TOparsed_last
+
+        self.F_parsed_last=self.nb_parsed_files
+
+        if self.button_state == 0:
+
+            self.fileProgressBar.setValue(max)
+            self.fileProgressBar.setMaximum(max)
+            chaine="autre Scanned files: "+str(max)+"/"+str(max)
+            self.label_9.setText(chaine)
+
+            self.F_TOparsed_last=self.nb_files_to_parse
+        else:
+
+            self.fileProgressBar.setValue(advance)
+            self.fileProgressBar.setMaximum(max)
+            self.fileProgressBar.setFormat("%v / %m")
+            chaine="Scanned files: "+str(advance)+"/"+str(max)
+            self.label_9.setText(chaine)
+            
 
     def onButtonClicked(self):
         """
@@ -159,6 +186,7 @@ class Application(QMainWindow):
             self.button_state = 0
             self.button.setText("Lancer l'analyse")
             self.stopParsing()
+            self.updateProgressBar()
 
     def onTreeViewClicked(self, index):
         """

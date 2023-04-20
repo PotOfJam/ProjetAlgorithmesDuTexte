@@ -35,6 +35,7 @@ This program is a utility tool to facilitate access to this database. The user-f
 - LEBOT Samuel
 - VLAYKOV Mathéo
 
+## 👥 Logo
 <p align="center">
   <img src="logo.png" />
 </p>
