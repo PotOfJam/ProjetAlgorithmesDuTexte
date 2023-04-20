@@ -41,6 +41,7 @@ class Application(QMainWindow):
         self.nb_files_to_parse = 0
         self.nb_parsed_organisms = 0
         self.nb_parsed_files = 0
+        self.start_parsing_label = False
 
         # Load the ui file
         uic.loadUi("src/app/application.ui", self)
@@ -248,6 +249,8 @@ class Application(QMainWindow):
             logging.info("Fin de l'analyse des fichiers sélectionnés")
             self.button_state = 0
             self.button.setText("Lancer l'analyse")
+            self.button.setEnabled(True)
+
 
     def multiThreadParsing(self, organisms):
         """
@@ -256,10 +259,12 @@ class Application(QMainWindow):
         Args:
             organisms (list): Tuples containing the name of the organism and the path to its folder.
         """
+        self.start_parsing_label=True
         parsing_attributes = []
-        self.threads = []
 
         for organism, organism_path in organisms:
+            if self.start_parsing_label == False:
+                return
             logging.info("Start parsing organism: %s" % organism)
             ids = search.searchID(organism)
             if ids == []:
@@ -276,9 +281,16 @@ class Application(QMainWindow):
                 self.nb_files_to_parse += organism_files_to_parse
                 for id in ids:
                     parsing_attributes.append((organism_path, id, organism))
+            else:
+                logging.info("Fin de l'analyse des fichiers sélectionnés")
+                self.button_state = 0
+                self.button.setText("Lancer l'analyse")
+                return
 
         t = 0
         for parsing_attribute in parsing_attributes:
+            if self.start_parsing_label == False:
+                return
             # Pass the function to execute
             # Any other args, kwargs are passed to the run function
             worker = Worker(self.threadWork, parsing_attribute=parsing_attribute)
@@ -289,6 +301,8 @@ class Application(QMainWindow):
             self.addWorker(worker)
             logging.info("Starting thread %d" % t)
             t += 1
+        self.start_parsing_label=False
+        return
 
     def startParsing(self):
         """
@@ -313,9 +327,15 @@ class Application(QMainWindow):
             self.multiThreadParsing(self.organisms_to_parse)
 
     def stopParsing(self):
-        
+        logging.info("Stopping the parsing")
+        if(self.nb_running_threads != 0):
+            self.button.setEnabled(False)
+            self.button.setText("Halting parsing")
+        self.worker_queue = Queue()
+        self.start_parsing_label = False
+
         logging.info("Stop parsing")
-        pass
+        return
 
     def signalHandler(self):
         """
