@@ -157,7 +157,7 @@ class Application(QMainWindow):
             self.startParsing()
         else:
             self.button_state = 0
-            self.button.setText("Lancer l'analyse")
+            self.button.setText("Start parsing ")
             self.stopParsing()
 
     def onTreeViewClicked(self, index):
@@ -244,12 +244,23 @@ class Application(QMainWindow):
         self.processQueue()
         self.updateProgressBar()
         if self.worker_queue.empty() and self.nb_running_threads==0:
-            logging.info("Fin de l'analyse des fichiers sélectionnés")
+            emitLog(Log.INFO, "Fin de l'analyse des fichiers sélectionnés")
             self.button_state = 0
-            self.button.setText("Lancer l'analyse")
+            self.button.setText("Start parsing ")
             self.button.setEnabled(True)
 
     def threadPreparsing(self, parsing_attributes):
+        """_summary_
+
+        Args:
+            parsing_attributes (_type_): _description_
+        """
+        if parsing_attributes == []:
+            emitLog(Log.INFO, "Fin de l'analyse des fichiers sélectionnés")
+            self.button_state = 0
+            self.button.setText("Start parsing ")
+            return
+        
         emitLog(Log.INFO, "Starting workers to parse files...")
         t = 0
         self.nb_files_to_parse = len(parsing_attributes)
@@ -287,12 +298,12 @@ class Application(QMainWindow):
         if self.selected_path == "" or not os.path.isdir(self.selected_path):
             emitLog(Log.ERROR, "Invalid path: " + self.selected_path)
             self.button_state = 0
-            self.button.setText("Lancer l'analyse")
+            self.button.setText("Start parsing ")
             return
         elif self.region_type == []:
             emitLog(Log.ERROR, "No DNA region selected")
             self.button_state = 0
-            self.button.setText("Lancer l'analyse")
+            self.button.setText("Start parsing ")
             return
         else:
             emitLog(Log.INFO, "Start parsing")

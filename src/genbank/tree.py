@@ -182,7 +182,7 @@ def findLastUpdateDate(ids, worker=None):
 
     last_modification_date = None
     for id in ids:
-        record = fetchFromID(id, rettype="genbank")
+        record = fetchFromID(id, rettype="genbank", worker=worker)
         modification_date = record.annotations["date"]
         modification_date = convertRecordDate(modification_date)
 
@@ -205,7 +205,7 @@ def findLastParsingDate(path, worker=None):
         datetime.datetime: Last modification date.
     """
 
-    emitLog(Log.INFO, "Looking for last local update...")
+    emitLog(Log.INFO, "Looking for last local update...", worker)
 
     # Find files in directory
     files = []
