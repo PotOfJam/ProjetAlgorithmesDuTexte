@@ -42,7 +42,7 @@ def updateTree(overview_file="overview.txt"):
         downloadAndUpdateTree(overview_file)
 
 
-def downloadAndUpdateTree(overview_file):
+def downloadAndUpdateTree(overview_file, worker=None):
     """
     Download latest version of the overview.txt file and update the tree in the Results folder located in the main folder.
 
@@ -55,7 +55,7 @@ def downloadAndUpdateTree(overview_file):
     try:
         open(overview_file, "wb").write(r.content)
     except:
-        emitLog(Log.ERROR, "No such file: " + overview_file)
+        emitLog(Log.ERROR, "No such file: " + overview_file, worker)
         return
 
     # Parse tree description file and create tree
@@ -68,9 +68,9 @@ def downloadAndUpdateTree(overview_file):
                 organism = organism.replace("?", "").replace("/", "").replace("[", "").replace("]", "")
                 os.makedirs(os.path.join("Results", "Organisme", kingdom, group, subgroup, organism), exist_ok=True)  # Ignore existing folders
             except:
-                emitLog(Log.WARNING, "Invalid overview line: %s" % row)
+                emitLog(Log.WARNING, "Invalid overview line: %s" % row, worker)
 
-def findSubFolders(path):
+def findSubFolders(path, worker=None):
     """
     Find sub-folders.
 
@@ -85,7 +85,7 @@ def findSubFolders(path):
     try:
         sub_folders = [sub_folder for sub_folder in os.listdir(path) if os.path.isdir(os.path.join(path, sub_folder))]
     except Exception as e:
-        emitLog(Log.ERROR, e)
+        emitLog(Log.ERROR, e, worker)
         return []
     
     for sub_folder in sub_folders:
@@ -93,7 +93,7 @@ def findSubFolders(path):
     return sub_folders
 
 
-def findLastSubFolders(selected_folder_path):
+def findLastSubFolders(selected_folder_path, worker=None):
     """
     Find folders at the bottom layer of the hierachy starting at a given path.
 
@@ -103,7 +103,7 @@ def findLastSubFolders(selected_folder_path):
     Returns:
         list: Paths of the sub-folders located at the bottom of the hierarchy.
     """
-    sub_folders = findSubFolders(selected_folder_path)
+    sub_folders = findSubFolders(selected_folder_path, worker)
     
     # Selected folder does not contain any sub-folder
     if sub_folders == []:
@@ -120,7 +120,7 @@ def findLastSubFolders(selected_folder_path):
     return sub_folders
 
 
-def findOrganisms(selected_folder_path):
+def findOrganisms(selected_folder_path, worker=None):
     """
     Find organisms contained in a given folder.
 
@@ -130,17 +130,17 @@ def findOrganisms(selected_folder_path):
     Returns:
         list: Tuples containing the name of the organism and the path to its folder.
     """
-    emitLog(Log.INFO, "Looking for organism(s) in the selected folder...")
+    emitLog(Log.INFO, "Looking for organism(s) in the selected folder...", worker)
 
     organisms = []
 
-    organisms_paths = findLastSubFolders(selected_folder_path)
+    organisms_paths = findLastSubFolders(selected_folder_path, worker)
     for path in organisms_paths:
         organisms.append((os.path.basename(os.path.normpath(path)), path))
 
-    emitLog(Log.INFO, "Found %d organisms to analyse:" % len(organisms))
+    emitLog(Log.INFO, "Found %d organisms to analyse:" % len(organisms), worker)
     for organism, _ in organisms:
-        emitLog(Log.INFO, "-> %s" % organism)
+        emitLog(Log.INFO, "-> %s" % organism, worker)
 
     return organisms
 
@@ -167,7 +167,7 @@ def convertRecordDate(modification_date):
     return modification_date
 
 
-def findLastUpdateDate(ids):
+def findLastUpdateDate(ids, worker=None):
     """
     Find the date at which the organism (all GenBank files) has been last modified in the GenBank database.
 
@@ -178,11 +178,11 @@ def findLastUpdateDate(ids):
         datetime.datetime: Last modification date.
     """
 
-    emitLog(Log.INFO, "Looking for last update on GenBank...")
+    emitLog(Log.INFO, "Looking for last update on GenBank...", worker)
 
     last_modification_date = None
     for id in ids:
-        record = fetchFromID(id, rettype="genbank")
+        record = fetchFromID(id, rettype="genbank", worker=worker)
         modification_date = record.annotations["date"]
         modification_date = convertRecordDate(modification_date)
 
@@ -194,7 +194,7 @@ def findLastUpdateDate(ids):
     return last_modification_date
 
 
-def findLastParsingDate(path):
+def findLastParsingDate(path, worker=None):
     """
     Find the date at which the organism (all parsing results files) has been last modified in the local "Result" folder.
 
@@ -205,14 +205,14 @@ def findLastParsingDate(path):
         datetime.datetime: Last modification date.
     """
 
-    emitLog(Log.INFO, "Looking for last local update...")
+    emitLog(Log.INFO, "Looking for last local update...", worker)
 
     # Find files in directory
     files = []
     try:
         files = [file for file in os.listdir(path) if os.path.isfile(os.path.join(path, file))]
     except Exception as e:
-        emitLog(Log.ERROR, e)
+        emitLog(Log.ERROR, e, worker)
         return
 
     # Find date
@@ -227,13 +227,14 @@ def findLastParsingDate(path):
     return parsing_date
 
 
-def needParsing(organism_path, ids):
+def needParsing(organism_path, ids, worker=None):
     """
     Check if an organism needs to be parsed.
 
     Args:
         organism_path (str): Path of the organism's folder.
         ids (list): List of GenBank IDs related to an organism.
+        worker ():
 
     Returns:
         int: Number of GenBank files to parse.
@@ -243,21 +244,21 @@ def needParsing(organism_path, ids):
 
     # Never parsed
     if organism_files == []:
-        emitLog(Log.INFO, "Organism was never parsed, all files need to be parsed...")
+        emitLog(Log.INFO, "Organism was never parsed, all files need to be parsed...", worker)
         return len(ids)
     
     # Already parsed, check for update...    
     # Genbank date
-    last_update_date = findLastUpdateDate(ids)
-    emitLog(Log.INFO, "Last GenBank update: %s" % last_update_date)
+    last_update_date = findLastUpdateDate(ids, worker)
+    emitLog(Log.INFO, "Last GenBank update: %s" % last_update_date, worker)
 
     # Parsing date
-    last_parsing_date = findLastParsingDate(organism_path)
-    emitLog(Log.INFO, "Last local update: %s" % last_parsing_date)
+    last_parsing_date = findLastParsingDate(organism_path, worker)
+    emitLog(Log.INFO, "Last local update: %s" % last_parsing_date, worker)
 
     # Parsing needs to be updated
     if last_parsing_date is None or last_update_date is None:
-        emitLog(Log.WARNING, "Invalid date")
+        emitLog(Log.WARNING, "Invalid date", worker)
         return 0
     if last_parsing_date < last_update_date:
         return len(ids)
