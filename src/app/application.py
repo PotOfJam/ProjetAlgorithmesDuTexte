@@ -154,19 +154,20 @@ class Application(QMainWindow):
         #chaine="Scanned organisms: "+str(self.nb_parsed_organisms)+"/"+str(self.nb_organisms_to_parse)
         #self.label_9.setText(chaine)
 
+
         advance = self.nb_parsed_files   - self.F_parsed_last
         max     = self.nb_files_to_parse - self.F_TOparsed_last
 
-        self.F_parsed_last=self.nb_parsed_files
 
         if self.button_state == 0:
 
             self.fileProgressBar.setValue(max)
             self.fileProgressBar.setMaximum(max)
-            chaine="autre Scanned files: "+str(max)+"/"+str(max)
+            chaine="Scanned files: "+str(max)+"/"+str(max)
             self.label_9.setText(chaine)
 
             self.F_TOparsed_last=self.nb_files_to_parse
+            self.F_parsed_last=self.nb_parsed_files
         else:
 
             self.fileProgressBar.setValue(advance)
@@ -277,6 +278,7 @@ class Application(QMainWindow):
         if (self.worker_queue.empty() and self.nb_running_threads==0):
             logging.info("Fin de l'analyse des fichiers sélectionnés")
             self.button_state = 0
+            self.updateProgressBar()
             self.button.setText("Lancer l'analyse")
             self.button.setEnabled(True)
 
