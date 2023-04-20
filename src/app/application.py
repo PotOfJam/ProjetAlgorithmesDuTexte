@@ -244,6 +244,10 @@ class Application(QMainWindow):
         self.nb_parsed_files += 1
         self.processQueue()
         self.updateProgressBar()
+        if (self.worker_queue.empty() and self.nb_running_threads==0):
+            logging.info("Fin de l'analyse des fichiers sélectionnés")
+            self.button_state = 0
+            self.button.setText("Lancer l'analyse")
 
     def multiThreadParsing(self, organisms):
         """
@@ -285,7 +289,6 @@ class Application(QMainWindow):
             self.addWorker(worker)
             logging.info("Starting thread %d" % t)
             t += 1
-        logging.info("Fin de l'analyse des fichiers sélectionnés")
 
     def startParsing(self):
         """
@@ -305,13 +308,12 @@ class Application(QMainWindow):
             return
         else:
             logging.info("Start parsing")
+            self.fileProgressBar.setValue(0)
             self.organisms_to_parse = tree.findOrganisms(self.selected_path)
             self.multiThreadParsing(self.organisms_to_parse)
 
     def stopParsing(self):
-        """
-        Stop file parsing.
-        """
+        
         logging.info("Stop parsing")
         pass
 
