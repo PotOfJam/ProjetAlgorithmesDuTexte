@@ -157,7 +157,7 @@ class Application(QMainWindow):
             self.startParsing()
         else:
             self.button_state = 0
-            self.button.setText("Start parsing ")
+            self.button.setText("Stopping parsing")
             self.stopParsing()
 
     def onTreeViewClicked(self, index):
@@ -243,7 +243,7 @@ class Application(QMainWindow):
         self.nb_parsed_files += 1
         self.processQueue()
         self.updateProgressBar()
-        if self.worker_queue.empty() and self.nb_running_threads==0:
+        if self.worker_queue.empty() and self.nb_running_threads == 0:
             emitLog(Log.INFO, "Fin de l'analyse des fichiers sélectionnés")
             self.button_state = 0
             self.button.setText("Start parsing ")
@@ -263,8 +263,11 @@ class Application(QMainWindow):
         
         emitLog(Log.INFO, "Starting workers to parse files...")
         t = 0
+        self.start_parsing_label = True
         self.nb_files_to_parse = len(parsing_attributes)
         for parsing_attribute in parsing_attributes:
+            if not self.start_parsing_label:
+                return
             # Pass the function to execute
             # Any other args, kwargs are passed to the run function
             worker = Worker(self.threadWork, parsing_attribute=parsing_attribute)
@@ -273,8 +276,9 @@ class Application(QMainWindow):
 
             # Start the thread
             self.addWorker(worker)
-            logging.info("Starting thread %d" % t)
-            t += 1        
+            emitLog(Log.INFO, "Starting thread %d" % t)
+            t += 1
+        self.start_parsing_label = False        
 
     def multiThreadParsing(self, organisms):
         """
@@ -307,23 +311,21 @@ class Application(QMainWindow):
             return
         else:
             emitLog(Log.INFO, "Start parsing")
-            logging.info("Start parsing")
+            emitLog(Log.INFO, "Start parsing")
             self.fileProgressBar.setValue(0)
             self.organisms_to_parse = tree.findOrganisms(self.selected_path)
             self.multiThreadParsing(self.organisms_to_parse)
+        return
 
     def stopParsing(self):
         """
         Stop file parsing.
         """
-        logging.info("Stopping the parsing")
         if(self.nb_running_threads != 0):
             self.button.setEnabled(False)
-            self.button.setText("Halting parsing")
         self.worker_queue = Queue()
         self.start_parsing_label = False
-
-        logging.info("Stop parsing")
+        emitLog(Log.INFO, "Stop parsing")
         return
 
     def signalHandler(self):
@@ -339,3 +341,4 @@ class Application(QMainWindow):
                     if os.path.exists(file):
                         os.remove(file)
                         emitLog(Log.INFO, "Successfully deleted: %s" % file)
+        return
