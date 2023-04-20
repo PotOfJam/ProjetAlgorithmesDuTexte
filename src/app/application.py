@@ -1,5 +1,5 @@
 # System
-import os, time
+import os
 from queue import Queue
 
 # GUI
@@ -13,6 +13,7 @@ from .parser_thread import *
 
 # GenBank functions
 from ..genbank import tree, search, fetch, feature_parser
+from .logger import emitLog, Log
 
 
 class Application(QMainWindow):
@@ -60,10 +61,10 @@ class Application(QMainWindow):
         # Update Results file tree
         tree.updateTree()
 
-        logging.info("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+        emitLog(Log.INFO, "Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
 
     def signalHandler(self, frame):
-            print("CTRL+C")
+            emitLog(Log.WARNING, "User interupt")
             sys.exit(42)
 
     def setUpLogger(self):
@@ -169,7 +170,7 @@ class Application(QMainWindow):
         """
         mapped_index = self.sort_proxy_model.mapToSource(index)
         self.selected_path = self.model.filePath(mapped_index)
-        logging.info("Selected path: %s" % self.selected_path)
+        emitLog(Log.INFO, "Selected path: %s" % self.selected_path)
 
     def onChecked(self):
         """
@@ -199,7 +200,7 @@ class Application(QMainWindow):
             self.region_type.append("5'UTR")
 
         if(self.all_checked == False and self.none_checked == False):
-            logging.info("Selected DNA regions: " + str(self.region_type))
+            emitLog(Log.INFO, "Selected DNA regions: " + str(self.region_type))
 
     def onChecked_ALL(self):
         if(self.ALL.isChecked() and self.none_checked == False):
@@ -207,7 +208,7 @@ class Application(QMainWindow):
             for k in range(len(self.checkboxes)-2):
                 self.checkboxes[k].setChecked(True)
             self.all_checked = False
-            logging.info("Selected DNA regions: " + str(self.region_type))
+            emitLog(Log.INFO, "Selected DNA regions: " + str(self.region_type))
 
     def onChecked_NONE(self):
         if(self.NONE.isChecked() and self.all_checked == False):
@@ -215,7 +216,7 @@ class Application(QMainWindow):
             for checkbox in self.checkboxes:
                 checkbox.setChecked(False)
             self.none_checked = False
-            logging.info("Selected DNA regions: " + str(self.region_type))
+            emitLog(Log.INFO, "Selected DNA regions: " + str(self.region_type))
 
     def addWorker(self, worker):
         self.worker_queue.put(worker)
@@ -230,16 +231,16 @@ class Application(QMainWindow):
     def threadWork(self, progress_callback, parsing_attribute, worker=None):
         # progress_callback.emit()
         organism_path, id, organism, worker = parsing_attribute
-        emitLog(worker, "Start parsing file: %s" % id)
+        emitLog(Log.INFO, "Start parsing file: %s" % id, worker)
         record = fetch.fetchFromID(id, worker=worker)
         if record is not None:
             feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record, worker=worker)
 
-    def threadLog(self, message):
-        logging.info(message)
+    def threadLog(self, level, message):
+        emitLog(level, message)
 
     def threadComplete(self):
-        logging.info("Thread complete")
+        emitLog(Log.INFO, "Thread complete")
         self.nb_running_threads -= 1
         self.nb_parsed_files += 1
         self.processQueue()
@@ -256,16 +257,16 @@ class Application(QMainWindow):
         self.threads = []
 
         for organism, organism_path in organisms:
-            logging.info("Start parsing organism: %s" % organism)
+            emitLog(Log.INFO, "Start parsing organism: %s" % organism)
             ids = search.searchID(organism)
             if ids == []:
-                logging.warning("Did not find any NC corresponding to organism: %s" % organism)
-                logging.info("Fin de l'analyse des fichiers sélectionnés")
+                emitLog(Log.WARNING, "Did not find any NC corresponding to organism: %s" % organism)
+                emitLog(Log.INFO, "Fin de l'analyse des fichiers sélectionnés")
                 self.button_state = 0
                 self.button.setText("Lancer l'analyse") # RESET BUTTON FUNCTION
                 return
             organism_files_to_parse = tree.needParsing(organism_path, ids) # AMELIORABLE ?
-            logging.info("Organism %s has %d file(s) that need(s) to be parsed" % (
+            emitLog(Log.INFO, "Organism %s has %d file(s) that need(s) to be parsed" % (
                 organism, organism_files_to_parse))
             if organism_files_to_parse > 0:
                 self.nb_organisms_to_parse += 1
@@ -283,28 +284,28 @@ class Application(QMainWindow):
 
             # Start the thread
             self.addWorker(worker)
-            logging.info("Starting thread %d" % t)
+            emitLog(Log.INFO, "Starting thread %d" % t)
             t += 1
-        logging.info("Fin de l'analyse des fichiers sélectionnés")
+        emitLog(Log.INFO, "Fin de l'analyse des fichiers sélectionnés")
 
     def startParsing(self):
         """
         Start file parsing.
         """
-        logging.info("Initialising parsing")
+        emitLog(Log.INFO, "Initialising parsing")
 
         if self.selected_path == "" or not os.path.isdir(self.selected_path):
-            logging.error("Invalid path: " + self.selected_path)
+            emitLog(Log.ERROR, "Invalid path: " + self.selected_path)
             self.button_state = 0
             self.button.setText("Lancer l'analyse")
             return
         elif self.region_type == []:
-            logging.error("No DNA region selected")
+            emitLog(Log.ERROR, "No DNA region selected")
             self.button_state = 0
             self.button.setText("Lancer l'analyse")
             return
         else:
-            logging.info("Start parsing")
+            emitLog(Log.INFO, "Start parsing")
             self.organisms_to_parse = tree.findOrganisms(self.selected_path)
             self.multiThreadParsing(self.organisms_to_parse)
 
@@ -312,7 +313,7 @@ class Application(QMainWindow):
         """
         Stop file parsing.
         """
-        logging.info("Stop parsing")
+        emitLog(Log.INFO, "Stop parsing")
         pass
 
     def signalHandler(self):
@@ -320,11 +321,11 @@ class Application(QMainWindow):
         Delete all organisms files in the selected folder (self.selected_path).
         Note: Also remove files if they were created during a previous parsing. (For instance, files not needing update)
         """
-        logging.debug("Received SIGINT")
+        emitLog(Log.DEBUG, "Received SIGINT")
         if self.organisms_to_parse != [] and self.nb_files_to_parse - self.nb_parsed_files > 0:
             for organism, organism_path in self.organisms_to_parse:
                 files = [file for file in os.listdir(organism_path) if os.path.isfile(file)]
                 for file in files:
                     if os.path.exists(file):
                         os.remove(file)
-                        logging.info("Successfully deleted: %s" % file)
+                        emitLog(Log.INFO, "Successfully deleted: %s" % file)

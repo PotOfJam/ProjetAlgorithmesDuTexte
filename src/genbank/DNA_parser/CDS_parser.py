@@ -1,6 +1,6 @@
 import os, logging, traceback
 from .sequence_parser_utils import *
-from ...app.parser_thread import emitLog
+from ...app.logger import emitLog, Log
 
 def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, intron_flag, worker=None):
 
@@ -40,13 +40,13 @@ def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, 
 
     # Recreate CDS sequence
     if CDS_info["location"] == []:
-        emitLog(worker, "Incorrect sequence location: (empty location)")
+        emitLog(Log.ERROR, "Incorrect sequence location: (empty location)", worker)
         return
     elif len(CDS_info["location"]) == 1:
         intron_flag = False
         CDS_info["start"] = CDS_info["location"][0][0]
         CDS_info["end"] = CDS_info["location"][0][1]
-        emitLog(worker, "location = " + str(CDS_info["start"]) + "," + str(CDS_info["end"]))
+        emitLog(Log.INFO, "location = " + str(CDS_info["start"]) + "," + str(CDS_info["end"]), worker)
         CDS_info["DNA_sequence"] = DNA[CDS_info["start"] : CDS_info["end"]]
     else:
         CDS_info["DNA_sub_sequence"] = []
@@ -61,7 +61,7 @@ def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, 
             sub_sequence = sub_sequence.reverse_complement()
     # Check for invalid DNA sequence
     if incorrectSequence(CDS_info["DNA_sequence"], "CDS", worker=worker):
-        emitLog(worker, "Incorrect sequence")
+        emitLog(Log.ERROR, "Incorrect sequence", worker)
         return
     
     # Recreate intron(s) sequence(s)
@@ -84,12 +84,18 @@ def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, 
 
 
 def writeCDS(CDS_info, worker=None):
+    """
+    Write CDS in result file.
 
+    Args:
+        CDS_info (dict): Information relative to the CDS.
+        worker (_type_, optional): _description_. Defaults to None.
+    """
     # File path
     try:
         file_path = os.path.join(CDS_info["path"], CDS_info["type"] + "_" + CDS_info["organism"] + "_" + CDS_info["file_name"] + ".txt" )
     except:
-        emitLog(worker, "PROBLEME 1")
+        emitLog(Log.ERROR, "Invalid file path", worker)
 
     # Sequence description
     try:
@@ -107,7 +113,7 @@ def writeCDS(CDS_info, worker=None):
         if CDS_info["strand"] == -1:
             sequence_description_text += ")"
     except:
-        emitLog(worker, "PROBLEME 2")
+        emitLog(Log.ERROR, "Invalid sequence description", worker)
 
     try:
         with open(file_path, "a") as file:
@@ -123,17 +129,23 @@ def writeCDS(CDS_info, worker=None):
                 file.write(sequence_description_text + " Exon " + str(exon_id) + "\n")
                 file.write(str(subsequence) + "\n")
     except:
-        emitLog(worker, traceback.format_exc())
-        emitLog(worker, "Unable to write in file: " + file_path)
+        emitLog(Log.ERROR, traceback.format_exc(), worker)
+        emitLog(Log.ERROR, "Unable to write in file: " + file_path, worker)
 
 
 def writeIntron(intron_info, worker=None):
+    """
+    Write intron in file.
 
+    Args:
+        intron_info (dict): Information relative to the intron.
+        worker (_type_, optional): _description_. Defaults to None.
+    """
     # File path
     try:
         file_path = os.path.join(intron_info["path"], intron_info["type"] + "_" + intron_info["organism"] + "_" + intron_info["file_name"] + ".txt" )
     except:
-        emitLog(worker, "PROBLEME 1")
+        emitLog(Log.ERROR, "Invalid file path")
 
     # Sequence description
     try:
@@ -148,7 +160,7 @@ def writeIntron(intron_info, worker=None):
         if intron_info["strand"] == -1:
             sequence_description_text += ")"
     except:
-        emitLog(worker, "PROBLEME 2")
+        emitLog(Log.ERROR, "Invalid sequence description", worker)
 
     try:
         with open(file_path, "a") as file:
@@ -159,5 +171,5 @@ def writeIntron(intron_info, worker=None):
                 file.write(sequence_description_text + " Intron " + str(intron_id) + "\n")
                 file.write(str(subsequence) + "\n")
     except:
-        emitLog(worker, traceback.format_exc())
-        emitLog(worker, "Unable to write in file: " + file_path)
+        emitLog(Log.ERROR, traceback.format_exc(), worker)
+        emitLog(Log.ERROR, "Unable to write in file: " + file_path, worker)

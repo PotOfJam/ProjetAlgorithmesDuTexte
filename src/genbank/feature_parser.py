@@ -1,7 +1,7 @@
 import traceback
 from .DNA_parser.sequence_parser import parseSequence
 from .DNA_parser.CDS_parser import parseCDS
-from ..app.parser_thread import emitLog
+from ..app.logger import emitLog, Log
 
 def parseFeatures(region_type, path, id, organism, record, worker=None):
     """
@@ -14,7 +14,7 @@ def parseFeatures(region_type, path, id, organism, record, worker=None):
         organism (string): Name of the organism.
         record (...): Record (content of the GenBank file).
     """
-    emitLog(worker, "Start parsing id = " + str(id))
+    emitLog(Log.INFO, "Start parsing id = " + str(id), worker)
 
     # Initialize variables
     file_name = id.split(".")[0]
@@ -26,39 +26,39 @@ def parseFeatures(region_type, path, id, organism, record, worker=None):
         DNA = record.seq
         DNA_length = len(DNA)
     except:
-        emitLog(worker, "Unable to read DNA sequence from id = " + str(id))
+        emitLog(Log.ERROR, "Unable to read DNA sequence from id = " + str(id), worker)
 
     # Parse feature according to its type
     try:
         for feature in record.features:
             # if feature.type in region_type:
             if feature.type == "CDS" and (("CDS" in region_type) or ("intron" in region_type)):
-                emitLog(worker, "Found CDS or intron in id = " + str(id))
+                emitLog(Log.INFO, "Found CDS or intron in id = " + str(id), worker)
                 parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, "CDS" in region_type, "intron" in region_type, worker=worker)
             elif feature.type == "centromere" and "centromere" in region_type:
-                emitLog(worker, "Found centromere in id = " + str(id))
+                emitLog(Log.INFO, "Found centromere in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "centromere", worker=worker)
             elif feature.type == "mobile_element" and "mobile_element" in region_type:
-                emitLog(worker, "Found mobile_element in id = " + str(id))
+                emitLog(Log.INFO, "Found mobile_element in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "mobile_element", worker=worker)
             elif feature.type == "telomere" and "telomere" in region_type:
-                emitLog(worker, "Found telomere in id = " + str(id))
+                emitLog(Log.INFO, "Found telomere in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "telomere", worker=worker)
             elif feature.type == "3'UTR" and "3'UTR" in region_type:
-                emitLog(worker, "Found 3'UTR in id = " + str(id))
+                emitLog(Log.INFO, "Found 3'UTR in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "3'UTR", worker=worker)
             elif feature.type == "5'UTR" and "5'UTR" in region_type:
-                emitLog(worker, "Found 5'UTR in id = " + str(id))
+                emitLog(Log.INFO, "Found 5'UTR in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "5'UTR", worker=worker)
             elif feature.type == "tRNA" and "tRNA" in region_type:
-                emitLog(worker, "Found tRNA in id = " + str(id))
+                emitLog(Log.INFO, "Found tRNA in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "tRNA", worker=worker)
             elif feature.type == "rRNA" and "rRNA" in region_type:
-                emitLog(worker, "Found rRNA in id = " + str(id))
+                emitLog(Log.INFO, "Found rRNA in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "rRNA", worker=worker)
             elif feature.type == "ncRNA" and "ncRNA" in region_type:
-                emitLog(worker, "Found ncRNA in id = " + str(id))
+                emitLog(Log.INFO, "Found ncRNA in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "ncRNA", worker=worker)
     except:
-        emitLog(worker, traceback.format_exc())
-        emitLog(worker, "Unable to read feature(s) from id = " + str(id))
+        emitLog(Log.ERROR, traceback.format_exc(), worker)
+        emitLog(Log.ERROR, "Unable to read feature(s) from id = " + str(id), worker)

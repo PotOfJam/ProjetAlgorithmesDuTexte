@@ -1,18 +1,6 @@
-import sys, traceback, logging
-from PyQt5.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot, QThread
-from PyQt5.QtWidgets import QApplication
-
-from main import TEST
-
-def emitLog(worker, message):
-    global TEST
-    if not TEST:
-        if(QThread.currentThread() == QApplication.instance().thread()):
-            logging.info(message)
-        else:
-            worker.signals.log.emit(message)
-        return
-
+import sys, traceback
+from PyQt5.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
+from .logger import Log
 
 class WorkerSignals(QObject):
     """
@@ -37,7 +25,7 @@ class WorkerSignals(QObject):
     error = pyqtSignal(tuple)
     result = pyqtSignal(object)
     progress = pyqtSignal(int)
-    log = pyqtSignal(str)
+    log = pyqtSignal(Log, str)
 
 
 class Worker(QRunnable):

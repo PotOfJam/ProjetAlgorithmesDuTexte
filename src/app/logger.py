@@ -1,8 +1,46 @@
 import logging
+from enum import Enum
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
+from main import TEST
+
+class Log(Enum):
+    """
+    Logging level.
+    """
+    ERROR = 0
+    WARNING = 1     
+    INFO = 2
+    DEBUG = 3
+
+def emitLog(level, message, worker=None):
+    """
+    Multi porpose logging function.
+    If called from current thread: Use logging to write message in log.
+    If called from worker thread: Emit signal to send log message to application thread.
+
+    Args:
+        level (Log): Logging level.
+        message (str): Logging message.
+        worker (worker, optional): Worker thread. Defaults to None.
+    """
+    global TEST
+    if not TEST:
+        if(QThread.currentThread() == QApplication.instance().thread()):
+            if level.value == Log.ERROR.value:
+                logging.error(message)
+            elif level.value == Log.WARNING.value:
+                logging.warning(message)
+            elif level.value == Log.INFO.value:
+                logging.info(message)
+            elif level.value == Log.DEBUG.value:
+                logging.debug(message)
+            else:
+                logging.error("Invalid log level for message: " + message)
+        else:
+            worker.signals.log.emit(level, message)
 
 class CustomFormatter(logging.Formatter):
     FORMATS = {
