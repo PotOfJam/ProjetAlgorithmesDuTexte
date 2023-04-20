@@ -8,11 +8,13 @@ from PyQt5 import uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+
+# Log and Thread
 from .logger import CustomFormatter, QPlainTextEditLogger
 from .parser_thread import *
 
 # GenBank functions
-from ..genbank import tree, search, fetch, feature_parser
+from ..genbank import tree, fetch, feature_parser
 from .logger import emitLog, Log
 
 
@@ -141,10 +143,6 @@ class Application(QMainWindow):
         """
         Change the progress bar.
         """
-        # self.organismProgressBar.setValue(self.nb_parsed_organisms)
-        # self.organismProgressBar.setMaximum(self.nb_organisms_to_parse)
-        # self.organismProgressBar.setFormat("%v / %m")
-
         self.fileProgressBar.setValue(self.nb_parsed_files)
         self.fileProgressBar.setMaximum(self.nb_files_to_parse)
         self.fileProgressBar.setFormat("%v / %m")
@@ -230,7 +228,6 @@ class Application(QMainWindow):
             self.nb_running_threads += 1
 
     def threadWork(self, progress_callback, parsing_attribute, worker=None):
-        # progress_callback.emit()
         organism_path, id, organism, worker = parsing_attribute
         emitLog(Log.INFO, "Start parsing file: %s" % id, worker)
         record = fetch.fetchFromID(id, worker=worker)
@@ -246,41 +243,16 @@ class Application(QMainWindow):
         self.nb_parsed_files += 1
         self.processQueue()
         self.updateProgressBar()
-        if (self.worker_queue.empty() and self.nb_running_threads==0):
+        if self.worker_queue.empty() and self.nb_running_threads==0:
             logging.info("Fin de l'analyse des fichiers sélectionnés")
             self.button_state = 0
             self.button.setText("Lancer l'analyse")
             self.button.setEnabled(True)
 
-    def multiThreadParsing(self, organisms):
-        """
-        Parse organims sequentially using multithreading.
-
-        Args:
-            organisms (list): Tuples containing the name of the organism and the path to its folder.
-        """
-        parsing_attributes = []
-        self.threads = []
-
-        for organism, organism_path in organisms:
-            emitLog(Log.INFO, "Start parsing organism: %s" % organism)
-            ids = search.searchID(organism)
-            if ids == []:
-                emitLog(Log.WARNING, "Did not find any NC corresponding to organism: %s" % organism)
-                emitLog(Log.INFO, "Fin de l'analyse des fichiers sélectionnés")
-                self.button_state = 0
-                self.button.setText("Lancer l'analyse") # RESET BUTTON FUNCTION
-                return
-            organism_files_to_parse = tree.needParsing(organism_path, ids) # AMELIORABLE ?
-            emitLog(Log.INFO, "Organism %s has %d file(s) that need(s) to be parsed" % (
-                organism, organism_files_to_parse))
-            if organism_files_to_parse > 0:
-                self.nb_organisms_to_parse += 1
-                self.nb_files_to_parse += organism_files_to_parse
-                for id in ids:
-                    parsing_attributes.append((organism_path, id, organism))
-
+    def threadPreparsing(self, parsing_attributes):
+        emitLog(Log.INFO, "Starting workers to parse files...")
         t = 0
+        self.nb_files_to_parse = len(parsing_attributes)
         for parsing_attribute in parsing_attributes:
             # Pass the function to execute
             # Any other args, kwargs are passed to the run function
@@ -290,9 +262,21 @@ class Application(QMainWindow):
 
             # Start the thread
             self.addWorker(worker)
-            emitLog(Log.INFO, "Starting thread %d" % t)
-            t += 1
-        emitLog(Log.INFO, "Fin de l'analyse des fichiers sélectionnés")
+            logging.info("Starting thread %d" % t)
+            t += 1        
+
+    def multiThreadParsing(self, organisms):
+        """
+        Parse organims sequentially using multithreading.
+
+        Args:
+            organisms (list): Tuples containing the name of the organism and the path to its folder.
+        """
+        emitLog(Log.INFO, "Start looking for files to parse...")
+        pre_worker = Preworker(None, organisms=organisms)
+        pre_worker.signals.result.connect(self.threadPreparsing)
+        pre_worker.signals.log.connect(self.threadLog)
+        self.threadpool.start(pre_worker)
 
     def startParsing(self):
         """
