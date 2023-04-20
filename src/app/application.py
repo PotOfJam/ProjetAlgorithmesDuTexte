@@ -150,12 +150,6 @@ class Application(QMainWindow):
         """
         Change the progress bar.
         """
-        # self.organismProgressBar.setValue(self.nb_parsed_organisms)
-        # self.organismProgressBar.setMaximum(self.nb_organisms_to_parse)
-        # self.organismProgressBar.setFormat("%v / %m")
-        #chaine="Scanned organisms: "+str(self.nb_parsed_organisms)+"/"+str(self.nb_organisms_to_parse)
-        #self.label_9.setText(chaine)
-
 
         advance = self.nb_parsed_files   - self.F_parsed_last
         max     = self.nb_files_to_parse - self.F_TOparsed_last
@@ -289,24 +283,27 @@ class Application(QMainWindow):
         Args:
             parsing_attributes (_type_): _description_
         """
-        if parsing_attributes == []:
-            emitLog(Log.INFO, "Fin de l'analyse des fichiers sélectionnés")
-            self.button_state = 0
-            self.button.setText("Start parsing ")
-            return
         
         emitLog(Log.INFO, "Starting workers to parse files...")
         t = 0
         self.start_parsing_label = True
+
+        if not self.start_parsing_label or parsing_attributes == []:
+            emitLog(Log.INFO, "Fin de l'analyse des fichiers sélectionnés")
+            self.button_state = 0
+            self.button.setText("Start parsing ")
+            self.button.setEnable(True)
+            return
+        
         self.nb_files_to_parse = len(parsing_attributes)
         for parsing_attribute in parsing_attributes:
-            if not self.start_parsing_label:
-                return
             # Pass the function to execute
             # Any other args, kwargs are passed to the run function
             worker = Worker(self.threadWork, parsing_attribute=parsing_attribute)
             worker.signals.finished.connect(self.threadComplete)
             worker.signals.log.connect(self.threadLog)
+            if not self.start_parsing_label:
+                return
 
             # Start the thread
             self.addWorker(worker)
@@ -345,9 +342,13 @@ class Application(QMainWindow):
             return
         else:
             emitLog(Log.INFO, "Start parsing")
-            emitLog(Log.INFO, "Start parsing")
             self.fileProgressBar.setValue(0)
             self.organisms_to_parse = tree.findOrganisms(self.selected_path)
+            self.nb_files_to_parse = 0
+            self.nb_parsed_files = 0
+            self.fileProgressBar.setValue(0)
+            self.fileProgressBar.setMaximum(1)
+            self.updateProgressBar()
             self.multiThreadParsing(self.organisms_to_parse)
         return
 
@@ -355,8 +356,8 @@ class Application(QMainWindow):
         """
         Stop file parsing.
         """
-        if(self.nb_running_threads != 0):
-            self.button.setEnabled(False)
+        
+        self.button.setEnabled(False)
         self.worker_queue = Queue()
         self.start_parsing_label = False
         emitLog(Log.INFO, "Stop parsing")
