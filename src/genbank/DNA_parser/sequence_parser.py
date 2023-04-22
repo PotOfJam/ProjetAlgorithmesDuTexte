@@ -27,7 +27,7 @@ def parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, featu
     elif len(sequence_info["location"]) == 1:
         sequence_info["start"] = sequence_info["location"][0][0]
         sequence_info["end"] = sequence_info["location"][0][1]
-        emitLog(Log.WARNING, "location = " + str(sequence_info["start"]) + "," + str(sequence_info["end"]), worker)
+        emitLog(Log.DEBUG, "location = " + str(sequence_info["start"]) + "," + str(sequence_info["end"]), worker)
         sequence_info["DNA_sequence"] = DNA[sequence_info["start"] : sequence_info["end"]]
     else:
         sequence_info["DNA_sub_sequence"] = []

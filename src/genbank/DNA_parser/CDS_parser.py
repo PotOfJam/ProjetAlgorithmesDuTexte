@@ -40,13 +40,13 @@ def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, 
 
     # Recreate CDS sequence
     if CDS_info["location"] == []:
-        emitLog(Log.ERROR, "Incorrect sequence location: (empty location)", worker)
+        emitLog(Log.WARNING, "Incorrect sequence location: (empty location)", worker)
         return
     elif len(CDS_info["location"]) == 1:
         intron_flag = False
         CDS_info["start"] = CDS_info["location"][0][0]
         CDS_info["end"] = CDS_info["location"][0][1]
-        emitLog(Log.INFO, "location = " + str(CDS_info["start"]) + "," + str(CDS_info["end"]), worker)
+        emitLog(Log.DEBUG, "location = " + str(CDS_info["start"]) + "," + str(CDS_info["end"]), worker)
         CDS_info["DNA_sequence"] = DNA[CDS_info["start"] : CDS_info["end"]]
     else:
         CDS_info["DNA_sub_sequence"] = []
@@ -61,7 +61,7 @@ def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, 
             sub_sequence = sub_sequence.reverse_complement()
     # Check for invalid DNA sequence
     if incorrectSequence(CDS_info["DNA_sequence"], "CDS", worker=worker):
-        emitLog(Log.ERROR, "Incorrect sequence", worker)
+        emitLog(Log.WARNING, "Incorrect sequence", worker)
         return
     
     # Recreate intron(s) sequence(s)
@@ -89,7 +89,7 @@ def writeCDS(CDS_info, worker=None):
 
     Args:
         CDS_info (dict): Information relative to the CDS.
-        worker (_type_, optional): _description_. Defaults to None.
+        worker (Worker, optional): Worker to execute function on a thread. Defaults to None.
     """
     # File path
     try:

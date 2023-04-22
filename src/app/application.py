@@ -135,7 +135,7 @@ class Application(QMainWindow):
         self.log_file = "application.log"
         if os.path.exists(self.log_file):
             os.remove(self.log_file)
-        logging.basicConfig(filename=self.log_file, encoding="utf-8", level=logging.DEBUG)
+        logging.basicConfig(filename=self.log_file, encoding="utf-8", level=logging.INFO)
 
         # Log widget
         self.logger_box = self.findChild(QFormLayout, "formLayout_6")
