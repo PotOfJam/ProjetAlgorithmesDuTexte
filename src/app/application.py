@@ -143,7 +143,6 @@ class Application(QMainWindow):
         self.logger_box.addWidget(logTextBox.widget)
         logging.getLogger().addHandler(logTextBox)
         logTextBox.setFormatter(CustomFormatter())
-        logging.getLogger().setLevel(logging.DEBUG)
 
     def onButtonClicked(self):
         """
