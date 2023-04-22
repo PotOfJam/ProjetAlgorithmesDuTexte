@@ -16,17 +16,17 @@ def incorrectSequenceLocation(start_location, end_location, DNA_length, worker=N
     """
     # Invalid location (not int)
     if ("<" in str(start_location)) or (">" in str(start_location)) or ("<" in str(end_location)) or (">" in str(end_location)):
-        emitLog(Log.WARNING, "Invalid sequence start/end location (%s,%s)" % (start_location, end_location), worker)
+        emitLog(Log.WARNING, "Invalid sequence start/end location (%s,%s)" % (str(start_location), str(end_location)), worker)
         return True
     # Incorrect start location
     if start_location < 0:
-        emitLog(Log.WARNING, "Incorrect sequence start location (%d,%d) (start_location < 0)" % (start_location, end_location), worker)
+        emitLog(Log.WARNING, "Incorrect sequence start location (%d,%d) (start_location < 0)" % (str(start_location), str(end_location)), worker)
         return True
     if end_location > DNA_length:
-        emitLog(Log.WARNING, "Incorrect sequence end location (%d,%d) (end_location > DNA_seq_len)" % (start_location, end_location), worker)
+        emitLog(Log.WARNING, "Incorrect sequence end location (%d,%d) (end_location > DNA_seq_len)" % (str(start_location), str(end_location)), worker)
         return True
     if end_location <= start_location:
-        emitLog(Log.WARNING, "Incorrect sequence start/end location (%d,%d) (end_location <= start_location)" % (start_location, end_location), worker)
+        emitLog(Log.WARNING, "Incorrect sequence start/end location (%d,%d) (end_location <= start_location)" % (str(start_location), str(end_location)), worker)
         return True
     return False
 
