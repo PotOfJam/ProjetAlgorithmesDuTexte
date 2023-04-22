@@ -70,6 +70,7 @@ def downloadAndUpdateTree(overview_file, worker=None):
             except:
                 emitLog(Log.WARNING, "Invalid overview line: %s" % row, worker)
 
+
 def findSubFolders(path, worker=None):
     """
     Find sub-folders.
@@ -103,6 +104,7 @@ def findLastSubFolders(selected_folder_path, worker=None):
     Returns:
         list: Paths of the sub-folders located at the bottom of the hierarchy.
     """
+    last_sub_folders = []
     sub_folders = findSubFolders(selected_folder_path, worker)
     
     # Selected folder does not contain any sub-folder
@@ -112,12 +114,10 @@ def findLastSubFolders(selected_folder_path, worker=None):
     # Selected folder contains sub-folder(s)
     while sub_folders != []:
         for sub_folder in sub_folders:
-            sub_sub_folders = findSubFolders(sub_folder)
-            if sub_sub_folders != []:
-                sub_folders += sub_sub_folders
-                sub_folders.remove(sub_folder)
+            last_sub_folders += findLastSubFolders(sub_folder, worker)
+            sub_folders.remove(sub_folder)
 
-    return sub_folders
+    return last_sub_folders
 
 
 def findOrganisms(selected_folder_path, worker=None):
