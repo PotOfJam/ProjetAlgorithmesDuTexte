@@ -368,7 +368,7 @@ p, li { white-space: pre-wrap; }
                    <item row="2" column="1">
                     <widget class="QPushButton" name="pushButton">
                      <property name="text">
-                      <string>Start</string>
+                      <string>Start parsing</string>
                      </property>
                     </widget>
                    </item>

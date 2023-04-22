@@ -150,7 +150,7 @@ class Application(QMainWindow):
         """
         if self.button_state == 0:
             self.button_state = 1
-            self.button.setText("Start parsing")
+            self.button.setText("Stop parsing")
             self.startParsing()
         else:
             self.button_state = 0
@@ -401,7 +401,7 @@ class Application(QMainWindow):
             self.resetButton()
         else:
             self.resetProgressbar()
-            emitLog(Log.INFO, "Start parsing")
+            emitLog(Log.INFO, "Stop parsing")
             self.organisms_to_parse = tree.findOrganisms(self.selected_path)
             self.updateProgressBar()
             self.preParsing(self.organisms_to_parse)
