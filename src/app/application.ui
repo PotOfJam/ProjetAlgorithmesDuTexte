@@ -348,7 +348,7 @@ p, li { white-space: pre-wrap; }
                  <item>
                   <layout class="QFormLayout" name="formLayout_5">
                    <item row="0" column="1">
-                    <widget class="QLabel" name="label_9">
+                    <widget class="QLabel" name="progress_bar_label">
                      <property name="text">
                       <string>Scanned files</string>
                      </property>

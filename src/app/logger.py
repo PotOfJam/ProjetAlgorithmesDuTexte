@@ -1,10 +1,8 @@
-import logging
+import sys, logging
 from enum import Enum
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-
-import sys
 
 class Log(Enum):
     """

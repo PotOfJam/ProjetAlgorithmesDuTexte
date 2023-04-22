@@ -10,16 +10,15 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 # Log and Thread
-from .logger import CustomFormatter, QPlainTextEditLogger
-from .parser_thread import *
+from .logger import *
+from .workers import *
 
 # GenBank functions
-from ..genbank import tree, fetch, feature_parser
-from .logger import emitLog, Log
+from ..genbank import tree, search, fetch, feature_parser
 
 
 class Application(QMainWindow):
-
+    
     def __init__(self):
         """
         Initialise the application.
@@ -37,8 +36,10 @@ class Application(QMainWindow):
         self.all_unchecked = True
 
         # File parsing attributes
-        self.selected_path = ""
-        self.region_type = []
+        # self.selected_path = ""
+        self.selected_path = "/home/fabien/TPS/2A/Algorithmes du Texte/ProjetAlgorithmesDuTexte/Results/Organisme/Bacteria/Aquificota/Aquificae/Aquifex" # For testing purpose only
+        # self.region_type = []
+        self.region_type = ["CDS"] # For testing purpose only
         self.organisms_to_parse = []
         self.nb_organisms_to_parse = 0
         self.nb_files_to_parse = 0
@@ -46,11 +47,8 @@ class Application(QMainWindow):
         self.nb_parsed_files = 0
         self.start_parsing_label = False
 
-        # Load the ui file
-        uic.loadUi("src/app/application.ui", self)
-
-        # Define layout
-        self.defineLayout()
+        # Create layout
+        self.createLayout()
 
         # Create widgets
         self.createWidgets()
@@ -66,30 +64,16 @@ class Application(QMainWindow):
 
         emitLog(Log.INFO, "Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
 
-    def signalHandler(self, frame):
-            emitLog(Log.WARNING, "User interupt")
-            sys.exit(42)
+    #==== GUI ================================================================#
 
-    def setUpLogger(self):
+    def createLayout(self):
         """
-        Set-up application logger.
+        Create Application layout.
         """
-        self.log_file = "application.log"
-        if os.path.exists(self.log_file):
-            os.remove(self.log_file)
-        logging.basicConfig(filename=self.log_file,
-                            encoding="utf-8", level=logging.DEBUG)
-        self.logger_box = self.findChild(QFormLayout, "formLayout_6")
-        logTextBox = QPlainTextEditLogger()
-        self.logger_box.addWidget(logTextBox.widget)
-        logging.getLogger().addHandler(logTextBox)
-        logTextBox.setFormatter(CustomFormatter())
-        logging.getLogger().setLevel(logging.DEBUG)
+        # Load the ui file
+        uic.loadUi("src/app/application.ui", self)
 
-    def defineLayout(self):
-        """
-        Define Application layout.
-        """
+        # Create layout
         self.splitter = self.findChild(QSplitter, "splitter")
         self.splitter.setStretchFactor(1, 10)
 
@@ -102,7 +86,7 @@ class Application(QMainWindow):
         self.model.setRootPath(QDir.currentPath())
         self.model.setFilter(QDir.NoDotAndDotDot | QDir.Dirs)
 
-        # Proxy Model to sort
+        # Proxy model to sort
         self.sort_proxy_model = QSortFilterProxyModel()
         self.sort_proxy_model.setSourceModel(self.model)
         self.sort_proxy_model.setDynamicSortFilter(True)
@@ -122,70 +106,66 @@ class Application(QMainWindow):
         self.treeView.clicked.connect(self.onTreeViewClicked)
 
         # Check boxes
-        self.checkboxes = [self.CDS, self.CENTRO, self.INTRON, self.MOBILE, self.NC_RNA,
-                           self.R_RNA, self.TELOMETRE, self.T_RNA, self.UTR_3, self.UTR_5, self.ALL, self.NONE]
+        self.checkboxes = [self.CDS, self.CENTRO, self.INTRON, self.MOBILE, self.NC_RNA, self.R_RNA, self.TELOMETRE, self.T_RNA, self.UTR_3, self.UTR_5, self.ALL, self.NONE]
         self.all_checked = False
         self.none_checked = False
         for checkbox in self.checkboxes:
             checkbox.toggled.connect(self.onChecked)
-
         self.NONE.toggled.connect(self.onChecked_NONE)
         self.ALL.toggled.connect(self.onChecked_ALL)
 
-        # markdown
+        # README
         text_read = self.textEdit
         text_read.setReadOnly(True)
-        with open('README.md', encoding='utf8') as f:
+        with open("README.md", encoding="utf8") as f:
             markdown = f.read()
             text_read.setMarkdown(markdown)
 
-        # progress bar init
-        self.F_parsed_last=self.nb_parsed_files
-        self.F_TOparsed_last=self.nb_files_to_parse
+        # Progress bar
+        self.F_parsed_last = self.nb_parsed_files
+        self.F_TOparsed_last = self.nb_files_to_parse
+        chaine = "Parsed files: " + str(self.nb_parsed_files) + "/" + str(self.nb_files_to_parse)
+        self.progress_bar_label.setText(chaine)
 
-        chaine="Scanned files: "+str(self.nb_parsed_files)+"/"+str(self.nb_files_to_parse)
-        self.label_9.setText(chaine)
-
-    def updateProgressBar(self):
+    def setUpLogger(self):
         """
-        Change the progress bar.
+        Set-up application logger.
         """
+        # Log file
+        self.log_file = "application.log"
+        if os.path.exists(self.log_file):
+            os.remove(self.log_file)
+        logging.basicConfig(filename=self.log_file, encoding="utf-8", level=logging.DEBUG)
 
-        advance = self.nb_parsed_files   - self.F_parsed_last
-        max     = self.nb_files_to_parse - self.F_TOparsed_last
-
-
-        if self.button_state == 0:
-
-            self.fileProgressBar.setValue(max)
-            self.fileProgressBar.setMaximum(max)
-            chaine="Scanned files: "+str(max)+"/"+str(max)
-            self.label_9.setText(chaine)
-
-            self.F_TOparsed_last=self.nb_files_to_parse
-            self.F_parsed_last=self.nb_parsed_files
-        else:
-
-            self.fileProgressBar.setValue(advance)
-            self.fileProgressBar.setMaximum(max)
-            self.fileProgressBar.setFormat("%v / %m")
-            chaine="Scanned files: "+str(advance)+"/"+str(max)
-            self.label_9.setText(chaine)
-            
+        # Log widget
+        self.logger_box = self.findChild(QFormLayout, "formLayout_6")
+        logTextBox = QPlainTextEditLogger()
+        self.logger_box.addWidget(logTextBox.widget)
+        logging.getLogger().addHandler(logTextBox)
+        logTextBox.setFormatter(CustomFormatter())
+        logging.getLogger().setLevel(logging.DEBUG)
 
     def onButtonClicked(self):
         """
-        Function to execute when the button is cliscked.
+        Function executed when the button is clicked.
         """
         if self.button_state == 0:
             self.button_state = 1
-            self.button.setText("Arrêter l'analyse")
+            self.button.setText("Start parsing")
             self.startParsing()
         else:
             self.button_state = 0
             self.button.setText("Stopping parsing")
             self.stopParsing()
             self.updateProgressBar()
+
+    def resetButton(self):
+        """
+        Reset button.
+        """
+        self.button_state = 0
+        self.button.setText("Start parsing")
+        self.button.setEnabled(True)  
 
     def onTreeViewClicked(self, index):
         """
@@ -200,7 +180,7 @@ class Application(QMainWindow):
 
     def onChecked(self):
         """
-        Function to execute when a check box is clicked.
+        Function executed when a specific DNA region checkbox is clicked.
         """
         self.region_type = []
 
@@ -229,6 +209,9 @@ class Application(QMainWindow):
             emitLog(Log.INFO, "Selected DNA regions: " + str(self.region_type))
 
     def onChecked_ALL(self):
+        """
+        Function executed when the checkbox for all DNA regions is clicked.
+        """
         if(self.ALL.isChecked() and self.none_checked == False):
             self.all_checked = True
             for k in range(len(self.checkboxes)-2):
@@ -237,6 +220,9 @@ class Application(QMainWindow):
             emitLog(Log.INFO, "Selected DNA regions: " + str(self.region_type))
 
     def onChecked_NONE(self):
+        """
+        Function executed when the checkbox for none of the DNA regions is clicked.
+        """
         if(self.NONE.isChecked() and self.all_checked == False):
             self.none_checked = True
             for checkbox in self.checkboxes:
@@ -244,64 +230,139 @@ class Application(QMainWindow):
             self.none_checked = False
             emitLog(Log.INFO, "Selected DNA regions: " + str(self.region_type))
 
-    def addWorker(self, worker):
-        self.worker_queue.put(worker)
-        self.processQueue()
+    def updateProgressBar(self):
+        """
+        Update progress bar.
+        """
+        advance = self.nb_parsed_files - self.F_parsed_last
+        max = self.nb_files_to_parse - self.F_TOparsed_last
 
-    def processQueue(self):
+        if self.button_state == 0:
+            self.fileProgressBar.setValue(max)
+            self.fileProgressBar.setMaximum(max)
+            chaine = "Parsed files: " + str(max) + "/" + str(max)
+            self.progress_bar_label.setText(chaine)
+            self.F_TOparsed_last = self.nb_files_to_parse
+            self.F_parsed_last = self.nb_parsed_files
+        else:
+            self.fileProgressBar.setValue(advance)
+            self.fileProgressBar.setMaximum(max)
+            self.fileProgressBar.setFormat("%v / %m")
+            chaine = "Parsed files: " + str(advance) + "/" + str(max)
+            self.progress_bar_label.setText(chaine)
+    
+    def resetProgressbar(self):
+        """
+        Reset progress bar.
+        """
+        self.nb_files_to_parse = 0
+        self.nb_parsed_files = 0
+        self.F_parsed_last = 0
+        self.F_TOparsed_last = 0
+        self.fileProgressBar.setValue(0)
+        self.fileProgressBar.setMaximum(1)
+
+    #==== Worker Handling ====================================================#
+
+    def processWorkerQueue(self):
+        """
+        Handle worker queue, ie: attribute a worker to a thread when possible.
+        """
         while not self.worker_queue.empty() and self.nb_running_threads < self.max_nb_threads - 1:
             worker = self.worker_queue.get()
             self.threadpool.start(worker)
             self.nb_running_threads += 1
 
-    def threadWork(self, progress_callback, parsing_attribute, worker=None):
-        organism_path, id, organism, worker = parsing_attribute
+    def addWorker(self, worker):
+        """
+        Add worker to the worker queue.
+
+        Args:
+            worker (Worker): Worker object used to download and parse files when attributed to a thread.
+        """
+        self.worker_queue.put(worker)
+        self.processWorkerQueue()
+
+    #==== Parsing ============================================================#
+
+    def preWorkerWork(self, organisms, preworker=None):
+        """
+        For each organism, look for its files in the GenBank database and check if the organism needs to be parsed.
+        An organism is parsed if GenBank files are newer than local files [or if there are less local files than GenBank files (organism partially parsed).](not yet implemented)
+        Create a list (parsing_arguments) containing required informations for parsing (organism path, file id, organism name).
+
+        Args:
+            organisms (list): Tuples containing the name of the organism and the path to its folder.
+            preworker (Preworker, optional): Preworker used to execute this function on a thread. Defaults to None.
+        """
+        parsing_arguments = []
+
+        for organism, organism_path in organisms:
+            emitLog(Log.INFO, "Start parsing organism: %s" % organism, preworker)
+            ids = search.searchID(organism, worker=preworker)
+            if ids == []:
+                emitLog(Log.WARNING, "Did not find any NC corresponding to organism: %s" % organism, preworker)
+                emitLog(Log.INFO, "End of parsing", preworker)
+                break
+            organism_files_to_parse = tree.needParsing(organism_path, ids, worker=preworker)
+            emitLog(Log.INFO, "Organism %s has %d file(s) that need(s) to be parsed" % (organism, organism_files_to_parse), preworker)
+            if organism_files_to_parse > 0:
+                for id in ids:
+                    parsing_arguments.append((organism_path, id, organism))
+        preworker.signals.result.emit(parsing_arguments)
+
+    def workerWork(self, parsing_argument, worker=None):
+        """
+        Parse a single file.
+
+        Args:
+            parsing_argument (tuple): Parsing informations (organism path, file id, organism name).
+            worker (Preworker, optional): Worker used to execute this function on a thread. Defaults to None.
+        """
+        organism_path, id, organism, worker = parsing_argument
         emitLog(Log.INFO, "Start parsing file: %s" % id, worker)
         record = fetch.fetchFromID(id, worker=worker)
         if record is not None:
             feature_parser.parseFeatures(self.region_type, organism_path, id, organism, record, worker=worker)
 
-    def threadLog(self, level, message):
-        emitLog(level, message)
-
-    def threadComplete(self):
+    def workerComplete(self):
+        """
+        Handle worker (file parsing) terminaison: start next worker, update progress bar, detect end of parsing.
+        """
         emitLog(Log.INFO, "Thread complete")
         self.nb_running_threads -= 1
         self.nb_parsed_files += 1
-        self.processQueue()
+        self.processWorkerQueue()
         self.updateProgressBar()
         if self.worker_queue.empty() and self.nb_running_threads == 0:
-            emitLog(Log.INFO, "Fin de l'analyse des fichiers sélectionnés")
-            self.button_state = 0
+            emitLog(Log.INFO, "End of parsing")
+            self.resetButton()
             self.updateProgressBar()
-            self.button.setText("Lancer l'analyse")
-            self.button.setEnabled(True)
 
-    def threadPreparsing(self, parsing_attributes):
-        """_summary_
+    def Parsing(self, parsing_arguments):
+        """
+        Handle parsing of multiple files. For each file, create a Worker (that will parse a single file) and add it to the Worker queue.
 
         Args:
-            parsing_attributes (_type_): _description_
+            parsing_arguments (list): List of tuples containing parsing informations (organism path, file id, organism name).
         """
-        
         emitLog(Log.INFO, "Starting workers to parse files...")
-        t = 0
+        
         self.start_parsing_label = True
 
-        if not self.start_parsing_label or parsing_attributes == []:
-            emitLog(Log.INFO, "Fin de l'analyse des fichiers sélectionnés")
-            self.button_state = 0
-            self.button.setText("Start parsing ")
-            self.button.setEnabled(True)
+        if not self.start_parsing_label or parsing_arguments == []:
+            emitLog(Log.INFO, "End of parsing")
+            self.resetButton()
             return
         
-        self.nb_files_to_parse = len(parsing_attributes)
-        for parsing_attribute in parsing_attributes:
+        t = 0
+        self.nb_files_to_parse = len(parsing_arguments)
+        for parsing_argument in parsing_arguments:
             # Pass the function to execute
             # Any other args, kwargs are passed to the run function
-            worker = Worker(self.threadWork, parsing_attribute=parsing_attribute)
-            worker.signals.finished.connect(self.threadComplete)
-            worker.signals.log.connect(self.threadLog)
+            worker = Worker(self.workerWork, parsing_argument=parsing_argument)
+            worker.signals.finished.connect(self.workerComplete)
+            worker.signals.log.connect(emitLog)
             if not self.start_parsing_label:
                 return
 
@@ -311,18 +372,19 @@ class Application(QMainWindow):
             t += 1
         self.start_parsing_label = False        
 
-    def multiThreadParsing(self, organisms):
+    def preParsing(self, organisms):
         """
-        Parse organims sequentially using multithreading.
+        Start a Preworker on a thread that will handle preparsing.
+        Note: used to keep the GUI reponsive.
 
         Args:
             organisms (list): Tuples containing the name of the organism and the path to its folder.
         """
         emitLog(Log.INFO, "Start looking for files to parse...")
-        pre_worker = Preworker(None, organisms=organisms)
-        pre_worker.signals.result.connect(self.threadPreparsing)
-        pre_worker.signals.log.connect(self.threadLog)
-        self.threadpool.start(pre_worker)
+        pre_worker = Preworker(self.preWorkerWork, organisms=organisms)
+        pre_worker.signals.result.connect(self.Parsing)
+        pre_worker.signals.log.connect(emitLog)
+        self.addWorker(pre_worker)
 
     def startParsing(self):
         """
@@ -332,38 +394,25 @@ class Application(QMainWindow):
 
         if self.selected_path == "" or not os.path.isdir(self.selected_path):
             emitLog(Log.ERROR, "Invalid path: " + self.selected_path)
-            self.button_state = 0
-            self.button.setText("Start parsing ")
-            return
+            self.resetButton()
         elif self.region_type == []:
             emitLog(Log.ERROR, "No DNA region selected")
-            self.button_state = 0
-            self.button.setText("Start parsing ")
-            return
+            self.resetButton()
         else:
+            self.resetProgressbar()
             emitLog(Log.INFO, "Start parsing")
-            self.fileProgressBar.setValue(0)
             self.organisms_to_parse = tree.findOrganisms(self.selected_path)
-            self.nb_files_to_parse = 0
-            self.nb_parsed_files = 0
-            self.F_parsed_last = 0
-            self.F_TOparsed_last = 0
-            self.fileProgressBar.setValue(0)
-            self.fileProgressBar.setMaximum(1)
             self.updateProgressBar()
-            self.multiThreadParsing(self.organisms_to_parse)
-        return
+            self.preParsing(self.organisms_to_parse)
 
     def stopParsing(self):
         """
         Stop file parsing.
         """
-        
         self.button.setEnabled(False)
         self.worker_queue = Queue()
         self.start_parsing_label = False
         emitLog(Log.INFO, "Stop parsing")
-        return
 
     def signalHandler(self):
         """
@@ -378,4 +427,3 @@ class Application(QMainWindow):
                     if os.path.exists(file):
                         os.remove(file)
                         emitLog(Log.INFO, "Successfully deleted: %s" % file)
-        return

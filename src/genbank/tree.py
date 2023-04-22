@@ -172,7 +172,7 @@ def findLastUpdateDate(ids, worker=None):
     Find the date at which the organism (all GenBank files) has been last modified in the GenBank database.
 
     Args:
-        ids (list): List of GenBank IDs related to an organism.
+        ids (list): List of GenBank file IDs related to an organism.
 
     Returns:
         datetime.datetime: Last modification date.
@@ -233,19 +233,28 @@ def needParsing(organism_path, ids, worker=None):
 
     Args:
         organism_path (str): Path of the organism's folder.
-        ids (list): List of GenBank IDs related to an organism.
+        ids (list): List of GenBank file IDs related to an organism.
         worker ():
 
     Returns:
         int: Number of GenBank files to parse.
     """
-    # global last_update_date, last_parsing_date
-    organism_files = [file for file in os.listdir(organism_path)]
+    organism_files = [file for file in os.listdir(organism_path) if os.path.isfile(file)]
 
     # Never parsed
     if organism_files == []:
         emitLog(Log.INFO, "Organism was never parsed, all files need to be parsed...", worker)
         return len(ids)
+    
+    # Partially parsed
+    # Following lines do not work because there will be many files if user parse for CDS and intron and...
+    # if len(organism_files) < len(ids):
+    #     emitLog(Log.INFO, "Organism was partially parsed, all files need to be parsed...", worker)
+    #     emitLog(Log.WARNING, "Local files are deleted", worker)
+    #     for file in organism_files:
+    #         if os.path.exists(file):
+    #             os.remove(file)
+    #     return len(ids)
     
     # Already parsed, check for update...    
     # Genbank date

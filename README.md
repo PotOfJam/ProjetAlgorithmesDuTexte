@@ -42,18 +42,10 @@ This program is a utility tool to facilitate access to this database. The user-f
 
 ## 📝 TO DO LIST !!!
 - Julie & Louise:
-    - [ ] Onglet README taille ajustable
-    - [ ] Etat de l'analyse (x/y fichiers/organismes analysés)
-    - [ ] Esthétique (taille du journal, couleur [application et journal], nom, onglet auteurs [file view sur README.md], logo dans la barre des tâches)
-    - [ ] Documentation (code + README)
+    - [x] ...
 
 - Mathéo:
-    - [ ] Tests
     - [ ] Documentation (code + README)
 
 - Samuel & Fabien:
-    - [ ] Niveaux de log
-    - [ ] Arrêt du parsing
-    - [ ] Fix UI *
-    - [ ] Fix NC version
-    - [ ] Documentation (code + README)
+    - [x] Documentation (code + README)
