@@ -301,8 +301,7 @@ class Application(QMainWindow):
             ids = search.searchID(organism, worker=preworker)
             if ids == []:
                 emitLog(Log.WARNING, "Did not find any NC corresponding to organism: %s" % organism, preworker)
-                emitLog(Log.INFO, "End of parsing", preworker)
-                break
+                continue
             organism_files_to_parse = tree.needParsing(organism_path, ids, worker=preworker)
             emitLog(Log.INFO, "Organism %s has %d file(s) that need(s) to be parsed" % (organism, organism_files_to_parse), preworker)
             if organism_files_to_parse > 0:

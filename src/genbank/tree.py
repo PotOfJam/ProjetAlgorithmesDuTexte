@@ -84,13 +84,10 @@ def findSubFolders(path, worker=None):
     # Look for sub-folders
     sub_folders = []
     try:
-        sub_folders = [sub_folder for sub_folder in os.listdir(path) if os.path.isdir(os.path.join(path, sub_folder))]
+        sub_folders = [os.path.join(path, sub_folder) for sub_folder in os.listdir(path) if os.path.isdir(os.path.join(path, sub_folder))]
     except Exception as e:
-        emitLog(Log.ERROR, e, worker)
         return []
     
-    for sub_folder in sub_folders:
-        sub_folder = os.path.join(path, sub_folder)
     return sub_folders
 
 
