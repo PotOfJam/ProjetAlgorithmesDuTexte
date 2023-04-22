@@ -33,31 +33,31 @@ def parseFeatures(region_type, path, id, organism, record, worker=None):
         for feature in record.features:
             # if feature.type in region_type:
             if feature.type == "CDS" and (("CDS" in region_type) or ("intron" in region_type)):
-                emitLog(Log.INFO, "CDS or intron in id = " + str(id), worker)
+                emitLog(Log.DEBUG, "CDS or intron in id = " + str(id), worker)
                 parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, "CDS" in region_type, "intron" in region_type, worker=worker)
             elif feature.type == "centromere" and "centromere" in region_type:
-                emitLog(Log.INFO, "centromere in id = " + str(id), worker)
+                emitLog(Log.DEBUG, "centromere in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "centromere", worker=worker)
             elif feature.type == "mobile_element" and "mobile_element" in region_type:
-                emitLog(Log.INFO, "mobile_element in id = " + str(id), worker)
+                emitLog(Log.DEBUG, "mobile_element in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "mobile_element", worker=worker)
             elif feature.type == "telomere" and "telomere" in region_type:
-                emitLog(Log.INFO, "telomere in id = " + str(id), worker)
+                emitLog(Log.DEBUG, "telomere in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "telomere", worker=worker)
             elif feature.type == "3'UTR" and "3'UTR" in region_type:
-                emitLog(Log.INFO, "3'UTR in id = " + str(id), worker)
+                emitLog(Log.DEBUG, "3'UTR in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "3'UTR", worker=worker)
             elif feature.type == "5'UTR" and "5'UTR" in region_type:
-                emitLog(Log.INFO, "5'UTR in id = " + str(id), worker)
+                emitLog(Log.DEBUG, "5'UTR in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "5'UTR", worker=worker)
             elif feature.type == "tRNA" and "tRNA" in region_type:
-                emitLog(Log.INFO, "tRNA in id = " + str(id), worker)
+                emitLog(Log.DEBUG, "tRNA in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "tRNA", worker=worker)
             elif feature.type == "rRNA" and "rRNA" in region_type:
-                emitLog(Log.INFO, "rRNA in id = " + str(id), worker)
+                emitLog(Log.DEBUG, "rRNA in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "rRNA", worker=worker)
             elif feature.type == "ncRNA" and "ncRNA" in region_type:
-                emitLog(Log.INFO, "ncRNA in id = " + str(id), worker)
+                emitLog(Log.DEBUG, "ncRNA in id = " + str(id), worker)
                 parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, "ncRNA", worker=worker)
     except:
         emitLog(Log.ERROR, traceback.format_exc(), worker)
