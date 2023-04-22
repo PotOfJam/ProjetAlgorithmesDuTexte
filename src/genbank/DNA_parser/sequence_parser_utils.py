@@ -6,13 +6,13 @@ def incorrectSequenceLocation(start_location, end_location, DNA_length, worker=N
     Check if the sequence location is correct.
 
     Args:
-        start_location (_type_): _description_
-        end_location (_type_): _description_
-        DNA_length (_type_): _description_
-        worker (_type_, optional): _description_. Defaults to None.
+        start_location (...): Start of the sequence.
+        end_location (...): End of the sequence.
+        DNA_length (int): Sequence length.
+        worker (Worker, optional): Worker calling the function. Defaults to None.
 
     Returns:
-        _type_: _description_
+        bool: True if the sequence location is correct else False.
     """
     # Invalid location (not int)
     if ("<" in str(start_location)) or (">" in str(start_location)) or ("<" in str(end_location)) or (">" in str(end_location)):
@@ -33,15 +33,15 @@ def incorrectSequenceLocation(start_location, end_location, DNA_length, worker=N
 
 def sequenceLocation(feature, DNA_length, worker=None):
     """
-
+    Retrieve sequence location from feature.
 
     Args:
-        feature (_type_): _description_
-        DNA_length (_type_): _description_
-        worker (_type_, optional): _description_. Defaults to None.
+        feature (...): DNA feature.
+        DNA_length (int): Sequence length.
+        worker (Worker, optional): Worker calling the function. Defaults to None.
 
     Returns:
-        _type_: _description_
+        List: List of tuple containing the DNA sequence location(s) (start location, end location).
     """
     # Initialise variable
     sequence_location = []
@@ -74,8 +74,17 @@ def sequenceLocation(feature, DNA_length, worker=None):
     return sequence_location
 
 
-def intronLocation(CDS_info_location):
+def intronLocation(CDS_info_location, worker=None):
+    """
+    retrieve intron location.
 
+    Args:
+        CDS_info_location (List): List of tuple containing the DNA sequence location(s) (start location, end location).
+        worker (Worker, optional): Worker calling the function. Defaults to None.
+
+    Returns:
+        List: List of tuple containing the DNA intron location(s) (start location, end location).
+    """
     intron_location = []
 
     if len(CDS_info_location) > 1:
@@ -88,9 +97,18 @@ def intronLocation(CDS_info_location):
 
 
 def defragmentSequence(DNA, sequence_location, worker=None):
+    """
+    Reconstruct the DNA sequence when the sequence is fragmented.
+    Note: sequence locations have been ordered in sequenceLocation function
 
-    # Note: sequence locations have been ordered in sequenceLocation function
+    Args:
+        DNA (string): Entire DNA sequence from the GenBank file.
+        sequence_location (List): List of tuple containing the DNA intron location(s) (start location, end location).
+        worker (Worker, optional): Worker calling the function. Defaults to None.
 
+    Returns:
+        string: DNA sequence.
+    """
     # Recreate sequence
     DNA_sequence = ""
     for sub_sequence_location in sequence_location:
@@ -102,7 +120,17 @@ def defragmentSequence(DNA, sequence_location, worker=None):
 
 
 def incorrectSequence(DNA_sequence, sequence_type, worker=None):
+    """
+    Check if a DNA sequence is correct: valid start and stop codon, valid length, valid DNA base. 
 
+    Args:
+        DNA_sequence (string): DNA sequence.
+        sequence_type (string): Type of the DNA sequence.
+        worker (Worker, optional): Worker calling the function. Defaults to None.
+
+    Returns:
+        bool: True if the DNA sequence is correct, else False.
+    """
     # Initialise constants
     valid_start_codon = ["ATG", "CTG", "TTG", "GTG", "ATA", "ATC", "ATT", "TTA"]
     valid_end_codon = ["TAA", "TAG", "TGA"]
@@ -129,8 +157,16 @@ def incorrectSequence(DNA_sequence, sequence_type, worker=None):
 
     return False
 
-def writeSequence(sequence_info, worker=None):
 
+def writeSequence(sequence_info, worker=None):
+    """
+    Write DNA sequence in the appropriate result file.
+    Note: append to file if it exists.
+
+    Args:
+        sequence_info (dict): Dictionnary containing all the information regarding a DNA sequence.
+        worker (Worker, optional): Worker calling the function. Defaults to None.
+    """
     # File path
     try:
         file_path = os.path.join(sequence_info["path"], sequence_info["type"] + "_" + sequence_info["organism"] + "_" + sequence_info["file_name"] + ".txt" )
