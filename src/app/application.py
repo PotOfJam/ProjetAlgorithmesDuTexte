@@ -334,9 +334,7 @@ class Application(QMainWindow):
         self.processWorkerQueue()
         self.updateProgressBar()
         if self.worker_queue.empty() and self.nb_running_threads == 0:
-            emitLog(Log.INFO, "End of parsing")
-            self.resetButton()
-            self.updateProgressBar()
+            self.endOfParsing()
 
     def Parsing(self, parsing_arguments):
         """
@@ -345,6 +343,10 @@ class Application(QMainWindow):
         Args:
             parsing_arguments (list): List of tuples containing parsing informations (organism path, file id, organism name).
         """
+        if parsing_arguments == []:
+            self.endOfParsing()
+            return
+        
         emitLog(Log.INFO, "Starting workers to parse files...")
         self.nb_running_threads -=1
         self.start_parsing_label = True
@@ -426,3 +428,11 @@ class Application(QMainWindow):
                     if os.path.exists(file):
                         os.remove(file)
                         emitLog(Log.INFO, "Successfully deleted: %s" % file)
+    
+    def endOfParsing(self):
+        """
+        End of parsing.
+        """
+        emitLog(Log.INFO, "End of parsing")
+        self.resetButton()
+        self.updateProgressBar()
