@@ -145,7 +145,7 @@ def writeIntron(intron_info, worker=None):
     try:
         file_path = os.path.join(intron_info["path"], intron_info["type"] + "_" + intron_info["organism"] + "_" + intron_info["file_name"] + ".txt" )
     except:
-        emitLog(Log.ERROR, "Invalid file path")
+        emitLog(Log.ERROR, "Invalid file path", worker)
 
     # Sequence description
     try:

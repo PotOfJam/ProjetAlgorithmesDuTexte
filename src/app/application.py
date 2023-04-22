@@ -319,7 +319,7 @@ class Application(QMainWindow):
             parsing_argument (tuple): Parsing informations (organism path, file id, organism name).
             worker (Preworker, optional): Worker used to execute this function on a thread. Defaults to None.
         """
-        organism_path, id, organism, worker = parsing_argument
+        organism_path, id, organism = parsing_argument
         emitLog(Log.INFO, "Start parsing file: %s" % id, worker)
         record = fetch.fetchFromID(id, worker=worker)
         if record is not None:
