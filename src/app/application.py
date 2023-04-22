@@ -36,10 +36,10 @@ class Application(QMainWindow):
         self.all_unchecked = True
 
         # File parsing attributes
-        # self.selected_path = ""
-        self.selected_path = "/home/fabien/TPS/2A/Algorithmes du Texte/ProjetAlgorithmesDuTexte/Results/Organisme/Bacteria/Aquificota/Aquificae/Aquifex" # For testing purpose only
-        # self.region_type = []
-        self.region_type = ["CDS"] # For testing purpose only
+        self.selected_path = ""
+        # self.selected_path = "/home/fabien/TPS/2A/Algorithmes du Texte/ProjetAlgorithmesDuTexte/Results/Organisme/Bacteria/Aquificota/Aquificae/Aquifex" # For testing purpose only
+        self.region_type = []
+        # self.region_type = ["CDS"] # For testing purpose only
         self.organisms_to_parse = []
         self.nb_organisms_to_parse = 0
         self.nb_files_to_parse = 0
