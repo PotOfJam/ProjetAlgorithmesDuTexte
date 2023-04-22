@@ -112,7 +112,7 @@ def writeCDS(CDS_info, worker=None):
             sequence_description_text += ")"
         if CDS_info["strand"] == -1:
             sequence_description_text += ")"
-        emitLog(Log.INFO,sequence_description_text,worker=worker)
+        emitLog(Log.INFO, sequence_description_text, worker)
     except:
         emitLog(Log.ERROR, "Invalid sequence description", worker)
 
@@ -160,7 +160,7 @@ def writeIntron(intron_info, worker=None):
         sequence_description_text += ")"
         if intron_info["strand"] == -1:
             sequence_description_text += ")"
-        emitLog(Log.INFO,sequence_description_text,worker=worker)
+        emitLog(Log.INFO, sequence_description_text, worker)
     except:
         emitLog(Log.ERROR, "Invalid sequence description", worker)
 

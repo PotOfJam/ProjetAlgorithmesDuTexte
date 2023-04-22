@@ -52,10 +52,7 @@ def sequenceLocation(feature, DNA_length, worker=None):
             for part_location in feature.location.parts:
                 start_location = part_location.start
                 end_location = part_location.end
-<<<<<<< HEAD
-=======
-                #emitLog(Log.INFO, "location = " + str(start_location) + "," + str(end_location), worker)
->>>>>>> cfff8e9d2b6a8d1d491838bf0786f63104390fa6
+                emitLog(Log.INFO, "location = " + str(start_location) + "," + str(end_location), worker)
                 if incorrectSequenceLocation(start_location, end_location, DNA_length, worker=worker):
                     return []
                 sequence_location.append((int(start_location), int(end_location)))
@@ -67,10 +64,7 @@ def sequenceLocation(feature, DNA_length, worker=None):
         else:
             start_location = feature.location.start
             end_location = feature.location.end
-<<<<<<< HEAD
-=======
-            #emitLog(Log.INFO, "location = " + str(start_location) + "," + str(end_location), worker)
->>>>>>> cfff8e9d2b6a8d1d491838bf0786f63104390fa6
+            emitLog(Log.INFO, "location = " + str(start_location) + "," + str(end_location), worker)
             if incorrectSequenceLocation(start_location, end_location, DNA_length, worker=worker):
                 return []
             sequence_location.append((int(start_location), int(end_location)))
@@ -194,7 +188,7 @@ def writeSequence(sequence_info, worker=None):
             sequence_description_text += ")"
         if sequence_info["strand"] == -1:
             sequence_description_text += ")"
-        emitLog(Log.INFO,sequence_description_text,worker=worker)
+        emitLog(Log.INFO, sequence_description_text, worker)
     except:
         emitLog(Log.ERROR, "Invalid sequence description", worker)
 
