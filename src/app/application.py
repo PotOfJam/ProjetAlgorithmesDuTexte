@@ -347,7 +347,7 @@ class Application(QMainWindow):
             parsing_arguments (list): List of tuples containing parsing informations (organism path, file id, organism name).
         """
         emitLog(Log.INFO, "Starting workers to parse files...")
-        
+        self.nb_running_threads -=1
         self.start_parsing_label = True
 
         if not self.start_parsing_label or parsing_arguments == []:

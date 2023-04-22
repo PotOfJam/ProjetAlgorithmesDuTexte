@@ -239,8 +239,7 @@ def needParsing(organism_path, ids, worker=None):
     Returns:
         int: Number of GenBank files to parse.
     """
-    organism_files = [file for file in os.listdir(organism_path) if os.path.isfile(file)]
-
+    organism_files = [file for file in os.listdir(organism_path)]
     # Never parsed
     if organism_files == []:
         emitLog(Log.INFO, "Organism was never parsed, all files need to be parsed...", worker)
