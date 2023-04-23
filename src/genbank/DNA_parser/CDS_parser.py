@@ -76,11 +76,11 @@ def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, 
 
     # Write CDS sequence in CDS file
     if CDS_flag:
-        writeCDS(CDS_info, worker=worker)
+        writeCDS(CDS_info, worker)
 
     # Write introns sequence in intron file
     if intron_flag:
-        writeIntron(intron_info, worker=worker)
+        writeIntron(intron_info, worker)
 
 
 def writeCDS(CDS_info, worker=None):

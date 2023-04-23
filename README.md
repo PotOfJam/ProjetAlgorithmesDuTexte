@@ -28,6 +28,10 @@ This program is a utility tool to facilitate access to this database. The user-f
 - [PyQt5](https://pypi.org/project/PyQt5/)
 - [QtMAterial](https://pypi.org/project/qt-material/)
 
+## 👨‍💻 Usage
+- Download source code: https://github.com/FABallemand/ProjetAlgorithmesDuTexte
+- Download Windows installer: https://drive.google.com/file/d/1tEywvqJIa2VIs5Cz_co32NlzzZ98B2fC/view?usp=share_link
+
 ## 👥 Team
 - ALLEMAND Fabien
 - BONNAIL Julie

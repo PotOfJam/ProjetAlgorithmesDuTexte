@@ -51,7 +51,12 @@ def downloadAndUpdateTree(overview_file, worker=None):
     """
     # Donwload tree decription file from genbank
     url = "https://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt"
-    r = requests.get(url, allow_redirects=True)
+    try:
+        r = requests.get(url, allow_redirects=True)
+    except:
+        emitLog(Log.ERROR, "Unable to download file: " + overview_file, worker)
+        return
+
     try:
         open(overview_file, "wb").write(r.content)
     except:
@@ -65,7 +70,7 @@ def downloadAndUpdateTree(overview_file, worker=None):
         for row in file_tree:
             try:
                 organism, kingdom, group, subgroup, *_ = row
-                organism = organism.replace("?", "").replace("/", "").replace("[", "").replace("]", "")
+                organism = organism.replace("?", "").replace("/", "").replace("[", "").replace("]", "").replace(":", "")
                 os.makedirs(os.path.join("Results", "Organisme", kingdom, group, subgroup, organism), exist_ok=True)  # Ignore existing folders
             except:
                 emitLog(Log.WARNING, "Invalid overview line: %s" % row, worker)

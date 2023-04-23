@@ -46,4 +46,4 @@ def parseSequence(path, file_name, id, organism, DNA, DNA_length, feature, featu
         return
 
     # Write CDS sequence in CDS file
-    writeSequence(sequence_info)
+    writeSequence(sequence_info, worker)
