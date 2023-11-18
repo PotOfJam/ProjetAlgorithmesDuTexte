@@ -229,7 +229,7 @@ def findLastParsingDate(path, worker=None):
     return parsing_date
 
 
-def needParsing(organism_path, ids, worker=None):
+def needParsing(organism_path, ids, worker=None, region_type=['CDS']):
     """
     Check if an organism needs to be parsed.
 
@@ -246,7 +246,6 @@ def needParsing(organism_path, ids, worker=None):
     if organism_files == []:
         emitLog(Log.INFO, "Organism was never parsed, all files need to be parsed...", worker)
         return len(ids)
-    
     # Partially parsed
     # Following lines do not work because there will be many files if user parse for CDS and intron and...
     # if len(organism_files) < len(ids):
@@ -271,7 +270,18 @@ def needParsing(organism_path, ids, worker=None):
         emitLog(Log.WARNING, "Invalid date", worker)
         return 0
     if last_parsing_date < last_update_date:
+        emitLog(Log.INFO, "Parsing needs to be updated...", worker)
         return len(ids)
-    
+    else:
+        for region in region_type:
+            region_found = False
+            for file in organism_files:
+                if region in file:
+                    region_found = True
+                    break
+            if not region_found:
+                emitLog(Log.INFO, f"Region '{region}' needs to be parsed...", worker)
+                return len(ids)
     # Parsing is up to date!
     return 0
+
