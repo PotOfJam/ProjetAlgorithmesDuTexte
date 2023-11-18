@@ -303,6 +303,7 @@ class Application(QMainWindow):
                 emitLog(Log.WARNING, "Did not find any NC corresponding to organism: %s" % organism, preworker)
                 continue
             organism_files_to_parse = tree.needParsing(organism_path, ids, worker=preworker, region_type=self.region_type)
+            self.region_type = tree.findRegionsToParse(organism_path, self.region_type,worker=preworker)
             emitLog(Log.INFO, "Organism %s has %d file(s) that need(s) to be parsed" % (organism, organism_files_to_parse), preworker)
             if organism_files_to_parse > 0:
                 for id in ids:

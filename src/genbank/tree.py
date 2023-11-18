@@ -7,6 +7,7 @@ import datetime
 
 from .fetch import *
 from ..app.logger import emitLog, Log
+import os
 
 def updateTree(overview_file="overview.txt"):
     """
@@ -285,3 +286,19 @@ def needParsing(organism_path, ids, worker=None, region_type=['CDS']):
     # Parsing is up to date!
     return 0
 
+def findRegionsToParse(organism_path, region_type, worker=None):
+    organism_files = [file for file in os.listdir(organism_path)]
+
+    regions_to_parse = []
+    if organism_files == []:
+        regions_to_parse = region_type
+    else:
+        for region in region_type:
+                region_found = False
+                for file in organism_files:
+                    if region in file:
+                        region_found = True
+                if not region_found:
+                    regions_to_parse.append(region)
+    emitLog(Log.INFO,f"Regions that really need to be parse: {regions_to_parse}", worker)
+    return regions_to_parse

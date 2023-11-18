@@ -71,8 +71,12 @@ def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, 
     
         # Intron reverse completement
         if CDS_info["strand"] == -1:
+            i = 0
             for sub_sequence in intron_info["DNA_sub_sequence"]:
-                sub_sequence = sub_sequence.reverse_complement()
+                intron_info["DNA_sub_sequence"][i] = sub_sequence.reverse_complement()
+                i+=1
+            intron_info["DNA_sub_sequence"].reverse()
+            
 
     # Write CDS sequence in CDS file
     if CDS_flag:

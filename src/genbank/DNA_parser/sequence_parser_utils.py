@@ -87,8 +87,9 @@ def intronLocation(CDS_info_location, worker=None):
 
     if len(CDS_info_location) > 1:
         for i in range(len(CDS_info_location) - 1):
-            start_location = CDS_info_location[i][1] + 1
-            end_location = CDS_info_location[i+1][0] - 1
+            start_location = CDS_info_location[i][1]
+            end_location = CDS_info_location[i+1][0]
+            emitLog(Log.INFO, "start:"+ str(start_location)+"   end :"+ str(end_location), worker)
             intron_location.append((start_location, end_location))
     
     return intron_location
