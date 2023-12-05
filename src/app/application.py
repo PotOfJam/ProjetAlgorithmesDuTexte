@@ -17,13 +17,18 @@ from .workers import *
 from ..genbank import tree, search, fetch, feature_parser
 
 
+
 class Application(QMainWindow):
     
     def __init__(self):
+        
         """
         Initialise the application.
         """
         super(Application, self).__init__()
+        
+        # Initialiser l'interface utilisateur
+        self.dynamic_widg=[]
 
         # Multithreading attributes
         self.threadpool = QThreadPool.globalInstance()
@@ -63,6 +68,8 @@ class Application(QMainWindow):
         tree.updateTree()
 
         emitLog(Log.INFO, "Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+        
+        self.update_font_size()
 
     #==== GUI ================================================================#
 
@@ -76,11 +83,19 @@ class Application(QMainWindow):
         # Create layout
         self.splitter = self.findChild(QSplitter, "splitter")
         self.splitter.setStretchFactor(1, 10)
+        
+        
 
     def createWidgets(self):
         """
         Create widgets and assign a function to each widget.
         """
+        # Log
+        self.logger_box = self.findChild(QFormLayout, "formLayout_6")
+        self.logTextBox = QPlainTextEditLogger()
+        self.logger_box.addWidget(self.logTextBox.widget)
+        
+        
         # Model
         self.model = QFileSystemModel()
         self.model.setRootPath(QDir.currentPath())
@@ -93,9 +108,10 @@ class Application(QMainWindow):
         self.sort_proxy_model.sort(0, Qt.AscendingOrder)
 
         # Push button
-        self.button = self.findChild(QPushButton, "pushButton")
+        self.button = self.pushButton
         self.button.clicked.connect(self.onButtonClicked)
         self.button_state = 0
+        
 
         # Tree view
         self.treeView.setModel(self.sort_proxy_model)
@@ -111,6 +127,8 @@ class Application(QMainWindow):
         self.none_checked = False
         for checkbox in self.checkboxes:
             checkbox.toggled.connect(self.onChecked)
+            self.dynamic_widg.append(checkbox) 
+            
         self.NONE.toggled.connect(self.onChecked_NONE)
         self.ALL.toggled.connect(self.onChecked_ALL)
 
@@ -120,12 +138,23 @@ class Application(QMainWindow):
         with open("README.md", encoding="utf8") as f:
             markdown = f.read()
             text_read.setMarkdown(markdown)
+        
 
         # Progress bar
         self.F_parsed_last = self.nb_parsed_files
         self.F_TOparsed_last = self.nb_files_to_parse
         chaine = "Parsed files: " + str(self.nb_parsed_files) + "/" + str(self.nb_files_to_parse)
         self.progress_bar_label.setText(chaine)
+        
+        
+        self.dynamic_widg.append(self.progress_bar_label) 
+        self.dynamic_widg.append(self.treeView)
+        self.dynamic_widg.append(self.tabs) 
+        self.dynamic_widg.append(self.button)
+        self.dynamic_widg.append(self.label_10)
+        self.dynamic_widg.append(self.textEdit)
+        
+        self.update_font_size()
 
     def setUpLogger(self):
         """
@@ -138,11 +167,8 @@ class Application(QMainWindow):
         logging.basicConfig(filename=self.log_file, encoding="utf-8", level=logging.INFO)
 
         # Log widget
-        self.logger_box = self.findChild(QFormLayout, "formLayout_6")
-        logTextBox = QPlainTextEditLogger()
-        self.logger_box.addWidget(logTextBox.widget)
-        logging.getLogger().addHandler(logTextBox)
-        logTextBox.setFormatter(CustomFormatter())
+        logging.getLogger().addHandler(self.logTextBox)
+        self.logTextBox.setFormatter(CustomFormatter())
 
     def onButtonClicked(self):
         """
@@ -175,6 +201,7 @@ class Application(QMainWindow):
         """
         mapped_index = self.sort_proxy_model.mapToSource(index)
         self.selected_path = self.model.filePath(mapped_index)
+        
         emitLog(Log.INFO, "Selected path: %s" % self.selected_path)
 
     def onChecked(self):
@@ -260,6 +287,24 @@ class Application(QMainWindow):
         self.F_TOparsed_last = 0
         self.fileProgressBar.setValue(0)
         self.fileProgressBar.setMaximum(1)
+        
+    def update_font_size(self):
+        font_percentage = 0.025  # Ajustez cela en fonction de vos besoins
+        font_size = int(self.height() * font_percentage)
+        
+        for widget in self.dynamic_widg:
+            font = widget.font()
+            font.setPointSize(font_size)
+            widget.setFont(font)
+            
+        self.logTextBox.changeFont(font_size)
+            
+        
+        
+    def resizeEvent(self, event):
+        # Redéfinir la taille de la police lors du redimensionnement de la fenêtre
+        self.update_font_size()
+        super(Application, self).resizeEvent(event)
 
     #==== Worker Handling ====================================================#
 
@@ -433,6 +478,8 @@ class Application(QMainWindow):
         """
         End of parsing.
         """
-        emitLog(Log.INFO, "End of parsing")
+        emitLog(Log.CRITICAL, "______________________________ "  ) 
+        emitLog(Log.CRITICAL, "______________END_____________ "  )
+        emitLog(Log.CRITICAL, "______________________________ " )
         self.resetButton()
         self.updateProgressBar()

@@ -69,11 +69,11 @@ def parseCDS(path, file_name, id, organism, DNA, DNA_length, feature, CDS_flag, 
         for start_location, end_location in intron_info["location"]:
             intron_info["DNA_sub_sequence"].append(DNA[start_location : end_location])
     
-        # Intron reverse completement
+        # Intron reverse complement
         if CDS_info["strand"] == -1:
             i = 0
             for sub_sequence in intron_info["DNA_sub_sequence"]:
-                intron_info["DNA_sub_sequence"][i] = sub_sequence.complement()
+                intron_info["DNA_sub_sequence"][i] = sub_sequence.reverse_complement()
                 i += 1
             intron_info["DNA_sub_sequence"].reverse()
     # Write CDS sequence in CDS file
@@ -105,11 +105,11 @@ def writeCDS(CDS_info, worker=None):
         if CDS_info["strand"] == -1:
             sequence_description_text += "complement("
         if len(CDS_info["location"]) == 1:
-            sequence_description_text += str(CDS_info["location"][0][0]) + ".." + str(CDS_info["location"][0][1])
+            sequence_description_text += str(CDS_info["location"][0][0]+1) + ".." + str(CDS_info["location"][0][1])
         else:
             sequence_description_text += "join("
             for sub_sequence_location in CDS_info["location"]:
-                sequence_description_text += str(sub_sequence_location[0]) + ".." + str(sub_sequence_location[1]) + ","
+                sequence_description_text += str(sub_sequence_location[0]+1) + ".." + str(sub_sequence_location[1]) + ","
             sequence_description_text = sequence_description_text[:len(sequence_description_text)-1]
             sequence_description_text += ")"
         if CDS_info["strand"] == -1:
@@ -157,7 +157,7 @@ def writeIntron(intron_info, worker=None):
             sequence_description_text += "complement("
         sequence_description_text += "join("
         for sub_sequence_location in intron_info["CDS_location"]:
-            sequence_description_text += str(sub_sequence_location[0]) + ".." + str(sub_sequence_location[1]) + ","
+            sequence_description_text += str(sub_sequence_location[0]+1) + ".." + str(sub_sequence_location[1]) + ","
         sequence_description_text = sequence_description_text[:len(sequence_description_text)-1]
         sequence_description_text += ")"
         if intron_info["strand"] == -1:

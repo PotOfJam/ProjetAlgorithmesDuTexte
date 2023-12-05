@@ -1,4 +1,3 @@
-
 import sys, signal
 from PyQt5.QtWidgets import QApplication
 from qt_material import apply_stylesheet
@@ -24,7 +23,7 @@ def main():
     # Create application
     _app = QApplication(sys.argv)
     window = Application()
-    apply_stylesheet(_app, theme="light_cyan_500.xml")
+    apply_stylesheet(_app, theme="dark_red.xml")
 
     # Signal handler
     signal.signal(signal.SIGINT, signalHandler)

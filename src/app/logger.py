@@ -12,6 +12,7 @@ class Log(Enum):
     WARNING = 1     
     INFO = 2
     DEBUG = 3
+    CRITICAL = 4
 
 def emitLog(level, message, worker=None):
     """
@@ -34,6 +35,8 @@ def emitLog(level, message, worker=None):
                 logging.info(message)
             elif level.value == Log.DEBUG.value:
                 logging.debug(message)
+            elif level.value == Log.CRITICAL.value:
+                logging.critical(message)
             else:
                 logging.error("Invalid log level for message: " + message)
         else:
@@ -41,10 +44,11 @@ def emitLog(level, message, worker=None):
 
 class CustomFormatter(logging.Formatter):
     FORMATS = {
-        logging.ERROR:   ("[%(levelname)-8s] %(message)s", "red"),
+        logging.ERROR:   ("[%(levelname)-8s] %(message)s", "yellow"),
         logging.DEBUG:   ("[%(levelname)-8s] %(message)s", "green"),
-        logging.INFO:    ("[%(levelname)-8s] %(message)s", "blue"),
-        logging.WARNING: ("[%(levelname)-8s] %(message)s", "orange")
+        logging.INFO:    ("[%(levelname)-8s] %(message)s", "cyan"),
+        logging.WARNING: ("[%(levelname)-8s] %(message)s", "orange"),
+        logging.CRITICAL:     ("[%(levelname)-8s] %(message)s", "yellow")
     }
 
     def format(self, record):
@@ -64,6 +68,8 @@ class QPlainTextEditLogger(logging.Handler):
         super().__init__()
         self.widget = QPlainTextEdit(parent)
         self.widget.setReadOnly(True)
+        
+        
 
     def emit(self, record):
         msg = self.format(record)
@@ -71,3 +77,12 @@ class QPlainTextEditLogger(logging.Handler):
         # move scrollbar
         scrollbar = self.widget.verticalScrollBar()
         scrollbar.setValue(scrollbar.maximum())
+        
+    def changeFont(self,font_size):
+        # Définir la taille de police du widget
+        font = QFont()
+        font.setPointSize(font_size) 
+        self.widget.setFont(font)
+        # Définir la feuille de style pour ajuster la taille du texte
+        style_sheet = "font-size: {}px;".format(font.pointSize())
+        self.widget.setStyleSheet(style_sheet)

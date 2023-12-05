@@ -88,7 +88,7 @@ def intronLocation(CDS_info_location, worker=None):
     if len(CDS_info_location) > 1:
         for i in range(len(CDS_info_location) - 1):
             start_location = CDS_info_location[i][1]
-            end_location = CDS_info_location[i+1][0]-1
+            end_location = CDS_info_location[i+1][0]
             emitLog(Log.INFO, "start:"+ str(start_location)+"   end :"+ str(end_location), worker)
             intron_location.append((start_location, end_location))
     
@@ -182,7 +182,7 @@ def writeSequence(sequence_info, worker=None):
         else:
             sequence_description_text += "join("
             for sub_sequence_location in sequence_info["location"]:
-                sequence_description_text += str(sub_sequence_location[0]) + ".." + str(sub_sequence_location[1]) + ","
+                sequence_description_text += str(sub_sequence_location[0]+1) + ".." + str(sub_sequence_location[1]) + ","
             sequence_description_text = sequence_description_text[:len(sequence_description_text)-1]
             sequence_description_text += ")"
         if sequence_info["strand"] == -1:
