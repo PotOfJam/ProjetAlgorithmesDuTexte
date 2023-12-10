@@ -14,7 +14,11 @@ def searchID(organism, search_db = "nucleotide", worker=None):
         return []
     
     handle = Entrez.esearch(db=search_db, term="(" + organism + "[Organism] AND NC_000001:NC_999999[ACCN])", retmax ="999999999", usehistory='y', idtype="acc")
-    record = Entrez.read(handle)
+    try:
+        record = Entrez.read(handle)
+    except:
+        emitLog(Log.ERROR, "Unable to retrieve ID(s) from search_db = " + search_db + " (invalid organism)", worker)
+        return []
     handle.close()
 
     emitLog(Log.INFO, "Found %d ids to analyse:" % len(record["IdList"]), worker)
