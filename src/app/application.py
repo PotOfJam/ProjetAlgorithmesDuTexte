@@ -491,4 +491,4 @@ class Application(QMainWindow):
         emitLog(Log.CRITICAL, "__________END PARSING_________ "  )
         emitLog(Log.CRITICAL, "______________________________ " )
         self.resetButton()
-        self.updateProgressBar()
+        self.resetProgressbar()
