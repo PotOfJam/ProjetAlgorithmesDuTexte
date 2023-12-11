@@ -127,7 +127,7 @@ class Application(QMainWindow):
         self.none_checked = False
         for checkbox in self.checkboxes:
             checkbox.toggled.connect(self.onChecked)
-            self.dynamic_widg.append(checkbox) 
+            #self.dynamic_widg.append(checkbox) 
             
         self.NONE.toggled.connect(self.onChecked_NONE)
         self.ALL.toggled.connect(self.onChecked_ALL)
@@ -146,7 +146,7 @@ class Application(QMainWindow):
         chaine = "Parsed files: " + str(self.nb_parsed_files) + "/" + str(self.nb_files_to_parse)
         self.progress_bar_label.setText(chaine)
         
-        
+        # Font zoom
         self.dynamic_widg.append(self.progress_bar_label) 
         self.dynamic_widg.append(self.treeView)
         self.dynamic_widg.append(self.tabs) 
@@ -289,15 +289,24 @@ class Application(QMainWindow):
         self.fileProgressBar.setMaximum(1)
         
     def update_font_size(self):
-        font_percentage = 0.025  # Ajustez cela en fonction de vos besoins
+        
+        font_percentage = 0.013  
         font_size = int(self.height() * font_percentage)
         
         for widget in self.dynamic_widg:
             font = widget.font()
             font.setPointSize(font_size)
             widget.setFont(font)
-            
+        
+        for widget in self.checkboxes:
+            font = widget.font()
+            font.setPointSize(font_size)
+            widget.setFont(font)
+        
+        font_percentage = 0.030
+        font_size = int(self.height() * font_percentage)
         self.logTextBox.changeFont(font_size)
+            
             
         
         
@@ -479,7 +488,7 @@ class Application(QMainWindow):
         End of parsing.
         """
         emitLog(Log.CRITICAL, "______________________________ "  ) 
-        emitLog(Log.CRITICAL, "______________END_____________ "  )
+        emitLog(Log.CRITICAL, "__________END PARSING_________ "  )
         emitLog(Log.CRITICAL, "______________________________ " )
         self.resetButton()
         self.updateProgressBar()
