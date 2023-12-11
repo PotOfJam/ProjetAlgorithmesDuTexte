@@ -42,13 +42,3 @@ This program is a utility tool to facilitate access to this database. The user-f
 <p align="center">
   <img src="logo.png" />
 </p>
-
-## 📝 TO DO LIST !!!
-- Julie & Louise:
-    - [x] ...
-
-- Mathéo:
-    - [ ] Documentation (code + README)
-
-- Samuel & Fabien:
-    - [x] Documentation (code + README)
