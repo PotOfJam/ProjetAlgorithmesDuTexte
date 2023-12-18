@@ -4,7 +4,9 @@ import time, random
 
 from ..app.logger import emitLog, Log
 
+
 def fetchFromID(id, fetch_db="nuccore", rettype="gbwithparts", worker=None):
+    RETRY_LIMIT = 20
 
     emitLog(Log.INFO, "Fetching data from GenBank database...(please wait)", worker)
 
@@ -15,7 +17,8 @@ def fetchFromID(id, fetch_db="nuccore", rettype="gbwithparts", worker=None):
 
     fetched = False
     delay = 0.5 # In seconds
-    while not fetched:
+    retries = 0
+    while not fetched and retries < RETRY_LIMIT:
         # Fetch data from database
         
         try:
@@ -24,6 +27,7 @@ def fetchFromID(id, fetch_db="nuccore", rettype="gbwithparts", worker=None):
             delay += random.uniform(0, 0.5)
             emitLog(Log.ERROR, "Unable to fetch id = " + str(id) + " from fetch_db = " + fetch_db + ", retrying in " + str(delay) + " seconds", worker)
             time.sleep(delay)
+            retries += 1
         except:
             emitLog(Log.ERROR, traceback.format_exc(), worker)
             emitLog(Log.ERROR, "Unable to fetch id = " + str(id) + " from fetch_db = " + fetch_db, worker)
